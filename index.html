@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#102a43" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102a43'/%3E%3Cpath d='M8 16 16 7l8 9-8 9-8-9Z' fill='none' stroke='%2353b9ff' stroke-width='2'/%3E%3Cpath d='M16 11v10' stroke='%2326d5c3' stroke-width='2'/%3E%3C/svg%3E" />
+    <title>五度智链 | 产业上链 Agent</title>
+    <link rel="stylesheet" href="styles.css?v=202609111520" />
+  </head>
+  <body>
+    <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="icon-map" viewBox="0 0 24 24"><path d="M3 6.5 8.5 4 15 6.5 21 4v13.5L15 20l-6.5-2.5L3 20V6.5Z"/><path d="M8.5 4v13.5M15 6.5V20"/></symbol>
+      <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 5-6"/><circle cx="7" cy="15" r="1"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="13" r="1"/><circle cx="19" cy="7" r="1"/></symbol>
+      <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3ZM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/></symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 11h6"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m16 16 5 5"/></symbol>
+      <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+      <symbol id="icon-sliders" viewBox="0 0 24 24"><path d="M4 6h6M14 6h6M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="12" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></symbol>
+      <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0 1 5"/><path d="M20 5v6h-6"/></symbol>
+      <symbol id="icon-maximize" viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M3 16v5h5"/></symbol>
+      <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></symbol>
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+      <symbol id="icon-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M14 6l6 6-6 6"/></symbol>
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24"><path d="M20 12H5M10 6l-6 6 6 6"/></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 7"/></symbol>
+      <symbol id="icon-building" viewBox="0 0 24 24"><path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M2 21h20M8 7h4M8 11h4M8 15h4M18 9h2v12"/></symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.1.1l2-2a5 5 0 0 0-7.1-7.1l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.1-.1l-2 2a5 5 0 0 0 7.1 7.1l1.1-1.1"/></symbol>
+      <symbol id="icon-send" viewBox="0 0 24 24"><path d="m4 4 17 8-17 8 3-8-3-8Z"/><path d="M7 12h14"/></symbol>
+      <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+      <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></symbol>
+      <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+      <symbol id="icon-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"/></symbol>
+      <symbol id="icon-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m4 12 8 4 8-4M4 16l8 5 8-5"/></symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="icon-file" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M8 13h8M8 17h6"/></symbol>
+    </svg>
+
+    <div class="app-shell">
+      <header class="top-navigation" aria-label="主导航">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div><strong>五度智链</strong><small>产业上链 Agent</small></div>
+        </div>
+        <nav class="primary-nav" aria-label="功能板块">
+          <button class="primary-nav-item active" type="button" data-view="graph"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><span><b>产业图谱</b><small>INDUSTRY MAP</small></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="ai"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><span><b>AI智能</b><small>AI ASSISTANT</small></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="onchain"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><span><b>上链说明</b><small>HOW IT WORKS</small></span><i class="nav-current"></i></button>
+        </nav>
+        <div class="top-navigation-actions"><span class="last-updated"><svg class="ui-icon tiny"><use href="#icon-clock"></use></svg>数据更新于 2026.09.08</span><button class="avatar-button" type="button" aria-label="当前用户">研</button></div>
+      </header>
+
+      <main class="main-content">
+        <div class="page-wrap">
+          <section class="view-panel active" id="graphView" data-panel="graph">
+            <section class="graph-query" aria-label="产业链查询">
+              <div class="query-topline"><div><span class="section-kicker">SEARCH &amp; FILTER</span><h2>产业链查询</h2></div><span class="query-result" id="queryResult">已加载 半导体与集成电路图谱</span></div>
+              <div class="query-row">
+                <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索环节节点或企业名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
+                <label class="select-box"><span>产业类型</span><select id="industryType"><option value="不限">不限</option><option value="战略性新兴产业">战略性新兴产业</option><option value="传统产业">传统产业</option><option value="未来产业">未来产业</option></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
+                <label class="select-box industry-name-box"><span>产业名称</span><select id="industryName"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
+                <label class="select-box province-box"><span>省份</span><select id="provinceSelect"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
+                <button class="button primary search-button" id="graphSearchButton" type="button"><svg class="ui-icon mini"><use href="#icon-search"></use></svg>查询</button>
+              </div>
+              <div class="active-filter-row" id="activeFilterRow"><span class="active-filter-label">当前条件</span><button class="filter-chip" type="button" data-clear-filter="industryType">产业类型：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><button class="filter-chip" type="button" data-clear-filter="provinceSelect">省份：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><span class="filter-note">搜索范围：节点名称、企业名称</span></div>
+            </section>
+
+            <section class="chain-selector-panel" id="chainSelectorPanel" aria-label="产业链选择">
+              <div class="chain-picker-view" id="chainPickerView">
+                <div class="insight-heading"><div><span class="section-kicker">CHAIN SELECTOR</span><h2>产业链选择</h2></div><span class="picker-count" id="chainPickerCount">1 条</span></div>
+                <div class="picker-context" id="chainPickerContext">按省份与官方产业体系筛选，选择后查看对应内容</div>
+                <div class="chain-picker-list" id="chainPickerList"></div>
+              </div>
+              <div class="selected-chain-view" id="selectedChainView" hidden>
+                <div class="selected-chain-back-row"><button class="selected-chain-back" id="changeChainButton" type="button"><svg class="ui-icon mini"><use href="#icon-arrow-left"></use></svg>产业链选择</button><span>当前产业链</span></div>
+                <div class="selected-chain-heading">
+                  <div class="selected-chain-copy"><span class="section-kicker">SELECTED INDUSTRY CHAIN</span><h2 id="selectedChainTitle">半导体与集成电路</h2><p id="selectedChainContext">全国 31 省市 · 战略性新兴产业</p></div>
+                  <div class="selected-chain-stats" id="selectedChainStats"></div>
+                </div>
+                <div class="selected-chain-filters-slot" id="selectedChainFiltersSlot">
+                  <div class="advanced-filters" id="advancedFilters">
+                    <div class="advanced-heading"><span><svg class="ui-icon mini"><use href="#icon-filter"></use></svg>企业筛选</span><small>筛选当前产业链中的企业与节点</small></div>
+                    <div class="advanced-filter-fields">
+                      <label class="advanced-field advanced-region-field" id="regionScopeField" hidden><span>区域范围</span><select id="regionScope"><option value="不限">不限</option></select></label>
+                      <label class="advanced-field"><span>企业荣誉</span><select id="honorFilter"><option value="不限">不限</option><option value="制造业单项冠军企业">制造业单项冠军企业</option><option value="高新技术企业">高新技术企业</option><option value="百强企业">百强企业</option><option value="专精特新企业">专精特新企业</option><option value="小巨人企业">小巨人企业</option></select></label>
+                      <label class="advanced-field"><span>证据强度</span><select id="evidenceFilter"><option value="全部证据">全部证据</option><option value="强证据">强证据</option><option value="待补证">待补证</option></select></label>
+                      <label class="advanced-field"><span>上市企业</span><select id="listedFilter"><option value="不限">不限</option><option value="是">是</option><option value="否">否</option></select></label>
+                    </div>
+                    <button class="text-button advanced-clear-button" type="button" id="clearAdvancedFilters">清空条件</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <nav class="workbench-tabs is-hidden" id="workbenchTabs" aria-label="产业工作台内容">
+              <button class="workbench-tab active" type="button" data-section="graphSection"><span class="tab-index">01</span><span><b>产业图谱</b><small>链条层级与节点</small></span></button>
+              <button class="workbench-tab" type="button" data-section="analysisSection"><span class="tab-index">02</span><span><b>产业分析</b><small>区域与结构洞察</small></span></button>
+              <button class="workbench-tab" type="button" data-section="companySection"><span class="tab-index">03</span><span><b>上链企业清单</b><small>代表企业与证据</small></span></button>
+            </nav>
+
+            <section class="workbench-section graph-section active" id="graphSection" data-section-panel="graphSection">
+              <div class="graph-content-layout">
+              <section class="graph-board" aria-label="产业链图谱">
+                <div class="panel-toolbar"><div><span class="section-kicker">INDUSTRY GRAPH</span><h2>产业图谱 <em><span id="graphTitle">半导体与集成电路</span></em></h2></div><div class="toolbar-actions"><button class="icon-button" type="button" id="fullscreenButton" aria-label="全屏查看" title="全屏查看"><svg class="ui-icon"><use href="#icon-maximize"></use></svg></button></div></div>
+                <div class="fullscreen-filter-slot" id="fullscreenFilterSlot"></div>
+                <div class="map-meta"><div class="map-legend" id="mapLegend"></div><span class="map-hint">点击任一环节查看企业清单</span></div>
+                <div class="chain-map" id="chainMap"></div>
+                <div class="graph-board-footer"><span><svg class="ui-icon tiny"><use href="#icon-link"></use></svg><b id="graphNodeCount">416</b>个细分环节</span><span><svg class="ui-icon tiny"><use href="#icon-building"></use></svg><b id="graphCompanyCount">452</b>家代表企业</span><span class="footer-note">代表企业来自附件，正式纳入需经过主体核验与证据判断</span></div>
+              </section>
+              </div>
+            </section>
+
+            <section class="workbench-section analysis-section" id="analysisSection" data-section-panel="analysisSection">
+              <div class="section-title-row workbench-section-heading"><div><span class="section-kicker">INDUSTRY INSIGHTS</span><h2>产业分析</h2><p id="analysisScope">基于当前产业链筛选结果，查看区域覆盖、企业结构与环节分布。</p></div><span class="section-context" id="analysisScopeContext">半导体与集成电路 · 全国</span></div>
+              <section class="analysis-story" id="analysisStory"><span class="analysis-story-mark">产业特征</span><div><h3 id="analysisStoryTitle">当前产业链的企业分布与结构</h3><p id="analysisStoryText">选择产业链后，将基于当前可见企业样本生成简要分析。</p></div><span class="analysis-story-note">演示样本 · 非实时工商统计</span></section>
+              <div class="analysis-grid">
+                <section class="analysis-panel distribution-panel"><div class="chart-heading"><div><span class="section-kicker">REGIONAL CLUSTERS</span><h3>上链企业全国分布</h3><p>按企业注册地址模拟统计，颜色越深代表当前产业链的企业样本越多</p></div><span class="chart-total" id="analysisRegionCount">0 个省市</span></div><div class="distribution-overview"><div class="distribution-highlight"><strong id="distributionCompanyTotal">0</strong><span>上链企业</span></div><div class="distribution-highlight"><strong id="distributionProvinceTotal">0</strong><span>覆盖省市</span></div><div class="distribution-highlight"><strong id="distributionCoreTotal">0</strong><span>核心产品企业</span></div></div><div class="distribution-layout"><div class="china-map-visual" aria-label="当前产业链上链企业省级分布"><svg class="china-map-base" viewBox="0 0 1000 620" role="img" aria-label="中国省级地图上的上链企业分布"><g id="chinaMapPaths"></g></svg><div class="province-map-points" id="provinceMapPoints"></div><div class="map-scale"><span>少</span><i class="scale-swatch low"></i><i class="scale-swatch mid"></i><i class="scale-swatch high"></i><span>多</span></div></div><div class="province-ranking"><div class="ranking-heading"><span>PROVINCE TOP 10</span><strong>企业数量</strong></div><div class="metric-bar-list" id="provinceTop10"></div></div></div></section>
+                <section class="analysis-panel type-panel"><div class="chart-heading"><div><span class="section-kicker">COMPANY PROFILE</span><h3>企业角色与证据结构</h3><p>结合企业角色和证据强度字段，观察样本成熟度</p></div></div><div class="type-chart"><div class="donut-chart" id="companyMixChart" style="--core-pct: 50%"><div><strong id="companyMixTotal">0</strong><span>家企业</span></div></div><div class="donut-legend"><div><i class="legend-square blue"></i><span>核心产品企业</span><b id="companyCorePct">0%</b></div><div><i class="legend-square teal"></i><span>技术潜力企业</span><b id="companyPotentialPct">0%</b></div></div></div><div class="analysis-subchart"><div class="subchart-label"><span>证据强度</span><small>当前样本</small></div><div class="metric-bar-list compact" id="analysisEvidenceBars"></div></div></section>
+                <section class="analysis-panel listed-panel trend-panel"><div class="chart-heading"><div><span class="section-kicker">ONCHAIN TREND</span><h3>近五年上链企业数量变化</h3><p>按年度观察当前产业链企业样本的增长趋势</p></div><span class="chart-total">单位：家</span></div><div class="trend-chart" id="listingTrendChart" aria-label="近五年上链企业数量变化"></div><div class="trend-note" id="listingTrendNote">当前筛选下的演示趋势</div></section>
+                <section class="analysis-panel stage-panel"><div class="chart-heading"><div><span class="section-kicker">CHAIN STRUCTURE</span><h3>各一级环节的上链企业关联数</h3><p>横轴为一级产业环节，柱高表示企业关联数</p></div><span class="chart-total">单位：家</span></div><div class="stage-bars" id="analysisStageBars"></div><div class="axis-labels"><span>0</span><span id="analysisStageAxis">—</span><span>—</span></div><div class="axis-caption">横轴：一级产业环节　纵轴：企业关联数（家）</div></section>
+                <section class="analysis-panel metric-panel capital-panel"><div class="chart-heading"><div><span class="section-kicker">REGISTERED CAPITAL</span><h3>注册资本区间分布</h3><p>由注册资本字段归类，作为企业规模的基础观察维度</p></div></div><div class="metric-bar-list tall" id="analysisCapitalBars"></div></section>
+              </div>
+            </section>
+
+            <section class="workbench-section company-section" id="companySection" data-section-panel="companySection">
+              <div class="section-title-row workbench-section-heading"><div><span class="section-kicker">ONCHAIN COMPANY LIST</span><h2>上链企业清单</h2><p id="companyListScope">展示当前产业链下的代表企业样本，点击企业所在环节可查看完整清单与证据。</p></div><div class="company-list-total"><strong id="companyListTotal">0</strong><span>家代表企业</span></div></div>
+              <div class="company-list-toolbar"><span id="companyListSummary">正在加载企业清单</span><span class="company-list-note">数据来自附件，正式纳入需经过主体核验与证据判断</span></div>
+              <div class="company-list-table" id="onchainCompanyList"></div>
+            </section>
+          </section>
+
+          <section class="view-panel" id="aiView" data-panel="ai">
+            <div class="ai-layout">
+              <aside class="conversation-panel" aria-label="对话记录"><div class="conversation-heading"><div><span class="section-kicker">CONVERSATION HISTORY</span><h3>对话记录</h3></div><button class="button secondary conversation-new-button" type="button" id="newConversationButton"><svg class="ui-icon mini"><use href="#icon-plus"></use></svg>新建对话</button></div><div class="conversation-list" id="conversationList"></div></aside>
+              <section class="chat-panel"><div class="chat-header"><div class="assistant-avatar"><svg class="ui-icon"><use href="#icon-spark"></use></svg></div><div><strong>产业研究助手</strong><span>可回答产业分布、企业画像、环节和证据问题</span></div><button class="icon-button subtle" type="button" id="clearChatButton" aria-label="清空当前对话" title="清空当前对话"><svg class="ui-icon"><use href="#icon-refresh"></use></svg></button></div><div class="chat-messages" id="chatMessages"></div><div class="chat-composer"><div class="composer-hint"><span id="chatContextLabel">当前上下文：半导体与集成电路 / 全国 31 省市 / 全部企业</span><span>Enter 发送</span></div><div class="composer-row"><textarea id="chatInput" rows="1" placeholder="输入你的产业问题，例如：江苏省有哪些半导体与集成电路环节？"></textarea><button class="send-button" id="sendChatButton" type="button" aria-label="发送问题" title="发送问题"><svg class="ui-icon"><use href="#icon-send"></use></svg></button></div></div></section>
+              <aside class="topic-panel"><div class="panel-title"><span class="section-kicker">SUGGESTED TOPICS</span><h3>可以这样问</h3></div><button class="topic-button" type="button" data-prompt="半导体与集成电路代表企业主要集中在哪些省份？"><span class="topic-icon blue"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><span><b>看区域分布</b><small>哪些省份值得重点关注？</small></span><svg class="ui-icon mini"><use href="#icon-chevron-right"></use></svg></button><button class="topic-button" type="button" data-prompt="半导体与集成电路中哪些环节代表企业最多？"><span class="topic-icon teal"><svg class="ui-icon"><use href="#icon-check"></use></svg></span><span><b>找核心环节</b><small>优先查看代表企业清单</small></span><svg class="ui-icon mini"><use href="#icon-chevron-right"></use></svg></button><button class="topic-button" type="button" data-prompt="半导体与集成电路当前有哪些核心环节？"><span class="topic-icon amber"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><span><b>识别核心环节</b><small>查看附件标注的核心环节</small></span><svg class="ui-icon mini"><use href="#icon-chevron-right"></use></svg></button></aside>
+            </div>
+          </section>
+
+          <section class="view-panel" id="onchainView" data-panel="onchain">
+            <div class="onchain-scroll">
+              <section class="explain-banner"><div class="banner-icon"><svg class="ui-icon"><use href="#icon-link"></use></svg></div><div><span class="section-kicker">ONE RESULT, TRACEABLE REASONS</span><h3>每一家企业为什么被纳入，都能看到依据</h3><p>系统先发现候选企业，再核对主体和证据，最后由规则与研究员共同决定企业在链上的角色。证据不足会被明确标记，不会被直接判断为“不属于”。</p></div><div class="banner-stat"><strong>6</strong><span>个判断步骤</span></div></section>
+              <section class="process-section"><div class="section-title-row"><div><span class="section-kicker">WORKFLOW</span><h3>一条企业如何上链</h3></div><span class="version-label">当前流程 V1.0</span></div><div class="process-steps"><div class="process-step done"><span>01</span><strong>定义节点</strong><small>明确纳入、排除范围</small></div><div class="process-line done"></div><div class="process-step done"><span>02</span><strong>发现企业</strong><small>数据库 + 搜索 + 候选名单</small></div><div class="process-line done"></div><div class="process-step done"><span>03</span><strong>核验主体</strong><small>统一社会信用代码与名称</small></div><div class="process-line"></div><div class="process-step"><span>04</span><strong>匹配证据</strong><small>产品、技术、客户、交付</small></div><div class="process-line"></div><div class="process-step"><span>05</span><strong>人工复核</strong><small>处理冲突与边界案例</small></div><div class="process-line"></div><div class="process-step"><span>06</span><strong>版本发布</strong><small>保留结果与变更记录</small></div></div></section>
+              <div class="logic-tools-grid"><section class="logic-panel"><div class="section-title-row"><div><span class="section-kicker">INCLUSION LOGIC</span><h3>企业角色与证据等级</h3></div><button class="icon-button subtle" type="button" id="logicInfoButton" aria-label="查看判断说明" title="查看判断说明"><svg class="ui-icon"><use href="#icon-info"></use></svg></button></div><div class="logic-table"><div class="logic-row logic-head"><span>角色</span><span>纳入判断</span><span>适合动作</span></div><div class="logic-row"><b class="logic-badge a1">A1</b><span><strong>核心产品企业</strong><small>目标产品明确，有客户、订单、交付或验收证据</small></span><em>优先招商</em></div><div class="logic-row"><b class="logic-badge a2">A2</b><span><strong>产品明确企业</strong><small>目标产品明确，但交付证据仍需补充</small></span><em>补充证据</em></div><div class="logic-row"><b class="logic-badge b">B</b><span><strong>技术潜力企业</strong><small>技术能力较强，产品证据不足</small></span><em>持续跟踪</em></div><div class="logic-row"><b class="logic-badge c">C</b><span><strong>上下游/使用方</strong><small>供应商、服务商、客户或转型潜力企业</small></span><em>协同分析</em></div><div class="logic-row"><b class="logic-badge l">L</b><span><strong>待补证线索</strong><small>只有媒体或宣传线索，暂不升级结论</small></span><em>人工复核</em></div></div></section><section class="tools-panel"><div class="section-title-row"><div><span class="section-kicker">SOURCE TOOLBOX</span><h3>上链工具箱</h3></div><span class="tool-count" id="enabledSourceCount">4 / 6 已启用</span></div><p class="tools-intro">按项目选择数据源，系统会优先使用已有数据库和历史经验，减少重复搜索。</p><div class="source-tools"><label class="source-tool enabled"><input type="checkbox" checked data-source="工商数据"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-building"></use></svg></span><span><b>企业工商数据</b><small>主体核验 · 全国覆盖</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="专利"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><span><b>专利</b><small>技术能力 · 近五年</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="软件著作权"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><span><b>软件著作权</b><small>软件产品 · 证据补充</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="互联网检索"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><span><b>互联网检索</b><small>官网与公开资料</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="招投标"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-file"></use></svg></span><span><b>招投标/政府项目</b><small>客户与交付证据</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="行业资讯"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><span><b>行业资讯</b><small>线索发现 · 不单独定论</small></span><i></i></label></div></section></div>
+              <section class="evidence-standard"><div><span class="section-kicker">EVIDENCE STANDARD</span><h3>四类结论分开判断</h3></div><div class="standard-items"><span><i class="standard-dot blue"></i><b>产品存在</b><small>企业确实提供目标产品</small></span><span><i class="standard-dot teal"></i><b>技术能力</b><small>专利、软著或研发能力</small></span><span><i class="standard-dot amber"></i><b>客户交付</b><small>订单、验收或项目证据</small></span><span><i class="standard-dot coral"></i><b>产业角色</b><small>核心、潜力、上下游分别标记</small></span></div></section>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden>
+      <aside class="node-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+        <div class="drawer-header"><div><span class="section-kicker">NODE COMPANY LIST</span><h2 id="drawerTitle">微处理器</h2><p id="drawerSubtitle">设计 · 微处理器 · 代表企业样本</p></div><button class="icon-button" type="button" id="closeDrawer" aria-label="关闭企业清单" title="关闭企业清单"><svg class="ui-icon"><use href="#icon-x"></use></svg></button></div>
+        <div class="drawer-summary"><div><span>代表企业</span><strong id="drawerCompanyTotal">0</strong></div><div><span>核心记录</span><strong id="drawerStrongTotal">0</strong></div><div><span>层级记录</span><strong id="drawerProvinceTotal">0</strong></div></div>
+        <div class="drawer-filters"><label class="drawer-search"><svg class="ui-icon mini"><use href="#icon-search"></use></svg><input id="drawerSearch" type="search" placeholder="搜索企业名称"/></label><div class="drawer-filter-row"><label><select id="drawerProvince"></select></label><label><select id="drawerType"><option value="全部类型">企业类型</option><option value="核心产品企业">核心产品企业</option><option value="技术潜力企业">技术潜力企业</option><option value="上下游/使用方">上下游/使用方</option></select></label><label><select id="drawerEvidence"><option value="全部证据">证据</option><option value="强证据">强证据</option><option value="待补证">待补证</option></select></label></div><div class="drawer-filter-summary"><span id="drawerFilterResult">显示 8 / 428 家</span><button class="text-button" type="button" id="clearDrawerFilters">清空筛选</button></div></div>
+        <div class="company-list" id="drawerCompanyList"></div>
+        <div class="drawer-footer"><span>结果需经人工复核后正式发布</span><button class="button secondary" type="button" id="drawerExportButton"><svg class="ui-icon mini"><use href="#icon-download"></use></svg>导出清单</button></div>
+      </aside>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="industry-data.js?v=202609111520"></script>
+    <script src="national-industry-data.js?v=202609111520"></script>
+    <script src="china-map-data.js?v=202609141500"></script>
+    <script src="app.js?v=202609111520"></script>
+  </body>
+</html>
