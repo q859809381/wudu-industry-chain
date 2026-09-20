@@ -48,7 +48,8 @@
         <nav class="primary-nav" aria-label="功能板块">
           <button class="primary-nav-item active" type="button" data-view="graph"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><span><b>产业图谱</b><small>INDUSTRY MAP</small></span><i class="nav-current"></i></button>
           <button class="primary-nav-item" type="button" data-view="ai"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><span><b>AI智能</b><small>AI ASSISTANT</small></span><i class="nav-current"></i></button>
-          <button class="primary-nav-item" type="button" data-view="onchain"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><span><b>上链说明</b><small>HOW IT WORKS</small></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="onchain"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>上链说明</b><small>HOW IT WORKS</small></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="solution"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>解决方案</b><small>SOLUTIONS</small></span><i class="nav-current"></i></button>
         </nav>
         <div class="top-navigation-actions"><span class="last-updated"><svg class="ui-icon tiny"><use href="#icon-clock"></use></svg>数据更新于 2026.09.08</span><button class="avatar-button" type="button" aria-label="当前用户">研</button></div>
       </header>
@@ -62,16 +63,16 @@
                 <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索环节节点或企业名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
                 <label class="select-box"><span>产业类型</span><select id="industryType"><option value="不限">不限</option><option value="战略性新兴产业">战略性新兴产业</option><option value="传统产业">传统产业</option><option value="未来产业">未来产业</option></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
                 <label class="select-box industry-name-box"><span>产业名称</span><select id="industryName"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
-                <label class="select-box province-box"><span>省份</span><select id="provinceSelect"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
+                <label class="select-box province-box"><span>产业体系</span><select id="provinceSelect"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
                 <button class="button primary search-button" id="graphSearchButton" type="button"><svg class="ui-icon mini"><use href="#icon-search"></use></svg>查询</button>
               </div>
-              <div class="active-filter-row" id="activeFilterRow"><span class="active-filter-label">当前条件</span><button class="filter-chip" type="button" data-clear-filter="industryType">产业类型：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><button class="filter-chip" type="button" data-clear-filter="provinceSelect">省份：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><span class="filter-note">搜索范围：节点名称、企业名称</span></div>
+              <div class="active-filter-row" id="activeFilterRow"><span class="active-filter-label">当前条件</span><button class="filter-chip" type="button" data-clear-filter="industryType">产业类型：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><button class="filter-chip" type="button" data-clear-filter="provinceSelect">产业体系：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><span class="filter-note">搜索范围：节点名称、企业名称</span></div>
             </section>
 
             <section class="chain-selector-panel" id="chainSelectorPanel" aria-label="产业链选择">
               <div class="chain-picker-view" id="chainPickerView">
                 <div class="insight-heading"><div><span class="section-kicker">CHAIN SELECTOR</span><h2>产业链选择</h2></div><span class="picker-count" id="chainPickerCount">1 条</span></div>
-                <div class="picker-context" id="chainPickerContext">按省份与官方产业体系筛选，选择后查看对应内容</div>
+                <div class="picker-context" id="chainPickerContext">按产业体系与官方命名筛选，选择后查看对应内容</div>
                 <div class="chain-picker-list" id="chainPickerList"></div>
               </div>
               <div class="selected-chain-view" id="selectedChainView" hidden>
@@ -84,10 +85,11 @@
                   <div class="advanced-filters" id="advancedFilters">
                     <div class="advanced-heading"><span><svg class="ui-icon mini"><use href="#icon-filter"></use></svg>企业筛选</span><small>筛选当前产业链中的企业与节点</small></div>
                     <div class="advanced-filter-fields">
-                      <label class="advanced-field advanced-region-field" id="regionScopeField" hidden><span>区域范围</span><select id="regionScope"><option value="不限">不限</option></select></label>
+                      <div class="advanced-field advanced-region-field" id="regionScopeField"><span>区域范围</span><div class="region-cascade" id="regionScopePicker"><select id="regionScope" class="advanced-state-select" hidden><option value="不限" selected>不限</option></select><button class="custom-select-trigger region-cascade-trigger" type="button" id="regionScopeTrigger" aria-haspopup="dialog" aria-expanded="false"><span class="custom-select-label" id="regionScopeLabel">不限</span><span class="custom-select-arrow"><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></span></button><div class="region-cascade-menu" id="regionScopeMenu" role="dialog" aria-label="区域范围"><div class="region-cascade-column"><strong>省</strong><div class="region-cascade-options" id="regionProvinceOptions" role="listbox" aria-label="省"></div></div><div class="region-cascade-column"><strong>市</strong><div class="region-cascade-options" id="regionCityOptions" role="listbox" aria-label="市"></div></div><div class="region-cascade-column"><strong>区</strong><div class="region-cascade-options" id="regionDistrictOptions" role="listbox" aria-label="区"></div></div></div></div></div>
                       <label class="advanced-field"><span>企业荣誉</span><select id="honorFilter"><option value="不限">不限</option><option value="制造业单项冠军企业">制造业单项冠军企业</option><option value="高新技术企业">高新技术企业</option><option value="百强企业">百强企业</option><option value="专精特新企业">专精特新企业</option><option value="小巨人企业">小巨人企业</option></select></label>
                       <label class="advanced-field"><span>证据强度</span><select id="evidenceFilter"><option value="全部证据">全部证据</option><option value="强证据">强证据</option><option value="待补证">待补证</option></select></label>
                       <label class="advanced-field"><span>上市企业</span><select id="listedFilter"><option value="不限">不限</option><option value="是">是</option><option value="否">否</option></select></label>
+                      <label class="advanced-field"><span>知识产权</span><select id="intellectualPropertyFilter" multiple data-multi-select="true"><option value="不限" selected>不限</option><option value="专利信息" data-level="1">专利信息</option><option value="发明授权" data-level="2" data-parent="专利信息">发明授权</option><option value="发明申请" data-level="2" data-parent="专利信息">发明申请</option><option value="实用新型" data-level="2" data-parent="专利信息">实用新型</option><option value="外观专利" data-level="2" data-parent="专利信息">外观专利</option><option value="软件著作权" data-level="1">软件著作权</option><option value="作品著作权" data-level="1">作品著作权</option><option value="商标信息" data-level="1">商标信息</option><option value="标准信息" data-level="1">标准信息</option><option value="其他" data-level="1">其他</option></select></label>
                     </div>
                     <button class="text-button advanced-clear-button" type="button" id="clearAdvancedFilters">清空条件</button>
                   </div>
@@ -146,6 +148,65 @@
               <section class="process-section"><div class="section-title-row"><div><span class="section-kicker">WORKFLOW</span><h3>一条企业如何上链</h3></div><span class="version-label">当前流程 V1.0</span></div><div class="process-steps"><div class="process-step done"><span>01</span><strong>定义节点</strong><small>明确纳入、排除范围</small></div><div class="process-line done"></div><div class="process-step done"><span>02</span><strong>发现企业</strong><small>数据库 + 搜索 + 候选名单</small></div><div class="process-line done"></div><div class="process-step done"><span>03</span><strong>核验主体</strong><small>统一社会信用代码与名称</small></div><div class="process-line"></div><div class="process-step"><span>04</span><strong>匹配证据</strong><small>产品、技术、客户、交付</small></div><div class="process-line"></div><div class="process-step"><span>05</span><strong>人工复核</strong><small>处理冲突与边界案例</small></div><div class="process-line"></div><div class="process-step"><span>06</span><strong>版本发布</strong><small>保留结果与变更记录</small></div></div></section>
               <div class="logic-tools-grid"><section class="logic-panel"><div class="section-title-row"><div><span class="section-kicker">INCLUSION LOGIC</span><h3>企业角色与证据等级</h3></div><button class="icon-button subtle" type="button" id="logicInfoButton" aria-label="查看判断说明" title="查看判断说明"><svg class="ui-icon"><use href="#icon-info"></use></svg></button></div><div class="logic-table"><div class="logic-row logic-head"><span>角色</span><span>纳入判断</span><span>适合动作</span></div><div class="logic-row"><b class="logic-badge a1">A1</b><span><strong>核心产品企业</strong><small>目标产品明确，有客户、订单、交付或验收证据</small></span><em>优先招商</em></div><div class="logic-row"><b class="logic-badge a2">A2</b><span><strong>产品明确企业</strong><small>目标产品明确，但交付证据仍需补充</small></span><em>补充证据</em></div><div class="logic-row"><b class="logic-badge b">B</b><span><strong>技术潜力企业</strong><small>技术能力较强，产品证据不足</small></span><em>持续跟踪</em></div><div class="logic-row"><b class="logic-badge c">C</b><span><strong>上下游/使用方</strong><small>供应商、服务商、客户或转型潜力企业</small></span><em>协同分析</em></div><div class="logic-row"><b class="logic-badge l">L</b><span><strong>待补证线索</strong><small>只有媒体或宣传线索，暂不升级结论</small></span><em>人工复核</em></div></div></section><section class="tools-panel"><div class="section-title-row"><div><span class="section-kicker">SOURCE TOOLBOX</span><h3>上链工具箱</h3></div><span class="tool-count" id="enabledSourceCount">4 / 6 已启用</span></div><p class="tools-intro">按项目选择数据源，系统会优先使用已有数据库和历史经验，减少重复搜索。</p><div class="source-tools"><label class="source-tool enabled"><input type="checkbox" checked data-source="工商数据"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-building"></use></svg></span><span><b>企业工商数据</b><small>主体核验 · 全国覆盖</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="专利"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><span><b>专利</b><small>技术能力 · 近五年</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="软件著作权"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><span><b>软件著作权</b><small>软件产品 · 证据补充</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="互联网检索"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><span><b>互联网检索</b><small>官网与公开资料</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="招投标"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-file"></use></svg></span><span><b>招投标/政府项目</b><small>客户与交付证据</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="行业资讯"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><span><b>行业资讯</b><small>线索发现 · 不单独定论</small></span><i></i></label></div></section></div>
               <section class="evidence-standard"><div><span class="section-kicker">EVIDENCE STANDARD</span><h3>四类结论分开判断</h3></div><div class="standard-items"><span><i class="standard-dot blue"></i><b>产品存在</b><small>企业确实提供目标产品</small></span><span><i class="standard-dot teal"></i><b>技术能力</b><small>专利、软著或研发能力</small></span><span><i class="standard-dot amber"></i><b>客户交付</b><small>订单、验收或项目证据</small></span><span><i class="standard-dot coral"></i><b>产业角色</b><small>核心、潜力、上下游分别标记</small></span></div></section>
+            </div>
+          </section>
+
+          <section class="view-panel solution-view" id="solutionView" data-panel="solution">
+            <div class="solution-page">
+              <section class="solution-hero" aria-labelledby="solutionTitle">
+                <div class="solution-hero-grid" aria-hidden="true"></div>
+                <div class="solution-hero-copy">
+                  <span class="section-kicker">INDUSTRY CHAIN SOLUTIONS</span>
+                  <h1 id="solutionTitle">构建可视化产业链<br />赋能产业精准分析与决策</h1>
+                  <p>标准数据包之外，提供从产业链深度梳理、标准化上链、可视化呈现到数据交付应用的全链路定制服务，交付专属产业链图谱与结构化数据包。</p>
+                  <div class="solution-hero-actions">
+                    <button class="button primary" type="button" id="solutionContactButton"><svg class="ui-icon mini"><use href="#icon-send"></use></svg>提交定制需求</button>
+                    <button class="button secondary" type="button" id="solutionCatalogButton"><svg class="ui-icon mini"><use href="#icon-map"></use></svg>查看标准数据包</button>
+                  </div>
+                </div>
+                <div class="solution-hero-aside" aria-label="解决方案概览">
+                  <span class="solution-hero-aside-label">从数据到应用</span>
+                  <strong>梳理 · 上链 · 呈现 · 交付</strong>
+                  <small>让产业链数据具备可读、可用、可持续更新的业务价值。</small>
+                </div>
+              </section>
+
+              <section class="solution-section" aria-labelledby="solutionPainTitle">
+                <div class="solution-section-heading"><div><span class="section-kicker">SCENARIO CHALLENGES</span><h2 id="solutionPainTitle">您是否也遇到这些难题</h2><p>产业数据工作的四类常见障碍，可以通过统一的数据与研究流程逐一解决。</p></div></div>
+                <div class="solution-card-grid four-columns">
+                  <article class="solution-card pain-card"><span class="solution-card-icon amber"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><h3>产业数据获取困难</h3><p>企业分散、口径不一，缺乏权威完整的产业链数据底座。</p></article>
+                  <article class="solution-card pain-card"><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-refresh"></use></svg></span><h3>数据更新效率低下</h3><p>人工整理耗时耗力，数据到手即过期，难以支撑动态决策。</p></article>
+                  <article class="solution-card pain-card"><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><h3>产业梳理专业不足</h3><p>产业链环节拆解需要深厚行业研究功底，自建团队成本高。</p></article>
+                  <article class="solution-card pain-card"><span class="solution-card-icon coral"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><h3>产业链可视化缺失</h3><p>数据躺在表格里，无法直观呈现产业全貌与关联关系。</p></article>
+                </div>
+              </section>
+
+              <section class="solution-section solution-section-muted" aria-labelledby="solutionDeliveryTitle">
+                <div class="solution-section-heading centered"><div><span class="section-kicker">DELIVERY FRAMEWORK</span><h2 id="solutionDeliveryTitle">四步交付您的专属产业链</h2><p>标准化上链 · 可视化呈现 · 精准化应用</p></div></div>
+                <div class="solution-card-grid four-columns delivery-grid">
+                  <article class="solution-card delivery-card"><span class="delivery-index">01</span><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><h3>产业链深度梳理</h3><p>“解构—识别—梳理”三步闭环，完成产业链上中下游结构拆解，明确核心数据与关联关系。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">02</span><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><h3>标准化上链</h3><p>将企业、知识产权、资质、政策等全链路数据统一入链，建立数据更新制度。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">03</span><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><h3>可视化呈现</h3><p>输出产业图谱与上链企业清单，支持多维度查看、节点逐级下钻。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">04</span><span class="solution-card-icon coral"><svg class="ui-icon"><use href="#icon-database"></use></svg></span><h3>数据交付应用</h3><p>提供全场景数据交付与可视化系统开发，支持 API 接口对接业务系统。</p></article>
+                </div>
+              </section>
+
+              <section class="solution-section" aria-labelledby="solutionCapabilityTitle">
+                <div class="solution-section-heading centered"><div><span class="section-kicker">CORE CAPABILITIES</span><h2 id="solutionCapabilityTitle">四大核心能力支撑</h2><p>数据 × 工具 × 研究 × 开发，全栈自研</p></div></div>
+                <div class="solution-card-grid four-columns capability-grid">
+                  <article class="solution-card capability-card"><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-database"></use></svg></span><h3>全量数据基座</h3><p>覆盖全国各地区、各行业的企业实体与全量数据，为产业分析提供统一底座。</p></article>
+                  <article class="solution-card capability-card"><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-sliders"></use></svg></span><h3>标准化上链工具</h3><p>数据标准化处理、关联关系构建与持续更新维护一体化。</p></article>
+                  <article class="solution-card capability-card"><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><h3>专业产业研究</h3><p>资深产业研究团队，深入理解行业规律与产业链结构。</p></article>
+                  <article class="solution-card capability-card"><span class="solution-card-icon coral"><svg class="ui-icon"><use href="#icon-building"></use></svg></span><h3>定制开发能力</h3><p>支持数据维度、可视化界面定制与系统集成开发。</p></article>
+                </div>
+              </section>
+
+              <section class="solution-section solution-section-muted" aria-labelledby="solutionCompareTitle">
+                <div class="solution-section-heading centered"><div><span class="section-kicker">SERVICE OPTIONS</span><h2 id="solutionCompareTitle">标准数据包 vs 定制方案</h2><p>按需选择，标准包即买即用，定制方案深度适配。</p></div></div>
+                <div class="solution-table-wrap"><table class="solution-table"><thead><tr><th>对比维度</th><th>标准数据包</th><th>产业链定制方案</th></tr></thead><tbody><tr><th>产业链范围</th><td>在售产业链，开箱即选</td><td>任意产业链 / 细分赛道，从零定义</td></tr><tr><th>区域覆盖</th><td>重点城市与全国区域</td><td>指定省 / 市 / 园区，可下钻至区县</td></tr><tr><th>数据维度</th><td>企业基础信息相关维度</td><td>字段级定制，可接入客户自有数据</td></tr><tr><th>交付形式</th><td>Excel 清单 + 图谱 + 数据字典</td><td>数据包 + 可视化系统 + API 接口</td></tr><tr><th>更新机制</th><td>跟随数据更新时间同步</td><td>专属更新方案，支持持续对接</td></tr><tr><th>适用场景</th><td>招商地图、投研筛选、供应链初筛</td><td>产业大脑、招商系统、监测平台建设</td></tr></tbody></table></div>
+              </section>
+
+              <section class="solution-cta" aria-labelledby="solutionCtaTitle"><div><span class="section-kicker">START A PROJECT</span><h2 id="solutionCtaTitle">告诉我们您的产业链需求</h2><p>提交需求后，产业研究顾问将在 1 个工作日内与您联系，提供产业链梳理建议与方案。</p></div><button class="button secondary" type="button" id="solutionCtaButton"><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg>免费获取定制方案</button></section>
             </div>
           </section>
         </div>

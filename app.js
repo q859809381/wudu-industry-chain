@@ -159,6 +159,28 @@ const provinceAreaCatalog = {
 
 const regionSystems = regionCatalog.map(({ province, system }) => ({ province, system }));
 
+function getRegionCities(province) {
+  return provinceAreaCatalog[province]?.cities || [];
+}
+
+function getRegionDistricts(province, city) {
+  if (!province || province === '不限' || !city || city === '不限') return [];
+  const catalog = provinceAreaCatalog[province] || { cities: [], districts: [] };
+  if (catalog.districtsByCity?.[city]) return catalog.districtsByCity[city];
+  if (catalog.cities.length <= 1) return catalog.districts || [];
+  const cityIndex = catalog.cities.indexOf(city);
+  const district = catalog.districts?.[cityIndex];
+  return district ? [district] : (catalog.districts || []);
+}
+
+function resolveSimulatedAdministrativeArea(province, address) {
+  const cities = getRegionCities(province);
+  const city = cities.find((item) => address.includes(item)) || cities[0] || '不限';
+  const districts = getRegionDistricts(province, city);
+  const district = districts.find((item) => address.includes(item)) || districts[0] || '不限';
+  return { city, district };
+}
+
 const industryProfiles = {};
 
 const semiconductorStageMeta = {
@@ -262,13 +284,28 @@ const simulatedEnterpriseHonors = [
   ['专精特新企业', '小巨人企业']
 ];
 
+const simulatedEnterpriseIntellectualPropertyPattern = [
+  ['专利信息', '发明授权'],
+  ['软件著作权'],
+  ['作品著作权'],
+  ['商标信息'],
+  ['标准信息'],
+  ['其他'],
+  ['专利信息', '发明申请', '软件著作权'],
+  ['专利信息', '实用新型', '商标信息'],
+  ['专利信息', '外观专利', '标准信息'],
+  ['软件著作权', '作品著作权']
+];
+
 function buildSemiconductorCompanyRecords(nodes) {
   let recordIndex = 0;
   return nodes.flatMap((node) => node.companies.map((name) => {
     const index = recordIndex++;
     const regionIndex = simulatedEnterpriseRegionPattern[index % simulatedEnterpriseRegionPattern.length];
     const [province, address] = simulatedEnterpriseRegions[regionIndex];
+    const { city, district } = resolveSimulatedAdministrativeArea(province, address);
     const honors = simulatedEnterpriseHonors[index % simulatedEnterpriseHonors.length];
+    const intellectualProperty = simulatedEnterpriseIntellectualPropertyPattern[index % simulatedEnterpriseIntellectualPropertyPattern.length];
     const listed = index % 5 === 0 ? '是' : '否';
     const capital = `${(1.2 + (index % 9) * 0.7).toFixed(1)} 亿元`;
     const year = 2022 + (index % 5);
@@ -278,6 +315,8 @@ function buildSemiconductorCompanyRecords(nodes) {
       name,
       displayName: `芯链示范企业${String(index + 1).padStart(2, '0')}`,
       province,
+      city,
+      district,
       registeredAddress: address,
       registeredCapital: capital,
       registeredDate: `${year}-${month}-${day}`,
@@ -289,6 +328,7 @@ function buildSemiconductorCompanyRecords(nodes) {
       evidence: node.coreCount ? '强证据' : '待补证',
       scale: '代表企业',
       honors,
+      intellectualProperty,
       listed,
       score: node.coreCount ? 'A1' : 'B',
       detail: `${node.l1} · ${node.l2}${node.paths[0] ? ` · ${node.paths[0]}` : ''}。代表企业来自附件，需结合主体和产品证据进一步核验。`
@@ -387,7 +427,8 @@ function renderChinaMapBase() {
 const viewMeta = {
   graph: ['INDUSTRY GRAPH', '产业图谱', '从产业节点到代表企业，查看半导体与集成电路的多级产业链关系。'],
   ai: ['AI RESEARCH AGENT', 'AI智能', '用自然语言查询企业、节点、证据和区域机会，回答会基于当前产业上下文生成。'],
-  onchain: ['HOW ENTERPRISES GO ON CHAIN', '上链说明', '上链不是把企业名称放进图谱，而是确认主体、能力、角色和证据边界。']
+  onchain: ['HOW ENTERPRISES GO ON CHAIN', '上链说明', '上链不是把企业名称放进图谱，而是确认主体、能力、角色和证据边界。'],
+  solution: ['INDUSTRY CHAIN SOLUTIONS', '解决方案', '围绕产业链梳理、标准化上链、可视化呈现与数据交付，提供可落地的定制服务。']
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -396,6 +437,8 @@ let currentIndustry = '半导体与集成电路';
 let chainSelectionActive = false;
 let currentNode = null;
 let currentNodePath = '';
+let regionScopeState = { province: '不限', city: '不限', district: '不限' };
+let regionScopePickerEventsReady = false;
 let toastTimer;
 
 const aiWelcomeMessage = '你好，我可以帮你分析半导体与集成电路的产业链层级、代表企业和省市产业体系。你可以直接问我“哪些环节代表企业最多”或“查看某个省份的官方产业体系”。';
@@ -435,8 +478,16 @@ function closeCustomSelect(custom) {
   custom.trigger.setAttribute('aria-expanded', 'false');
 }
 
+function closeRegionScopePicker() {
+  const menu = $('#regionScopeMenu');
+  const trigger = $('#regionScopeTrigger');
+  menu?.classList.remove('open');
+  trigger?.setAttribute('aria-expanded', 'false');
+}
+
 function closeAllCustomSelects() {
   $$('.custom-select-host').forEach((host) => closeCustomSelect(host._customSelect));
+  closeRegionScopePicker();
 }
 
 function positionCustomSelectMenu(custom) {
@@ -448,9 +499,116 @@ function positionCustomSelectMenu(custom) {
   custom.menu.style.minWidth = `${Math.round(triggerRect.width)}px`;
 }
 
+function getMultiSelectValues(select) {
+  return [...(select?.options || [])]
+    .filter((option) => option.selected)
+    .map((option) => option.value);
+}
+
+function setMultiSelectValues(select, values = ['不限']) {
+  if (!select?.multiple) return;
+  const available = new Set([...select.options].map((option) => option.value));
+  const nextValues = [...new Set(values)].filter((value) => value !== '不限' && available.has(value));
+  const selectedValues = nextValues.length ? new Set(nextValues) : new Set(['不限']);
+  [...select.options].forEach((option) => { option.selected = selectedValues.has(option.value); });
+}
+
+function getMultiSelectDisplayValues(select) {
+  const selectedValues = new Set(getMultiSelectValues(select));
+  return getMultiSelectValues(select).filter((value) => {
+    const option = [...select.options].find((item) => item.value === value);
+    return !option?.dataset.parent || !selectedValues.has(option.dataset.parent);
+  });
+}
+
+function getMultiSelectLabel(select) {
+  const values = getMultiSelectDisplayValues(select).filter((value) => value !== '不限');
+  if (!values.length) return '不限';
+  const labels = values.map((value) => [...select.options].find((option) => option.value === value)?.textContent || value);
+  return labels.length > 2 ? `${labels[0]} 等 ${labels.length} 项` : labels.join('、');
+}
+
+function toggleMultiSelectOption(select, value, checked) {
+  const selectedValues = new Set(getMultiSelectValues(select).filter((selectedValue) => selectedValue !== '不限'));
+  const option = [...select.options].find((item) => item.value === value);
+  const childOptions = [...select.options].filter((item) => item.dataset.parent === value);
+  if (value === '不限') {
+    selectedValues.clear();
+  } else if (childOptions.length) {
+    if (checked) {
+      selectedValues.add(value);
+      childOptions.forEach((child) => selectedValues.add(child.value));
+    } else {
+      selectedValues.delete(value);
+      childOptions.forEach((child) => selectedValues.delete(child.value));
+    }
+  } else if (option?.dataset.parent) {
+    if (checked) selectedValues.add(value);
+    else selectedValues.delete(value);
+    const parent = option.dataset.parent;
+    const siblings = [...select.options].filter((item) => item.dataset.parent === parent);
+    if (siblings.every((sibling) => selectedValues.has(sibling.value))) selectedValues.add(parent);
+    else selectedValues.delete(parent);
+  } else if (checked) {
+    selectedValues.add(value);
+  } else {
+    selectedValues.delete(value);
+  }
+  setMultiSelectValues(select, [...selectedValues]);
+  select.dispatchEvent(new Event('input', { bubbles: true }));
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function syncMultiCustomSelect(select) {
+  const custom = select?._customSelect;
+  if (!custom) return;
+  custom.label.textContent = getMultiSelectLabel(select);
+  custom.menu.classList.add('multi-select-menu');
+  const selectedValues = new Set(getMultiSelectValues(select));
+  custom.menu.replaceChildren(...[...select.options].map((option) => {
+    const item = document.createElement('label');
+    item.className = 'custom-select-option custom-select-check-option';
+    item.dataset.value = option.value;
+    item.dataset.level = option.dataset.level || '1';
+    item.setAttribute('role', 'option');
+    item.setAttribute('aria-selected', String(option.selected));
+    if (option.dataset.level === '2') item.classList.add('is-suboption');
+    if (option.selected) item.classList.add('selected');
+    const childOptions = [...select.options].filter((child) => child.dataset.parent === option.value);
+    const selectedChildCount = childOptions.filter((child) => selectedValues.has(child.value)).length;
+    const isIndeterminate = childOptions.length > 0 && !option.selected && selectedChildCount > 0;
+    if (isIndeterminate) {
+      item.classList.add('indeterminate');
+      item.setAttribute('aria-checked', 'mixed');
+    } else {
+      item.setAttribute('aria-checked', String(option.selected));
+    }
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = option.selected;
+    checkbox.indeterminate = isIndeterminate;
+    checkbox.setAttribute('aria-label', option.textContent);
+    checkbox.addEventListener('change', (event) => {
+      event.stopPropagation();
+      toggleMultiSelectOption(select, option.value, checkbox.checked);
+    });
+
+    const label = document.createElement('span');
+    label.className = 'custom-select-option-label';
+    label.textContent = option.textContent;
+    item.append(checkbox, label);
+    return item;
+  }));
+}
+
 function syncCustomSelect(select) {
   const custom = select?._customSelect;
   if (!custom) return;
+  if (select.multiple || select.dataset.multiSelect === 'true') {
+    syncMultiCustomSelect(select);
+    return;
+  }
   const selected = [...select.options].find((option) => option.value === select.value) || select.options[0];
   custom.label.textContent = selected ? selected.textContent : '';
   custom.menu.replaceChildren(...[...select.options].map((option) => {
@@ -570,7 +728,7 @@ function enhanceCustomSelects() {
 
   if (customSelectEventsReady) return;
   document.addEventListener('click', (event) => {
-    if (!event.target.closest('.custom-select-host')) closeAllCustomSelects();
+    if (!event.target.closest('.custom-select-host') && !event.target.closest('#regionScopePicker')) closeAllCustomSelects();
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeAllCustomSelects();
@@ -605,29 +763,123 @@ function getSelectedFilterValues() {
   };
 }
 
-function populateRegionScopeOptions(preserve = true) {
-  const field = $('#regionScopeField');
+function getRegionScopeLabel(state = regionScopeState) {
+  return [state.province, state.city, state.district]
+    .filter((value) => value && value !== '不限')
+    .join(' · ') || '不限';
+}
+
+function setRegionScopeState(next, { close = false, apply = true } = {}) {
+  const province = next.province || '不限';
+  const city = province === '不限' ? '不限' : (next.city || '不限');
+  const district = city === '不限' ? '不限' : (next.district || '不限');
+  regionScopeState = { province, city, district };
+  const label = getRegionScopeLabel();
   const select = $('#regionScope');
-  if (!field || !select) return;
-  const province = $('#provinceSelect')?.value || '不限';
-  if (province === '不限') {
-    field.hidden = true;
-    setSelectOptions(select, [['不限', '不限', '选择省份后可细分到市、区县']]);
-    select.value = '不限';
-    syncFilterControl(select);
-    return;
+  if (select) {
+    const option = document.createElement('option');
+    option.value = label;
+    option.textContent = label;
+    option.selected = true;
+    select.replaceChildren(option);
   }
-  const catalog = provinceAreaCatalog[province] || { cities: [], districts: [] };
-  const previous = preserve ? select.value : '不限';
-  const options = [
-    ['不限', '不限', '全省范围'],
-    ...catalog.cities.map((city) => [city, city, '市级']),
-    ...catalog.districts.map((district) => [district, district, '区县级'])
-  ];
-  field.hidden = false;
-  setSelectOptions(select, options);
-  select.value = options.some(([value]) => value === previous) ? previous : '不限';
-  syncFilterControl(select);
+  const triggerLabel = $('#regionScopeLabel');
+  if (triggerLabel) triggerLabel.textContent = label;
+  renderRegionScopeOptions();
+  if (apply) select?.dispatchEvent(new Event('change', { bubbles: true }));
+  if (close) closeRegionScopePicker();
+}
+
+function renderRegionScopeOption(container, level, value, label, selected = false, disabled = false) {
+  const option = document.createElement('button');
+  option.type = 'button';
+  option.className = 'region-cascade-option';
+  option.dataset.level = level;
+  option.dataset.value = value;
+  option.setAttribute('role', 'option');
+  option.setAttribute('aria-selected', String(selected));
+  option.textContent = label;
+  option.disabled = disabled;
+  if (selected) option.classList.add('selected');
+  if (disabled) option.classList.add('disabled');
+  option.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (disabled) return;
+    if (level === 'province') {
+      setRegionScopeState({ province: value, city: '不限', district: '不限' }, { close: value === '不限' });
+    } else if (level === 'city') {
+      setRegionScopeState({ ...regionScopeState, city: value, district: '不限' });
+    } else {
+      setRegionScopeState({ ...regionScopeState, district: value }, { close: true });
+    }
+  });
+  container.append(option);
+}
+
+function renderRegionScopeOptions() {
+  const provinceOptions = $('#regionProvinceOptions');
+  const cityOptions = $('#regionCityOptions');
+  const districtOptions = $('#regionDistrictOptions');
+  if (!provinceOptions || !cityOptions || !districtOptions) return;
+  const { province, city, district } = regionScopeState;
+  provinceOptions.replaceChildren();
+  renderRegionScopeOption(provinceOptions, 'province', '不限', '不限', province === '不限');
+  Object.keys(provinceAreaCatalog).forEach((item) => {
+    renderRegionScopeOption(provinceOptions, 'province', item, item, province === item);
+  });
+
+  cityOptions.replaceChildren();
+  if (province === '不限') {
+    renderRegionScopeOption(cityOptions, 'city', '', '请先选择省', false, true);
+  } else {
+    renderRegionScopeOption(cityOptions, 'city', '不限', '全部市', city === '不限');
+    getRegionCities(province).forEach((item) => {
+      renderRegionScopeOption(cityOptions, 'city', item, item, city === item);
+    });
+  }
+
+  districtOptions.replaceChildren();
+  if (province === '不限') {
+    renderRegionScopeOption(districtOptions, 'district', '', '请先选择省', false, true);
+  } else if (city === '不限') {
+    renderRegionScopeOption(districtOptions, 'district', '', '请先选择市', false, true);
+  } else {
+    renderRegionScopeOption(districtOptions, 'district', '不限', '全部区', district === '不限');
+    getRegionDistricts(province, city).forEach((item) => {
+      renderRegionScopeOption(districtOptions, 'district', item, item, district === item);
+    });
+  }
+}
+
+function initializeRegionScopePicker() {
+  const picker = $('#regionScopePicker');
+  const trigger = $('#regionScopeTrigger');
+  const menu = $('#regionScopeMenu');
+  if (!picker || !trigger || !menu) return;
+  renderRegionScopeOptions();
+  if (regionScopePickerEventsReady) return;
+  trigger.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const isOpen = menu.classList.contains('open');
+    closeAllCustomSelects();
+    if (isOpen) return;
+    renderRegionScopeOptions();
+    menu.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('#regionScopePicker')) closeRegionScopePicker();
+  });
+  regionScopePickerEventsReady = true;
+}
+
+function resetRegionScopePicker() {
+  setRegionScopeState({ province: '不限', city: '不限', district: '不限' }, { close: true, apply: false });
+}
+
+function populateRegionScopeOptions() {
+  renderRegionScopeOptions();
 }
 
 function getCatalogMatches({ includeName = true, includeProvince = true } = {}) {
@@ -737,7 +989,7 @@ function updateFilterChips() {
   const filters = [
     ['industryType', '产业类型', $('#industryType').value, '不限'],
     ['industryName', '产业名称', $('#industryName').value, '不限'],
-    ['provinceSelect', '省份', $('#provinceSelect').value, '不限']
+    ['provinceSelect', '产业体系', $('#provinceSelect').value, '不限']
   ];
   row.innerHTML = `<span class="active-filter-label">当前条件</span>${filters.filter(([, , value, empty]) => value && value !== empty).map(([id, label, value]) => `<button class="filter-chip" type="button" data-clear-filter="${id}">${escapeHtml(label)}：${escapeHtml(value)} ${icon('x', 'ui-icon tiny')}</button>`).join('')}<span class="filter-note">搜索范围：节点名称、企业名称</span>`;
   if (filters.every(([, , value, empty]) => !value || value === empty)) row.querySelector('.filter-note').textContent = '搜索范围：节点名称、企业名称';
@@ -774,18 +1026,32 @@ function getFilterContext() {
 }
 
 function getAdvancedFilterValues() {
+  const intellectualPropertySelect = $('#intellectualPropertyFilter');
   return {
     honor: $('#honorFilter')?.value || '不限',
     evidence: $('#evidenceFilter')?.value || '全部证据',
-    listed: $('#listedFilter')?.value || '不限'
+    listed: $('#listedFilter')?.value || '不限',
+    intellectualProperty: intellectualPropertySelect?.multiple
+      ? getMultiSelectValues(intellectualPropertySelect)
+      : [intellectualPropertySelect?.value || '不限']
   };
 }
 
+function companyMatchesRegionScope(company) {
+  const { province, city, district } = regionScopeState;
+  return (province === '不限' || company.province === province) &&
+    (city === '不限' || company.city === city) &&
+    (district === '不限' || company.district === district);
+}
+
 function companyMatchesAdvancedFilters(company) {
-  const { honor, evidence, listed } = getAdvancedFilterValues();
-  return (honor === '不限' || (company.honors || []).includes(honor)) &&
+  const { honor, evidence, listed, intellectualProperty } = getAdvancedFilterValues();
+  const intellectualPropertyValues = intellectualProperty.filter((value) => value !== '不限');
+  return companyMatchesRegionScope(company) &&
+    (honor === '不限' || (company.honors || []).includes(honor)) &&
     (evidence === '全部证据' || company.evidence === evidence) &&
-    (listed === '不限' || company.listed === listed);
+    (listed === '不限' || company.listed === listed) &&
+    (!intellectualPropertyValues.length || intellectualPropertyValues.some((value) => (company.intellectualProperty || []).includes(value)));
 }
 
 function renderSelectedChain(profile) {
@@ -1289,11 +1555,18 @@ function getAiContextSnapshot() {
   const province = $('#provinceSelect')?.value || '不限';
   const region = regionCatalog.find((item) => item.province === province);
   const regionLabel = province === '不限' ? '全国 31 省市' : `${province}${region?.system ? ` · ${region.system}` : ''}`;
-  const { honor, evidence, listed } = getAdvancedFilterValues();
+  const regionScopeLabel = getRegionScopeLabel();
+  const { honor, evidence, listed, intellectualProperty } = getAdvancedFilterValues();
+  const intellectualPropertySelect = $('#intellectualPropertyFilter');
+  const intellectualPropertyValues = intellectualPropertySelect?.multiple
+    ? getMultiSelectDisplayValues(intellectualPropertySelect).filter((value) => value !== '不限')
+    : intellectualProperty.filter((value) => value !== '不限');
   const activeFilters = [
+    regionScopeLabel !== '不限' ? `区域：${regionScopeLabel}` : '',
     honor !== '不限' ? `荣誉：${honor}` : '',
     evidence !== '全部证据' ? `证据：${evidence}` : '',
-    listed !== '不限' ? `上市：${listed}` : ''
+    listed !== '不限' ? `上市：${listed}` : '',
+    intellectualPropertyValues.length ? `知识产权：${intellectualPropertyValues.join('、')}` : ''
   ].filter(Boolean);
   return `${industry} / ${regionLabel} / ${activeFilters.length ? activeFilters.join(' · ') : '全部企业'}`;
 }
@@ -1442,7 +1715,7 @@ function init() {
   setSelectOptions($('#provinceSelect'), [['不限', '不限', '全部省市'], ...regionCatalog.map((item) => [item.province, item.province, item.system])]);
   setSelectOptions($('#industryName'), [['不限', '不限']]);
   populateIndustryNameOptions(false);
-  populateRegionScopeOptions(false);
+  initializeRegionScopePicker();
   renderGraph();
   $$('.primary-nav-item').forEach((item) => item.addEventListener('click', () => setView(item.dataset.view)));
   $$('.workbench-tab').forEach((tab) => {
@@ -1455,8 +1728,8 @@ function init() {
   $('#industryType').addEventListener('change', () => handleCatalogFilterChange('industryType'));
   $('#industryName').addEventListener('change', () => handleCatalogFilterChange('industryName'));
   $('#provinceSelect').addEventListener('change', () => handleCatalogFilterChange('provinceSelect'));
-  ['#honorFilter', '#evidenceFilter', '#listedFilter', '#regionScope'].forEach((selector) => $(selector).addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); updateFilterChips(); applyGraphFilters(); }));
-  $('#clearAdvancedFilters').addEventListener('click', () => { $('#honorFilter').value = '不限'; $('#evidenceFilter').value = '全部证据'; $('#listedFilter').value = '不限'; $('#regionScope').value = '不限'; ['#honorFilter', '#evidenceFilter', '#listedFilter', '#regionScope'].forEach((selector) => syncFilterControl($(selector))); updateFilterChips(); applyGraphFilters(); showToast('高级筛选条件已清空'); });
+  ['#honorFilter', '#evidenceFilter', '#listedFilter', '#intellectualPropertyFilter', '#regionScope'].forEach((selector) => $(selector).addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); updateFilterChips(); applyGraphFilters(); }));
+  $('#clearAdvancedFilters').addEventListener('click', () => { $('#honorFilter').value = '不限'; $('#evidenceFilter').value = '全部证据'; $('#listedFilter').value = '不限'; setMultiSelectValues($('#intellectualPropertyFilter'), ['不限']); resetRegionScopePicker(); ['#honorFilter', '#evidenceFilter', '#listedFilter', '#intellectualPropertyFilter', '#regionScope'].forEach((selector) => syncFilterControl($(selector))); updateFilterChips(); applyGraphFilters(); showToast('高级筛选条件已清空'); });
   $('#changeChainButton').addEventListener('click', () => { showChainPicker(); showToast('请选择要查看的产业链'); });
   $('#fullscreenButton').addEventListener('click', () => setGraphFullscreen(!$('.graph-board').classList.contains('fullscreen-map')));
   $('#closeDrawer').addEventListener('click', closeDrawer);
@@ -1470,9 +1743,12 @@ function init() {
   $('#clearChatButton').addEventListener('click', clearActiveConversation);
   $('#newConversationButton').addEventListener('click', createConversation);
   $('#logicInfoButton').addEventListener('click', () => showToast('企业角色与证据等级用于区分招商优先级，证据不足不会被直接判定为不属于'));
+  $('#solutionContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
+  $('#solutionCtaButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
+  $('#solutionCatalogButton').addEventListener('click', () => setView('graph'));
   $$('[data-source]').forEach((input) => input.addEventListener('change', updateSourceCount));
   enhanceCustomSelects();
-  ['#honorFilter', '#evidenceFilter', '#listedFilter', '#regionScope'].forEach((selector) => syncAdvancedOptionGroup($(selector)));
+  ['#honorFilter', '#evidenceFilter', '#listedFilter', '#intellectualPropertyFilter', '#regionScope'].forEach((selector) => syncAdvancedOptionGroup($(selector)));
   updateSourceCount();
   renderConversationList();
   renderActiveConversation();
