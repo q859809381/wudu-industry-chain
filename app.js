@@ -1154,8 +1154,9 @@ function ensureCurrentIndustry(entries) {
       return selectedByFilter;
     }
   }
-  // 产业类型目录中的 18 条产业链始终允许选中（部分尚未接入图谱明细）
+  // 产业类型目录中的 18 条产业链与产业大类下的 135 条细分链始终允许选中（部分尚未接入图谱明细）
   if (currentIndustry && nationalIndustryEntries.some((entry) => entry.name === currentIndustry)) return currentIndustry;
+  if (currentIndustry && industryCategoryGroups.some((group) => group.chains.includes(currentIndustry))) return currentIndustry;
   if (currentIndustry && names.includes(currentIndustry)) return currentIndustry;
   const matched = names.find((name) => name === currentIndustry || industryNameMatches(name, currentIndustry));
   if (matched) {
@@ -1267,14 +1268,11 @@ function showChainPicker() {
 // into view.
 const chainFilterState = { tab: 'type', value: '' };
 
-function getChainFilterTabOptions() {
-  return industryTypeOrder.map((type) => ({ value: type, label: type, sublabel: '' }));
-}
-
 function getChainGroups() {
   const query = getSearchText();
   const matchesQuery = (name) => !query || String(name).toLowerCase().includes(query);
-  return industryTypeOrder.map((type) => ({
+  const systemGroups = industryTypeOrder.map((type) => ({
+    kind: 'system',
     value: type,
     label: type,
     sublabel: '',
@@ -1282,6 +1280,17 @@ function getChainGroups() {
       .filter((entry) => entry.type === type && matchesQuery(entry.name))
       .map((entry) => ({ name: entry.name, types: [entry.type] }))
   }));
+  // 17 个产业大类（产业链清单1022 归并口径），与三大产业体系并列展示
+  const categoryGroups = industryCategoryGroups.map((category) => ({
+    kind: 'category',
+    value: category.name,
+    label: category.name,
+    sublabel: '',
+    entries: [...new Set(category.chains)]
+      .filter((name) => matchesQuery(name))
+      .map((name) => ({ name, types: [category.name] }))
+  }));
+  return [...systemGroups, ...categoryGroups];
 }
 
 // 卡片名称中的搜索关键词高亮
@@ -1322,22 +1331,28 @@ function renderChainFilterSidebar() {
   const list = $('#chainFilterList');
   if (!list) return;
   const query = getSearchText();
-  let options = getChainFilterTabOptions();
+  const groups = getChainGroups();
   // 搜索时：只保留有匹配产业链的分类选项
-  if (query) {
-    const matched = new Set(getChainGroups().filter((group) => group.entries.length > 0).map((group) => String(group.value)));
-    options = options.filter((option) => matched.has(String(option.value)));
+  const visibleGroups = query ? groups.filter((group) => group.entries.length > 0) : groups;
+  const sections = [
+    { key: 'system', label: '三大产业体系', options: visibleGroups.filter((group) => group.kind === 'system') },
+    { key: 'category', label: '产业大类', options: visibleGroups.filter((group) => group.kind === 'category') },
+  ];
+  const allOptions = sections.flatMap((section) => section.options);
+  if (!allOptions.some((option) => option.value === chainFilterState.value)) {
+    chainFilterState.value = allOptions[0]?.value || '';
   }
-  if (!options.some((option) => option.value === chainFilterState.value)) {
-    chainFilterState.value = options[0]?.value || '';
-  }
-  if (!options.length) {
+  if (!allOptions.length) {
     list.innerHTML = '<div class="chain-filter-empty">无匹配的分类</div>';
     return;
   }
-  list.innerHTML = options.map((option) => {
-    const isActive = option.value === chainFilterState.value;
-    return `<button class="chain-filter-option ${isActive ? 'active' : ''}" type="button" data-filter-value="${escapeHtml(option.value)}" aria-pressed="${isActive}"><span class="chain-filter-option-copy"><strong>${escapeHtml(option.label)}</strong>${option.sublabel ? `<small>${escapeHtml(option.sublabel)}</small>` : ''}</span></button>`;
+  list.innerHTML = sections.map((section) => {
+    if (!section.options.length) return '';
+    const items = section.options.map((option) => {
+      const isActive = option.value === chainFilterState.value;
+      return `<button class="chain-filter-option ${section.key} ${isActive ? 'active' : ''}" type="button" data-filter-value="${escapeHtml(option.value)}" aria-pressed="${isActive}"><span class="chain-filter-option-copy"><strong>${escapeHtml(option.label)}</strong>${option.sublabel ? `<small>${escapeHtml(option.sublabel)}</small>` : ''}</span></button>`;
+    }).join('');
+    return `<div class="chain-filter-section ${section.key}"><div class="chain-filter-section-label"><b>${section.label}</b></div>${items}</div>`;
   }).join('');
   $$('.chain-filter-option', list).forEach((button) => button.addEventListener('click', () => {
     selectChainFilterOption(button.dataset.filterValue);
@@ -1441,7 +1456,7 @@ function renderChainPicker(profile) {
     } else {
       groupsContainer.innerHTML = visibleGroups.map((group) => {
         const cards = group.entries.map((entry) => renderChainCard(entry, selectedIndustry)).join('');
-        return `<div class="chain-picker-group" data-group-value="${escapeHtml(group.value)}"><div class="chain-picker-group-heading"><strong>${escapeHtml(group.label)}</strong>${group.sublabel ? `<small>${escapeHtml(group.sublabel)}</small>` : ''}<span>${group.entries.length} 条</span></div><div class="chain-picker-group-list">${cards || '<div class="empty-chain-list">该分类下暂无匹配的产业链</div>'}</div></div>`;
+        return `<div class="chain-picker-group ${group.kind === 'category' ? 'category' : ''}" data-group-value="${escapeHtml(group.value)}"><div class="chain-picker-group-heading"><strong>${escapeHtml(group.label)}</strong>${group.sublabel ? `<small>${escapeHtml(group.sublabel)}</small>` : ''}<span>${group.entries.length} 条</span></div><div class="chain-picker-group-list">${cards || '<div class="empty-chain-list">该分类下暂无匹配的产业链</div>'}</div></div>`;
       }).join('');
     }
     $$('.chain-picker-item', groupsContainer).forEach((button) => button.addEventListener('click', () => {

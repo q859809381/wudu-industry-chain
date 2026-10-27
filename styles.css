@@ -1782,10 +1782,22 @@ html, body { overflow-x: hidden; }
 .chain-filter-option-copy strong { overflow: hidden; color: inherit; font-size: 12px; font-weight: 500; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
 .chain-filter-option.active .chain-filter-option-copy strong { font-weight: 600; }
 .chain-filter-option-copy small { overflow: hidden; color: #93a5b1; font-size: 10px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 侧栏分节：三大产业体系 / 产业大类（虚线分隔 + 小节标签，体系项用蓝色菱形图标区分） */
+.chain-filter-section + .chain-filter-section { margin-top: 8px; padding-top: 10px; border-top: 1px dashed #d7e2ea; }
+.chain-filter-section-label { display: flex; align-items: baseline; gap: 6px; margin: 0 0 5px; padding: 0 9px; }
+.chain-filter-section-label b { color: #8ba0b0; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+.chain-filter-option.system strong { padding-left: 13px; position: relative; }
+.chain-filter-option.system strong::before { content: ""; position: absolute; left: 1px; top: 50%; width: 6px; height: 6px; transform: translateY(-50%) rotate(45deg); border: 1.5px solid #5b9bd8; border-radius: 1.5px; background: #e8f2fc; }
+.chain-filter-option.system:hover strong::before { background: #5b9bd8; }
+.chain-filter-option.system.active { border-color: #c6e0f6; background: #e9f3fe; color: #1d5fa8; }
+.chain-filter-option.system.active strong::before { background: #2c6fb5; border-color: #2c6fb5; }
 .chain-picker-groups { min-width: 0; display: flex; flex-direction: column; gap: 20px; padding: 14px 16px 18px; }
 .chain-picker-group { scroll-margin-top: 76px; }
 .chain-picker-group-heading { display: flex; align-items: baseline; gap: 8px; margin-bottom: 9px; padding-left: 8px; border-left: 3px solid #d5e3ee; }
 .chain-picker-group.active .chain-picker-group-heading { border-left-color: #2c6fb5; }
+.chain-picker-group.category .chain-picker-group-heading { border-left-color: #9fd4cb; }
+.chain-picker-group.category.active .chain-picker-group-heading { border-left-color: #1d7a6d; }
 .chain-picker-group-heading strong { color: #24485f; font-size: 14px; }
 .chain-picker-group.active .chain-picker-group-heading strong { color: #2c6fb5; }
 .chain-picker-group-heading small { min-width: 0; overflow: hidden; color: #93a5b1; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
