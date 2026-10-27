@@ -580,6 +580,10 @@ function renderDetailTableRows(rows, itemId) {
       const detailAttributes = legalDetailConfig[itemId] ? ` data-legal-detail="${escapeDetailHtml(itemId)}" data-legal-case="${escapeDetailHtml(row[1] ?? "")}"` : "";
       return `<td><button type="button" class="table-action"${detailAttributes}>详情</button></td>`;
     }
+    // 日期列不折行（如"2026-07-01"必须单行展示）
+    if (detailSortableColumns[itemId]?.[columns[index]] === "date") {
+      return `<td class="cell-date">${escapeDetailHtml(cell)}</td>`;
+    }
     return `<td>${escapeDetailHtml(cell)}</td>`;
   }).join("")}</tr>`).join("");
 }
@@ -1375,6 +1379,9 @@ document.querySelectorAll("[data-detail-nav], [data-detail-tab]").forEach((butto
   button.addEventListener("click", () => renderDetailCategory(button.dataset.detailNav || button.dataset.detailTab));
 });
 
+// 初始化页签悬浮导航浮窗（hover 1s 展开子分区快捷跳转）
+setupDetailNavMenus();
+
 document.addEventListener("click", (event) => {
   const menuItem = event.target.closest("[data-detail-nav-menu-category]");
   if (!menuItem) return;
@@ -1608,13 +1615,6 @@ window.addEventListener("resize", () => syncDetailExpandables());
     if (title) title.textContent = CTX.short;
     const logo = document.getElementById('companyDetailLogo');
     if (logo) logo.textContent = CTX.short.slice(0, 1);
-    const alias = document.getElementById('companyDetailAlias');
-    if (alias) {
-      const origin = CTX.raw?.name || '';
-      const text = origin && origin !== CTX.short ? `附件企业名称：${origin}` : '';
-      alias.textContent = text;
-      alias.hidden = !text;
-    }
     const copyButton = document.getElementById('companyDetailCopyName');
     if (copyButton) copyButton.dataset.copyCompany = CTX.short;
 

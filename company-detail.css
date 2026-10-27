@@ -401,6 +401,8 @@ body.has-detail-modal { overflow: hidden; }
 
 /* 法律诉讼：筛选条（下拉 + 关键词检索） */
 .detail-filter-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.detail-filter-bar .detail-filter-select,
+.detail-filter-bar .detail-inline-search { flex: 0 0 auto; }
 .detail-filter-bar select { padding: 5px 26px 5px 10px; border: 1px solid var(--line); border-radius: 4px; background: #fff url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23a8aec2'/%3E%3C/svg%3E") no-repeat right 9px center; color: #58667c; font-size: 12px; appearance: none; cursor: pointer; }
 .detail-data-section .company-detail-section-heading { flex-wrap: wrap; }
 
@@ -453,14 +455,43 @@ body.has-detail-modal { overflow: hidden; }
 }
 
 /* ===================== 本项目适配 ===================== */
+/* 视图面板左右通栏：滚动条贴屏幕最右侧，内容宽度与其他页面保持一致 */
 #companyDetailView.active {
   display: block;
   padding-top: 0;
+  padding-inline: clamp(28px, 4.5vw, 72px);
+  margin-inline: calc(50% - 50vw);
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-#companyDetailView .company-detail-shell { width: 100%; }
+#companyDetailView .company-detail-shell {
+  width: min(100%, calc(min(1460px, 100vw) - 2 * clamp(28px, 4.5vw, 72px)));
+  /* 与头部导航保留 16px 呼吸间距（仅初始状态；吸顶页签仍贴头部） */
+  margin-top: 16px;
+  margin-inline: auto;
+}
+
+/* 视口内通用辅助类（移植自五度易查，遗漏导致筛选条文案外露、挤压换行） */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 数据表格：默认按内容自适应列宽（覆盖全局 node-drawer 表格的等宽 fixed 布局） */
+#companyDetailView .company-table { table-layout: auto; }
+#companyDetailView .company-table-judgment { table-layout: fixed; }
+#companyDetailView .company-table th:last-child,
+#companyDetailView .company-table td:last-child { white-space: nowrap; }
+/* 日期列单行不折行 */
+#companyDetailView .company-table .cell-date { white-space: nowrap; }
 
 .company-detail-toolbar {
   display: flex;
@@ -529,6 +560,9 @@ body.has-detail-modal { overflow: hidden; }
   background: #fff;
   border-radius: 7px 7px 0 0;
 }
+
+/* 详情表格最后一行保留底边框（styles.css 的列表表格去尾线规则不适用于详情页） */
+#companyDetailView .company-table tbody tr:last-child td { border-bottom: 1px solid #dfe5ee; }
 
 #companyDetailView .company-info-card .detail-data-sections { border-radius: 0 0 7px 7px; }
 

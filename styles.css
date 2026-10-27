@@ -2018,8 +2018,9 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 /* 首页整页跟随 .main-content 滚动，禁止面板自身裁剪（否则下半部分无法滚动查看） */
 /* 首页整页跟随 .main-content 滚动；flex:none 防止面板被压缩导致底部 padding 溢出不计入滚动区 */
 .home-view.active { display: block; overflow: visible; padding-top: 0; flex: none; }
-/* 首页激活时去掉 page-wrap 顶部留白，让 hero 与导航无缝衔接 */
-.page-wrap:has(.home-view.active) { padding-top: 0; }
+/* 首页/企业详情激活时去掉 page-wrap 顶部留白，让吸顶元素与导航无缝衔接 */
+.page-wrap:has(.home-view.active),
+.page-wrap:has(#companyDetailView.active) { padding-top: 0; }
 /* 左右通栏；底色与导航完全一致（--navy-deep），叠加浅调科技修饰（细网格 + 点阵 + 冷光晕） */
 .home-hero { position: relative; display: block; margin: 0 calc(50% - 50vw); padding: 46px 58px 42px; text-align: center; overflow: hidden; background-color: #0b2034;
   background-image:
