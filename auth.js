@@ -17,7 +17,7 @@
     authShell.innerHTML = [
       '<div class="auth-login-view" id="loginView"><div class="auth-login-panel">',
       '<div class="auth-brand-mark">W</div><p class="auth-eyebrow">WUDU INDUSTRY CHAIN</p>',
-      '<h1>五度智链</h1><p class="auth-login-subtitle">产业链数据洞察工作台</p>',
+      '<h1>五度易链</h1><p class="auth-login-subtitle">产业链数据洞察工作台</p>',
       '<form class="auth-form" id="loginForm" novalidate>',
       '<label class="auth-input-group"><span>登录账号</span><input id="loginAccount" name="account" type="text" inputmode="tel" autocomplete="username" placeholder="请输入手机号或登录账号" required></label>',
       '<label class="auth-input-group"><span>登录密码</span><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="请输入登录密码" required></label>',
@@ -78,7 +78,7 @@
       otherStorage.removeItem(SESSION_KEY);
       setAuthenticated(true);
       loginPassword.value = '';
-      notify('登录成功，欢迎进入五度智链');
+      notify('登录成功，欢迎进入五度易链');
     });
 
     if (avatarButton) {

@@ -553,7 +553,7 @@ function renderChinaMapBase() {
 }
 
 const viewMeta = {
-  home: ['PRODUCT HOME', '首页', '了解五度智链的数据底座、核心能力与企业上链服务流程。'],
+  home: ['PRODUCT HOME', '首页', '了解五度易链的数据底座、核心能力与企业上链服务流程。'],
   graph: ['INDUSTRY GRAPH', '产业图谱', '从产业节点到代表企业，查看半导体与集成电路的多级产业链关系。'],
   ai: ['AI RESEARCH AGENT', 'AI智能', '用自然语言查询企业、节点、证据和区域机会，回答会基于当前产业上下文生成。'],
   onchain: ['HOW ENTERPRISES GO ON CHAIN', '上链说明', '上链不是把企业名称放进图谱，而是确认主体、能力、角色和证据边界。'],
