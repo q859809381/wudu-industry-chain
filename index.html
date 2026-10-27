@@ -6,11 +6,13 @@
     <meta name="theme-color" content="#102a43" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102a43'/%3E%3Cpath d='M8 16 16 7l8 9-8 9-8-9Z' fill='none' stroke='%2353b9ff' stroke-width='2'/%3E%3Cpath d='M16 11v10' stroke='%2326d5c3' stroke-width='2'/%3E%3C/svg%3E" />
     <title>五度智链 | 产业上链 Agent</title>
-    <link rel="stylesheet" href="styles.css?v=202609201600" />
+    <link rel="stylesheet" href="styles.css?v=202610271033" />
+    <link rel="stylesheet" href="company-detail.css?v=202610260940" />
     <link rel="stylesheet" href="auth.css?v=202609151530" />
   </head>
   <body>
     <svg class="icon-sprite" aria-hidden="true" focusable="false">
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 11 9-7 9 7"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
       <symbol id="icon-map" viewBox="0 0 24 24"><path d="M3 6.5 8.5 4 15 6.5 21 4v13.5L15 20l-6.5-2.5L3 20V6.5Z"/><path d="M8.5 4v13.5M15 6.5V20"/></symbol>
       <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h17"/><path d="m7 15 4-4 3 2 5-6"/><circle cx="7" cy="15" r="1"/><circle cx="11" cy="11" r="1"/><circle cx="14" cy="13" r="1"/><circle cx="19" cy="7" r="1"/></symbol>
       <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3ZM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z"/></symbol>
@@ -46,53 +48,99 @@
           <div><strong>五度智链</strong><small>产业上链 Agent</small></div>
         </div>
         <nav class="primary-nav" aria-label="功能板块">
-          <button class="primary-nav-item active" type="button" data-view="graph"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><span><b>产业图谱</b><small>INDUSTRY MAP</small></span><i class="nav-current"></i></button>
-          <button class="primary-nav-item" type="button" data-view="ai"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><span><b>AI智能</b><small>AI ASSISTANT</small></span><i class="nav-current"></i></button>
-          <button class="primary-nav-item" type="button" data-view="onchain"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>上链说明</b><small>HOW IT WORKS</small></span><i class="nav-current"></i></button>
-          <button class="primary-nav-item" type="button" data-view="solution"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>解决方案</b><small>SOLUTIONS</small></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item active" type="button" data-view="home"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-home"></use></svg></span><span><b>首页</b></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="graph"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><span><b>产业图谱</b></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="ai"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><span><b>AI智能</b></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="onchain"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>上链说明</b></span><i class="nav-current"></i></button>
+          <button class="primary-nav-item" type="button" data-view="solution"><span class="nav-icon"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><span><b>解决方案</b></span><i class="nav-current"></i></button>
         </nav>
         <div class="top-navigation-actions"><span class="last-updated"><svg class="ui-icon tiny"><use href="#icon-clock"></use></svg>数据更新于 2026.09.08</span><button class="avatar-button" type="button" aria-label="当前用户">研</button></div>
       </header>
 
       <main class="main-content">
         <div class="page-wrap">
-          <section class="view-panel active" id="graphView" data-panel="graph">
+          <section class="view-panel active home-view" id="homeView" data-panel="home">
+            <section class="home-hero">
+              <div class="home-hero-copy">
+                <h1>把产业链装进数据 让企业上链<em>有据可依</em></h1>
+                <p>以 3.8 亿+ 企业主体数据为底座，覆盖三大产业体系、18 条重点产业链，提供产业链图谱洞察、AI 智能分析、企业上链核验与解决方案交付的一站式服务。</p>
+              </div>
+              <div class="home-hero-query">
+                <div class="home-query-box">
+                  <textarea id="homeQueryInput" rows="2" placeholder="请输入行业标签或问题，Enter 键发送" aria-label="产业链智能查询"></textarea>
+                  <div class="home-query-actions">
+                    <span class="home-ai-label"><svg class="ui-icon mini"><use href="#icon-spark"></use></svg>AI 研究助手 · 基于产业链上下文作答</span>
+                    <button class="home-query-send" id="homeQuerySend" type="button" aria-label="发送查询"><svg class="ui-icon"><use href="#icon-arrow-right"></use></svg></button>
+                  </div>
+                </div>
+              </div>
+              <div class="home-hero-panel" aria-hidden="true">
+                <div class="home-hero-stat"><div><strong>3.8 亿+</strong><span>企业实体数据</span></div></div>
+                <div class="home-hero-stat"><div><strong>120 亿+</strong><span>全量数据覆盖</span></div></div>
+                <div class="home-hero-stat"><div><strong>18 条</strong><span>重点产业链覆盖</span></div></div>
+                <div class="home-hero-stat"><div><strong>3,344 个</strong><span>标准产业节点</span></div></div>
+              </div>
+            </section>
+
+            <section class="home-section">
+              <div class="home-section-head"><h2>四大核心能力</h2><p>从链条解析到证据交付，覆盖企业上链的完整链路</p></div>
+              <div class="home-capability-grid">
+                <article class="home-capability"><span class="highlight-icon blue"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><h3>产业链图谱洞察</h3><p>从一级环节到六级细分路径逐层拆解链条，识别优势、弱势与断链环节，定位关键企业群。</p><button class="home-link" type="button" data-goto="graph">查看图谱<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></article>
+                <article class="home-capability"><span class="highlight-icon teal"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><h3>AI 智能分析</h3><p>用自然语言提问，回答基于当前产业链上下文生成，覆盖企业、节点、证据与区域机会。</p><button class="home-link" type="button" data-goto="ai">开始提问<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></article>
+                <article class="home-capability"><span class="highlight-icon amber"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><h3>企业上链核验</h3><p>上链不是把名称放进图谱，而是确认主体、能力、角色与证据边界，形成可回溯记录。</p><button class="home-link" type="button" data-goto="onchain">了解上链<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></article>
+                <article class="home-capability"><span class="highlight-icon blue"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><h3>解决方案交付</h3><p>围绕产业链梳理、标准化上链、可视化呈现与数据交付，提供可落地的定制服务。</p><button class="home-link" type="button" data-goto="solution">查看方案<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></article>
+              </div>
+            </section>
+
+            <section class="home-section home-systems">
+              <div class="home-section-head"><h2>三大产业体系 · 18 条重点产业链</h2><p>点击任一产业链，直接进入图谱查看环节与代表企业</p></div>
+              <div class="home-system-grid">
+                <div class="home-system-column"><h3>六大新兴支柱产业</h3><div class="home-chain-chips" data-system="六大新兴支柱产业"></div></div>
+                <div class="home-system-column"><h3>六大未来产业</h3><div class="home-chain-chips" data-system="六大未来产业"></div></div>
+                <div class="home-system-column"><h3>六张网</h3><div class="home-chain-chips" data-system="六张网"></div></div>
+              </div>
+            </section>
+
+            <section class="home-section">
+              <div class="home-section-head"><h2>企业上链四步流程</h2><p>标准化流程保证每一条上链记录都经得起回溯</p></div>
+              <ol class="home-steps">
+                <li><span class="home-step-index">01</span><h3>圈定产业范围</h3><p>选择产业链与区域口径，确定需要梳理的链条边界。</p></li>
+                <li><span class="home-step-index">02</span><h3>解析链条层级</h3><p>沿环节逐层拆解，锁定各环节的代表企业与配套关系。</p></li>
+                <li><span class="home-step-index">03</span><h3>主体核验上链</h3><p>核验企业主体、能力、角色与证据，确认后方可上链。</p></li>
+                <li><span class="home-step-index">04</span><h3>数据交付应用</h3><p>输出图谱、企业清单与报告，支撑招商与研究决策。</p></li>
+              </ol>
+            </section>
+
+            <section class="home-cta">
+              <div><h2>现在，从一条产业链开始</h2><p>数据更新于 2026.09.08 · 代表企业样本来自公开资料与附件口径，正式纳入需经过主体核验与证据判断</p></div>
+              <button class="button primary" type="button" data-goto="graph">进入产业图谱<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button>
+            </section>
+          </section>
+
+          <section class="view-panel" id="graphView" data-panel="graph">
             <section class="graph-query" aria-label="产业链查询">
-              <div class="query-topline"><div><span class="section-kicker">SEARCH &amp; FILTER</span><h2>产业链查询</h2></div><span class="query-result" id="queryResult">已加载 半导体与集成电路图谱</span></div>
+              <div class="query-topline"><div><span class="section-kicker">SEARCH &amp; FILTER</span><h2>产业链查询</h2></div></div>
               <div class="query-row">
-                <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索环节节点或企业名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
-                <label class="select-box"><span>产业类型</span><select id="industryType"><option value="不限">不限</option><option value="战略性新兴产业">战略性新兴产业</option><option value="传统产业">传统产业</option><option value="未来产业">未来产业</option></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
-                <label class="select-box industry-name-box"><span>产业名称</span><select id="industryName"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
-                <label class="select-box province-box"><span>产业体系</span><select id="provinceSelect"></select><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></label>
+                <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索产业链名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
                 <button class="button primary search-button" id="graphSearchButton" type="button"><svg class="ui-icon mini"><use href="#icon-search"></use></svg>查询</button>
               </div>
-              <div class="active-filter-row" id="activeFilterRow"><span class="active-filter-label">当前条件</span><button class="filter-chip" type="button" data-clear-filter="industryType">产业类型：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><button class="filter-chip" type="button" data-clear-filter="provinceSelect">产业体系：不限 <svg class="ui-icon tiny"><use href="#icon-x"></use></svg></button><span class="filter-note">搜索范围：节点名称、企业名称</span></div>
             </section>
 
             <section class="chain-selector-panel" id="chainSelectorPanel" aria-label="产业链选择">
               <div class="chain-picker-view" id="chainPickerView">
-                <div class="insight-heading"><div><span class="section-kicker">CHAIN SELECTOR</span><h2>产业链选择</h2></div><span class="picker-count" id="chainPickerCount">1 条</span></div>
-                <div class="picker-context" id="chainPickerContext">按产业体系与官方命名筛选，选择后查看对应内容</div>
-                <div class="chain-picker-list" id="chainPickerList"></div>
+                <div class="chain-picker-layout">
+                  <aside class="chain-filter-sidebar" aria-label="产业筛选">
+                    <div class="chain-filter-heading"><strong>产业分类</strong><small>三大产业体系 · 18 条产业链</small></div>
+                    <div class="chain-filter-list" id="chainFilterList"></div>
+                  </aside>
+                  <div class="chain-picker-groups" id="chainPickerGroups"></div>
+                </div>
               </div>
               <div class="selected-chain-view" id="selectedChainView" hidden>
                 <div class="selected-chain-back-row"><button class="selected-chain-back" id="changeChainButton" type="button"><svg class="ui-icon mini"><use href="#icon-arrow-left"></use></svg>产业链选择</button><span>当前产业链</span></div>
                 <div class="selected-chain-heading">
-                  <div class="selected-chain-copy"><span class="section-kicker">SELECTED INDUSTRY CHAIN</span><h2 id="selectedChainTitle">半导体与集成电路</h2><p id="selectedChainContext">全国 31 省市 · 战略性新兴产业</p></div>
+                  <div class="selected-chain-copy"><h2 id="selectedChainTitle">半导体与集成电路</h2><p id="selectedChainContext">全国 31 省市 · 战略性新兴产业</p></div>
                   <div class="selected-chain-stats" id="selectedChainStats"></div>
-                </div>
-                <div class="selected-chain-filters-slot" id="selectedChainFiltersSlot">
-                  <div class="advanced-filters" id="advancedFilters">
-                    <div class="advanced-heading"><span><svg class="ui-icon mini"><use href="#icon-filter"></use></svg>企业筛选</span><small>筛选当前产业链中的企业与节点</small></div>
-                    <div class="advanced-filter-fields">
-                      <div class="advanced-field advanced-region-field" id="regionScopeField"><span>区域范围</span><div class="region-cascade" id="regionScopePicker"><select id="regionScope" class="advanced-state-select" hidden><option value="不限" selected>不限</option></select><button class="custom-select-trigger region-cascade-trigger" type="button" id="regionScopeTrigger" aria-haspopup="dialog" aria-expanded="false"><span class="custom-select-label" id="regionScopeLabel">不限</span><span class="custom-select-arrow"><svg class="ui-icon mini"><use href="#icon-chevron-down"></use></svg></span></button><div class="region-cascade-menu" id="regionScopeMenu" role="dialog" aria-label="区域范围"><div class="region-cascade-column"><strong>省</strong><div class="region-cascade-options" id="regionProvinceOptions" role="listbox" aria-label="省"></div></div><div class="region-cascade-column"><strong>市</strong><div class="region-cascade-options" id="regionCityOptions" role="listbox" aria-label="市"></div></div><div class="region-cascade-column"><strong>区</strong><div class="region-cascade-options" id="regionDistrictOptions" role="listbox" aria-label="区"></div></div></div></div></div>
-                      <label class="advanced-field"><span>企业荣誉</span><select id="honorFilter"><option value="不限">不限</option><option value="制造业单项冠军企业">制造业单项冠军企业</option><option value="高新技术企业">高新技术企业</option><option value="百强企业">百强企业</option><option value="专精特新企业">专精特新企业</option><option value="小巨人企业">小巨人企业</option></select></label>
-                      <label class="advanced-field"><span>证据强度</span><select id="evidenceFilter"><option value="全部证据">全部证据</option><option value="强证据">强证据</option><option value="待补证">待补证</option></select></label>
-                      <label class="advanced-field"><span>上市企业</span><select id="listedFilter"><option value="不限">不限</option><option value="是">是</option><option value="否">否</option></select></label>
-                      <label class="advanced-field"><span>知识产权</span><select id="intellectualPropertyFilter" multiple data-multi-select="true"><option value="不限" selected>不限</option><option value="专利信息" data-level="1">专利信息</option><option value="发明授权" data-level="2" data-parent="专利信息">发明授权</option><option value="发明申请" data-level="2" data-parent="专利信息">发明申请</option><option value="实用新型" data-level="2" data-parent="专利信息">实用新型</option><option value="外观专利" data-level="2" data-parent="专利信息">外观专利</option><option value="软件著作权" data-level="1">软件著作权</option><option value="作品著作权" data-level="1">作品著作权</option><option value="商标信息" data-level="1">商标信息</option><option value="标准信息" data-level="1">标准信息</option><option value="其他" data-level="1">其他</option></select></label>
-                    </div>
-                    <button class="text-button advanced-clear-button" type="button" id="clearAdvancedFilters">清空条件</button>
-                  </div>
                 </div>
               </div>
             </section>
@@ -106,9 +154,8 @@
             <section class="workbench-section graph-section active" id="graphSection" data-section-panel="graphSection">
               <div class="graph-content-layout">
               <section class="graph-board" aria-label="产业链图谱">
-                <div class="panel-toolbar"><div><span class="section-kicker">INDUSTRY GRAPH</span><h2>产业图谱 <em><span id="graphTitle">半导体与集成电路</span></em></h2></div><div class="toolbar-actions"><button class="icon-button" type="button" id="fullscreenButton" aria-label="全屏查看" title="全屏查看"><svg class="ui-icon"><use href="#icon-maximize"></use></svg></button></div></div>
                 <div class="fullscreen-filter-slot" id="fullscreenFilterSlot"></div>
-                <div class="map-meta"><div class="map-legend" id="mapLegend"></div><span class="map-hint">点击任一环节查看企业清单</span></div>
+                <div class="map-meta"><div class="map-legend" id="mapLegend"></div><div class="map-meta-tools"><span class="map-hint">点击任一环节查看企业清单</span><span class="graph-pan-hint">按住拖动查看</span><button class="icon-button" type="button" id="fullscreenButton" aria-label="全屏查看" title="全屏查看"><svg class="ui-icon"><use href="#icon-maximize"></use></svg></button></div></div>
                 <div class="chain-map" id="chainMap"></div>
                 <div class="graph-board-footer"><span><svg class="ui-icon tiny"><use href="#icon-link"></use></svg><b id="graphNodeCount">416</b>个细分环节</span><span><svg class="ui-icon tiny"><use href="#icon-building"></use></svg><b id="graphCompanyCount">452</b>家代表企业</span><span class="footer-note">代表企业来自附件，正式纳入需经过主体核验与证据判断</span></div>
               </section>
@@ -116,22 +163,145 @@
             </section>
 
             <section class="workbench-section analysis-section" id="analysisSection" data-section-panel="analysisSection">
-              <div class="section-title-row workbench-section-heading"><div><span class="section-kicker">INDUSTRY INSIGHTS</span><h2>产业分析</h2><p id="analysisScope">基于当前产业链筛选结果，查看区域覆盖、企业结构与环节分布。</p></div><span class="section-context" id="analysisScopeContext">半导体与集成电路 · 全国</span></div>
-              <section class="analysis-story" id="analysisStory"><span class="analysis-story-mark">产业特征</span><div><h3 id="analysisStoryTitle">当前产业链的企业分布与结构</h3><p id="analysisStoryText">选择产业链后，将基于当前可见企业样本生成简要分析。</p></div><span class="analysis-story-note">演示样本 · 非实时工商统计</span></section>
               <div class="analysis-grid">
-                <section class="analysis-panel distribution-panel"><div class="chart-heading"><div><span class="section-kicker">REGIONAL CLUSTERS</span><h3>上链企业全国分布</h3><p>按企业注册地址模拟统计，颜色越深代表当前产业链的企业样本越多</p></div><span class="chart-total" id="analysisRegionCount">0 个省市</span></div><div class="distribution-overview"><div class="distribution-highlight"><strong id="distributionCompanyTotal">0</strong><span>上链企业</span></div><div class="distribution-highlight"><strong id="distributionProvinceTotal">0</strong><span>覆盖省市</span></div><div class="distribution-highlight"><strong id="distributionCoreTotal">0</strong><span>核心产品企业</span></div></div><div class="distribution-layout"><div class="china-map-visual" aria-label="当前产业链上链企业省级分布"><svg class="china-map-base" viewBox="0 0 1000 620" role="img" aria-label="中国省级地图上的上链企业分布"><g id="chinaMapPaths"></g></svg><div class="province-map-points" id="provinceMapPoints"></div><div class="map-scale"><span>少</span><i class="scale-swatch low"></i><i class="scale-swatch mid"></i><i class="scale-swatch high"></i><span>多</span></div></div><div class="province-ranking"><div class="ranking-heading"><span>PROVINCE TOP 10</span><strong>企业数量</strong></div><div class="metric-bar-list" id="provinceTop10"></div></div></div></section>
-                <section class="analysis-panel type-panel"><div class="chart-heading"><div><span class="section-kicker">COMPANY PROFILE</span><h3>企业角色与证据结构</h3><p>结合企业角色和证据强度字段，观察样本成熟度</p></div></div><div class="type-chart"><div class="donut-chart" id="companyMixChart" style="--core-pct: 50%"><div><strong id="companyMixTotal">0</strong><span>家企业</span></div></div><div class="donut-legend"><div><i class="legend-square blue"></i><span>核心产品企业</span><b id="companyCorePct">0%</b></div><div><i class="legend-square teal"></i><span>技术潜力企业</span><b id="companyPotentialPct">0%</b></div></div></div><div class="analysis-subchart"><div class="subchart-label"><span>证据强度</span><small>当前样本</small></div><div class="metric-bar-list compact" id="analysisEvidenceBars"></div></div></section>
-                <section class="analysis-panel listed-panel trend-panel"><div class="chart-heading"><div><span class="section-kicker">ONCHAIN TREND</span><h3>近五年上链企业数量变化</h3><p>按年度观察当前产业链企业样本的增长趋势</p></div><span class="chart-total">单位：家</span></div><div class="trend-chart" id="listingTrendChart" aria-label="近五年上链企业数量变化"></div><div class="trend-note" id="listingTrendNote">当前筛选下的演示趋势</div></section>
-                <section class="analysis-panel stage-panel"><div class="chart-heading"><div><span class="section-kicker">CHAIN STRUCTURE</span><h3>各一级环节的上链企业关联数</h3><p>横轴为一级产业环节，柱高表示企业关联数</p></div><span class="chart-total">单位：家</span></div><div class="stage-bars" id="analysisStageBars"></div><div class="axis-labels"><span>0</span><span id="analysisStageAxis">—</span><span>—</span></div><div class="axis-caption">横轴：一级产业环节　纵轴：企业关联数（家）</div></section>
-                <section class="analysis-panel metric-panel capital-panel"><div class="chart-heading"><div><span class="section-kicker">REGISTERED CAPITAL</span><h3>注册资本区间分布</h3><p>由注册资本字段归类，作为企业规模的基础观察维度</p></div></div><div class="metric-bar-list tall" id="analysisCapitalBars"></div></section>
+                <section class="analysis-panel distribution-panel"><div class="chart-heading"><div><h3>上链企业分布</h3><p>按企业注册地址模拟统计，颜色越深代表当前产业链的企业样本越多</p></div><label class="select-box region-filter-box"><select id="analysisRegionFilter" aria-label="按地区筛选上链企业"><option value="">全国</option></select></label></div><div class="distribution-overview"><div class="distribution-highlight"><span class="highlight-icon blue"><svg class="ui-icon mini"><use href="#icon-building"></use></svg></span><div class="highlight-main"><strong id="distributionCompanyTotal">0</strong><span>上链企业</span></div><small id="distributionCompanyNote">—</small><i><b id="distributionCompanyBar" style="width:0%"></b></i></div><div class="distribution-highlight"><span class="highlight-icon teal"><svg class="ui-icon mini"><use href="#icon-layers"></use></svg></span><div class="highlight-main"><strong id="distributionStageTotal">0</strong><span>覆盖环节</span></div><small id="distributionStageNote">—</small><i><b class="teal-bar" id="distributionStageBar" style="width:0%"></b></i></div><div class="distribution-highlight"><span class="highlight-icon amber"><svg class="ui-icon"><use href="#icon-spark"></use></svg></span><div class="highlight-main"><strong id="distributionCoreTotal">0</strong><span>重要及核心企业</span></div><small id="distributionCoreNote">—</small><i><b class="amber-bar" id="distributionCoreBar" style="width:0%"></b></i></div></div><div class="distribution-layout"><div class="china-map-visual" aria-label="当前产业链上链企业省级分布"><svg class="china-map-base" viewBox="0 0 880 640" role="img" aria-label="中国省级地图上的上链企业分布"><g id="chinaMapPaths"></g></svg><div class="province-map-points" id="provinceMapPoints"></div><svg class="southsea-inset" viewBox="0 0 168 200" aria-hidden="true"><g id="southSeaPaths"></g><text class="southsea-label" x="84" y="196" text-anchor="middle">南海诸岛</text></svg><div class="map-scale"><span>少</span><i class="scale-swatch low"></i><i class="scale-swatch mid"></i><i class="scale-swatch high"></i><span>多</span></div></div><div class="province-ranking"><div class="ranking-heading"><span id="rankingTitle">省份排名</span><strong>企业数量</strong></div><div class="metric-bar-list" id="provinceTop10"></div></div></div></section>
+                <section class="analysis-panel listed-panel trend-panel"><div class="chart-heading"><div><h3>近五年企业数量分布</h3><p>按注册年度统计新注册企业与累计企业总量，观察样本增长节奏</p></div><span class="chart-total">单位：家</span></div><div class="dual-legend" id="trendLegend"><span><i class="legend-square blue"></i>新注册企业</span><span><i class="legend-square teal"></i>企业总量</span></div><div class="dual-trend-chart" id="listingTrendChart" aria-label="近五年企业数量分布"></div><div class="trend-note" id="listingTrendNote">2022—2026 年度企业注册分布</div></section>
+                <section class="analysis-panel metric-panel capital-panel"><div class="chart-heading"><div><h3>企业注册资本分布</h3><p>按注册资本区间归类，区间口径与企业高级筛选保持一致</p></div><span class="chart-total">单位：家</span></div><div class="capital-columns" id="analysisCapitalColumns" aria-label="企业注册资本分布柱状图"></div><div class="trend-note" id="capitalNote">—</div></section>
+                <section class="analysis-panel financing-panel"><div class="chart-heading"><div><h3>企业融资事件统计</h3><p>按融资轮次汇总企业融资事件，金额按披露口径统计</p></div><span class="chart-total" id="financingEventTotal">0 起</span></div><div class="stat-kpis" id="financingKpis"></div><div class="financing-donut" id="analysisFinancingDonut" aria-label="融资轮次占比环形图"></div></section>
+                <section class="analysis-panel financing-year-panel"><div class="chart-heading"><div><h3>年度融资事件统计</h3><p>按披露年度统计融资事件数量，观察历年融资活跃度变化</p></div><span class="chart-total" id="financingYearTotal">0 起</span></div><div class="finance-year-line" id="analysisFinancingYearLine" aria-label="年度融资事件数量趋势图"></div></section>
+                <section class="analysis-panel qualification-panel"><div class="chart-heading"><div><h3>企业资质统计</h3><p>按资质标签统计四类重点企业数量与样本占比</p></div><span class="chart-total" id="qualificationRate">占比 —</span></div><div class="qualification-grid" id="analysisQualificationGrid"></div></section>
               </div>
             </section>
 
             <section class="workbench-section company-section" id="companySection" data-section-panel="companySection">
-              <div class="section-title-row workbench-section-heading"><div><span class="section-kicker">ONCHAIN COMPANY LIST</span><h2>上链企业清单</h2><p id="companyListScope">展示当前产业链下的代表企业样本，点击企业所在环节可查看完整清单与证据。</p></div><div class="company-list-total"><strong id="companyListTotal">0</strong><span>家代表企业</span></div></div>
-              <div class="company-list-toolbar"><span id="companyListSummary">正在加载企业清单</span><span class="company-list-note">数据来自附件，正式纳入需经过主体核验与证据判断</span></div>
+              <div class="company-filter-bar" id="companyFilterBar" data-filter-scope="list">
+                <div class="company-filter-row">
+                  <div class="company-filter-primary">
+                    <div class="company-filter-groups" id="companyFilterGroups" data-filter-groups></div>
+                    <button type="button" class="company-filter-more" id="toggleCompanyAdvanced" data-advanced-toggle="list" aria-expanded="true" aria-controls="companyFilterAdvanced"><span>更多筛选</span><b class="company-filter-more-count" id="companyAdvancedCount" data-advanced-count hidden>0</b><i class="filter-drop-caret" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="company-filter-actions">
+                    <button type="button" class="text-button" id="clearCompanyFilters" data-clear-filters="list">清空筛选</button>
+                    <button type="button" class="company-export-button" id="exportCompanyTable"><svg class="ui-icon mini"><use href="#icon-download"></use></svg>导出表格</button>
+                  </div>
+                </div>
+                <div class="company-filter-advanced" id="companyFilterAdvanced" data-filter-advanced></div>
+              </div>
+              <div class="company-filter-chips" id="companyFilterChips" data-filter-chips="list" data-filter-scope="list" hidden></div>
+              <div class="company-list-toolbar"><span id="companyListSummary">正在加载企业清单</span><span class="company-list-aside"><span class="company-list-inline-total"><strong id="companyListTotal">0</strong>家代表企业</span><span class="company-list-note">数据来自附件 · 需核验后纳入</span></span></div>
               <div class="company-list-table" id="onchainCompanyList"></div>
             </section>
+          </section>
+
+          <section class="view-panel" id="companyDetailView" data-panel="company-detail" aria-label="企业详情">
+            <div class="company-detail-shell">
+              <div class="company-detail-toolbar">
+                <button class="detail-back-button" type="button" id="companyDetailBack">
+                  <svg class="ui-icon mini"><use href="#icon-arrow-left"></use></svg>返回上链企业清单
+                </button>
+                <div class="company-detail-crumb">
+                  <span class="section-kicker">COMPANY PROFILE</span><i></i><b id="companyDetailCrumb">企业详情</b><i></i><span>演示样本 · 非实时工商数据</span>
+                </div>
+              </div>
+
+              <div class="company-detail-layout">
+                <div class="company-detail-main">
+                  <section class="company-overview-card" aria-labelledby="companyDetailTitle">
+                    <div class="company-overview-head">
+                      <div class="company-detail-logo" id="companyDetailLogo" aria-hidden="true">企</div>
+                      <div class="company-overview-copy">
+                        <div class="company-title-line">
+                          <h1 id="companyDetailTitle">企业名称</h1>
+                          <button type="button" class="inline-copy" id="companyDetailCopyName" data-copy-company aria-label="复制企业名称">复制企业名称</button>
+                        </div>
+                        <span class="company-alias" id="companyDetailAlias" hidden></span>
+                        <div class="company-status-tags" id="companyDetailTags"></div>
+                      </div>
+                      <div class="company-overview-actions">
+                        <button type="button" class="dd-report-button" data-detail-action="dd-report">AI尽调报告</button>
+                        <button type="button" data-detail-action="favorite">立即收藏</button>
+                        <button type="button" data-detail-action="monitor">添加监控</button>
+                      </div>
+                    </div>
+                    <div class="company-summary-grid">
+                      <dl>
+                        <div><dt>统一社会信用代码</dt><dd><span data-company-field="uscc">—</span> <button type="button" class="summary-more" data-copy-field="uscc">复制</button></dd></div>
+                        <div><dt>法定代表人</dt><dd><a href="#company-detail" data-related-company data-company-field="legal">—</a></dd></div>
+                        <div><dt>注册资本</dt><dd data-company-field="capital">—</dd></div>
+                        <div><dt>成立日期</dt><dd data-company-field="est">—</dd></div>
+                      </dl>
+                      <dl>
+                        <div><dt>电话</dt><dd><span data-company-field="phone">—</span> <button type="button" class="summary-more">更多4</button></dd></div>
+                        <div><dt>邮箱</dt><dd><span data-company-field="email">—</span> <button type="button" class="summary-more">更多1</button></dd></div>
+                        <div><dt>官网</dt><dd><a href="#company-detail" data-related-company><span data-company-field="site">—</span></a></dd></div>
+                        <div><dt>地址</dt><dd data-company-field="address">—</dd></div>
+                      </dl>
+                      <dl>
+                        <div><dt>所属行业</dt><dd data-company-field="industry">—</dd></div>
+                        <div><dt>产业环节</dt><dd data-company-field="path">—</dd></div>
+                        <div><dt>环节归属</dt><dd data-company-field="node">—</dd></div>
+                      </dl>
+                    </div>
+                    <div class="company-intro">
+                      <span>简介：</span><span class="company-intro-text" id="companyDetailIntroText"></span>
+                      <button type="button" data-detail-action="expand-intro">展开</button>
+                    </div>
+                  </section>
+
+                  <section class="company-graph-card" aria-labelledby="companyGraphTitle">
+                    <div class="company-detail-section-heading">
+                      <h2 id="companyGraphTitle">企业图谱 <em>演示占位</em></h2>
+                      <span>接入股权、任职与对外投资关系后自动生成</span>
+                    </div>
+                    <div class="company-graph-grid">
+                      <button type="button" class="company-graph-item" data-detail-action="graph">
+                        <span class="graph-node graph-node-blue">对外投资</span>
+                        <span class="graph-node graph-node-main" data-graph="short">本企业</span>
+                        <span class="graph-node graph-node-orange">法定代表人</span>
+                        <span class="graph-node graph-node-green">股东</span>
+                        <strong>聚合图谱</strong>
+                      </button>
+                      <button type="button" class="company-graph-item" data-detail-action="graph">
+                        <span class="graph-node graph-node-main" data-graph="legal">法定代表人</span>
+                        <span class="graph-node graph-node-blue">对外投资</span>
+                        <span class="graph-node graph-node-blue">对外任职</span>
+                        <strong>法人关系图谱</strong>
+                      </button>
+                      <button type="button" class="company-graph-item" data-detail-action="graph">
+                        <span class="graph-node graph-node-main" data-graph="short">本企业</span>
+                        <span class="graph-node graph-node-green">股东</span>
+                        <span class="graph-node graph-node-green" data-graph="legal-share">股东</span>
+                        <strong>股东关系图谱</strong>
+                      </button>
+                      <button type="button" class="company-graph-item" data-detail-action="graph">
+                        <span class="graph-node graph-node-main" data-graph="short">本企业</span>
+                        <span class="graph-node graph-node-purple">高管</span>
+                        <span class="graph-node graph-node-purple" data-graph="legal-title">高管</span>
+                        <strong>高管关系图谱</strong>
+                      </button>
+                    </div>
+                  </section>
+
+                  <section class="company-info-card" id="detail-basic" aria-label="企业详细信息">
+                    <div class="detail-nav-region" data-detail-nav-region>
+                      <div class="company-detail-tabs" role="tablist" aria-label="企业信息分类">
+                        <button class="is-active" type="button" data-detail-tab="basic">基本信息</button>
+                        <button type="button" data-detail-tab="listing">上市信息</button>
+                        <button type="button" data-detail-tab="intellectual">知识产权</button>
+                        <button type="button" data-detail-tab="legal">法律诉讼</button>
+                        <button type="button" data-detail-tab="risk">经营风险</button>
+                        <button type="button" data-detail-tab="operation">经营信息</button>
+                        <button type="button" data-detail-tab="development">企业发展</button>
+                        <button type="button" data-detail-tab="marketing">营销信息</button>
+                      </div>
+                      <div class="detail-nav-popover" data-detail-nav-popover aria-hidden="true"></div>
+                    </div>
+                    <div class="company-detail-subtabs" data-detail-subtabs aria-label="基本信息分类"></div>
+                    <div class="detail-data-sections" data-detail-sections></div>
+                  </section>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section class="view-panel" id="aiView" data-panel="ai">
@@ -143,11 +313,61 @@
           </section>
 
           <section class="view-panel" id="onchainView" data-panel="onchain">
-            <div class="onchain-scroll">
-              <section class="explain-banner"><div class="banner-icon"><svg class="ui-icon"><use href="#icon-link"></use></svg></div><div><span class="section-kicker">ONE RESULT, TRACEABLE REASONS</span><h3>每一家企业为什么被纳入，都能看到依据</h3><p>系统先发现候选企业，再核对主体和证据，最后由规则与研究员共同决定企业在链上的角色。证据不足会被明确标记，不会被直接判断为“不属于”。</p></div><div class="banner-stat"><strong>6</strong><span>个判断步骤</span></div></section>
-              <section class="process-section"><div class="section-title-row"><div><span class="section-kicker">WORKFLOW</span><h3>一条企业如何上链</h3></div><span class="version-label">当前流程 V1.0</span></div><div class="process-steps"><div class="process-step done"><span>01</span><strong>定义节点</strong><small>明确纳入、排除范围</small></div><div class="process-line done"></div><div class="process-step done"><span>02</span><strong>发现企业</strong><small>数据库 + 搜索 + 候选名单</small></div><div class="process-line done"></div><div class="process-step done"><span>03</span><strong>核验主体</strong><small>统一社会信用代码与名称</small></div><div class="process-line"></div><div class="process-step"><span>04</span><strong>匹配证据</strong><small>产品、技术、客户、交付</small></div><div class="process-line"></div><div class="process-step"><span>05</span><strong>人工复核</strong><small>处理冲突与边界案例</small></div><div class="process-line"></div><div class="process-step"><span>06</span><strong>版本发布</strong><small>保留结果与变更记录</small></div></div></section>
-              <div class="logic-tools-grid"><section class="logic-panel"><div class="section-title-row"><div><span class="section-kicker">INCLUSION LOGIC</span><h3>企业角色与证据等级</h3></div><button class="icon-button subtle" type="button" id="logicInfoButton" aria-label="查看判断说明" title="查看判断说明"><svg class="ui-icon"><use href="#icon-info"></use></svg></button></div><div class="logic-table"><div class="logic-row logic-head"><span>角色</span><span>纳入判断</span><span>适合动作</span></div><div class="logic-row"><b class="logic-badge a1">A1</b><span><strong>核心产品企业</strong><small>目标产品明确，有客户、订单、交付或验收证据</small></span><em>优先招商</em></div><div class="logic-row"><b class="logic-badge a2">A2</b><span><strong>产品明确企业</strong><small>目标产品明确，但交付证据仍需补充</small></span><em>补充证据</em></div><div class="logic-row"><b class="logic-badge b">B</b><span><strong>技术潜力企业</strong><small>技术能力较强，产品证据不足</small></span><em>持续跟踪</em></div><div class="logic-row"><b class="logic-badge c">C</b><span><strong>上下游/使用方</strong><small>供应商、服务商、客户或转型潜力企业</small></span><em>协同分析</em></div><div class="logic-row"><b class="logic-badge l">L</b><span><strong>待补证线索</strong><small>只有媒体或宣传线索，暂不升级结论</small></span><em>人工复核</em></div></div></section><section class="tools-panel"><div class="section-title-row"><div><span class="section-kicker">SOURCE TOOLBOX</span><h3>上链工具箱</h3></div><span class="tool-count" id="enabledSourceCount">4 / 6 已启用</span></div><p class="tools-intro">按项目选择数据源，系统会优先使用已有数据库和历史经验，减少重复搜索。</p><div class="source-tools"><label class="source-tool enabled"><input type="checkbox" checked data-source="工商数据"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-building"></use></svg></span><span><b>企业工商数据</b><small>主体核验 · 全国覆盖</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="专利"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><span><b>专利</b><small>技术能力 · 近五年</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="软件著作权"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><span><b>软件著作权</b><small>软件产品 · 证据补充</small></span><i></i></label><label class="source-tool enabled"><input type="checkbox" checked data-source="互联网检索"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><span><b>互联网检索</b><small>官网与公开资料</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="招投标"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-file"></use></svg></span><span><b>招投标/政府项目</b><small>客户与交付证据</small></span><i></i></label><label class="source-tool"><input type="checkbox" data-source="行业资讯"/><span class="source-icon"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><span><b>行业资讯</b><small>线索发现 · 不单独定论</small></span><i></i></label></div></section></div>
-              <section class="evidence-standard"><div><span class="section-kicker">EVIDENCE STANDARD</span><h3>四类结论分开判断</h3></div><div class="standard-items"><span><i class="standard-dot blue"></i><b>产品存在</b><small>企业确实提供目标产品</small></span><span><i class="standard-dot teal"></i><b>技术能力</b><small>专利、软著或研发能力</small></span><span><i class="standard-dot amber"></i><b>客户交付</b><small>订单、验收或项目证据</small></span><span><i class="standard-dot coral"></i><b>产业角色</b><small>核心、潜力、上下游分别标记</small></span></div></section>
+            <div class="solution-page onchain-page">
+              <section class="solution-hero" aria-labelledby="onchainTitle">
+                <div class="solution-hero-grid" aria-hidden="true"></div>
+                <div class="solution-hero-copy">
+                  <h1 id="onchainTitle">面向地方规划和实际产业基础<br />建设专属产业链</h1>
+                  <p>围绕地方资源禀赋、重点企业、园区定位和产业政策，形成适合本地使用的产业链目录、节点体系与企业数据。</p>
+                  <div class="solution-hero-actions">
+                    <button class="button primary" type="button" id="onchainContactButton"><svg class="ui-icon mini"><use href="#icon-send"></use></svg>提交定制需求</button>
+                  </div>
+                </div>
+                <div class="solution-hero-aside" aria-label="定制产业链概览">
+                  <span class="solution-hero-aside-label">从规划到数据</span>
+                  <strong>目录 · 图谱 · 底座 · 应用</strong>
+                  <small>让地方产业链建设有据可依、可持续更新。</small>
+                </div>
+              </section>
+
+              <section class="solution-section" aria-labelledby="onchainUnderstandTitle">
+                <div class="solution-section-heading"><div><h2 id="onchainUnderstandTitle">我们如何理解地方产业</h2><p>政策、规律与真实企业三条线索交叉验证，确保链条结构既符合规划意图，也经得起数据检验。</p></div></div>
+                <div class="solution-card-grid three-columns">
+                  <article class="solution-card"><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><h3>从政策规划明确发展边界</h3><p>综合国家产业政策、地方专项规划、政府工作报告和园区发展资料，识别当地真正希望发展、具备承载条件的产业方向。</p></article>
+                  <article class="solution-card"><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-layers"></use></svg></span><h3>从产业规律设计链条结构</h3><p>结合产品形成过程、关键技术、材料设备、生产制造和应用市场，建立可解释、可维护的产业链层级和节点定义。</p></article>
+                  <article class="solution-card"><span class="solution-card-icon coral"><svg class="ui-icon"><use href="#icon-building"></use></svg></span><h3>从真实企业检验产业基础</h3><p>依托企业、知识产权、项目、招投标、投融资等基础数据库，识别本地已有基础、外部供给和潜在合作对象。</p></article>
+                </div>
+              </section>
+
+              <section class="solution-section solution-section-muted" aria-labelledby="onchainExperienceTitle">
+                <div class="solution-section-heading"><div><h2 id="onchainExperienceTitle">经大型产业信息平台建设验证的实践基础</h2><p>参与深圳国家高技术产业创新中心“国际科技产业信息服务平台”建设，在深圳 20+8 产业集群实践中积累产业研究、图谱建设、企业数据组织与持续更新经验。</p></div></div>
+                <div class="onchain-stat-grid">
+                  <div class="onchain-stat"><strong>20+8</strong><span>深圳战略性新兴产业与未来产业实践</span></div>
+                  <div class="onchain-stat"><strong>28张</strong><span>可复用标准产业图谱</span></div>
+                  <div class="onchain-stat"><strong>3,344个</strong><span>标准产业节点</span></div>
+                  <div class="onchain-stat"><strong>多源数据</strong><span>企业、知识产权、项目、招投标与资本要素</span></div>
+                </div>
+              </section>
+
+              <section class="solution-section" aria-labelledby="onchainDeliverTitle">
+                <div class="solution-section-heading centered"><div><h2 id="onchainDeliverTitle">可交付成果</h2><p>从目录到底座，形成可直接投入使用的产业链数据资产。</p></div></div>
+                <div class="solution-card-grid four-columns">
+                  <article class="solution-card delivery-card"><span class="delivery-index">01</span><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-book"></use></svg></span><h3>产业规划目录</h3><p>将国家与地方规划、园区定位和发展目标转化为统一可检索的产业目录。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">02</span><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-map"></use></svg></span><h3>产业链标准图谱</h3><p>交付产业层级、节点定义、包含排除边界和重点技术方向。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">03</span><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-database"></use></svg></span><h3>企业与要素底座</h3><p>围绕节点组织企业、产品、技术、知识产权、项目和资本等信息。</p></article>
+                  <article class="solution-card delivery-card"><span class="delivery-index">04</span><span class="solution-card-icon coral"><svg class="ui-icon"><use href="#icon-chart"></use></svg></span><h3>画像与招商应用</h3><p>支撑区域产业画像、企业线索发现、招商候选管理与策略报告生成。</p></article>
+                </div>
+              </section>
+
+              <section class="solution-section solution-section-muted" aria-labelledby="onchainWorkflowTitle">
+                <div class="solution-section-heading centered"><div><h2 id="onchainWorkflowTitle">建设服务</h2><p>四个阶段完成从研究到持续更新的闭环交付。</p></div></div>
+                <div class="onchain-workflow">
+                  <div class="onchain-workflow-row"><span class="onchain-workflow-no">01</span><div class="onchain-workflow-main"><h3>规划与产业研究</h3><p>围绕地方目标、产业规律、技术演进和实际产业基础明确建设边界。</p></div><span class="onchain-workflow-output">研究方案</span></div>
+                  <div class="onchain-workflow-row"><span class="onchain-workflow-no">02</span><div class="onchain-workflow-main"><h3>专属图谱建设</h3><p>形成面向客户业务场景的产业层级、节点定义与标准产业图谱。</p></div><span class="onchain-workflow-output">图谱与标准</span></div>
+                  <div class="onchain-workflow-row"><span class="onchain-workflow-no">03</span><div class="onchain-workflow-main"><h3>数据底座与应用</h3><p>组织企业及多源要素数据，接入产业画像、招商线索和专题分析场景。</p></div><span class="onchain-workflow-output">数据与应用</span></div>
+                  <div class="onchain-workflow-row"><span class="onchain-workflow-no">04</span><div class="onchain-workflow-main"><h3>专家复核与更新</h3><p>由产业与数据团队共同复核，并随政策、技术和企业变化持续维护。</p></div><span class="onchain-workflow-output">持续服务</span></div>
+                </div>
+              </section>
             </div>
           </section>
 
@@ -156,7 +376,7 @@
               <section class="solution-hero" aria-labelledby="solutionTitle">
                 <div class="solution-hero-grid" aria-hidden="true"></div>
                 <div class="solution-hero-copy">
-                  <span class="section-kicker">INDUSTRY CHAIN SOLUTIONS</span>
+                  
                   <h1 id="solutionTitle">构建可视化产业链<br />赋能产业精准分析与决策</h1>
                   <p>标准数据包之外，提供从产业链深度梳理、标准化上链、可视化呈现到数据交付应用的全链路定制服务，交付专属产业链图谱与结构化数据包。</p>
                   <div class="solution-hero-actions">
@@ -172,7 +392,7 @@
               </section>
 
               <section class="solution-section" aria-labelledby="solutionPainTitle">
-                <div class="solution-section-heading"><div><span class="section-kicker">SCENARIO CHALLENGES</span><h2 id="solutionPainTitle">您是否也遇到这些难题</h2><p>产业数据工作的四类常见障碍，可以通过统一的数据与研究流程逐一解决。</p></div></div>
+                <div class="solution-section-heading"><div><h2 id="solutionPainTitle">您是否也遇到这些难题</h2><p>产业数据工作的四类常见障碍，可以通过统一的数据与研究流程逐一解决。</p></div></div>
                 <div class="solution-card-grid four-columns">
                   <article class="solution-card pain-card"><span class="solution-card-icon amber"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><h3>产业数据获取困难</h3><p>企业分散、口径不一，缺乏权威完整的产业链数据底座。</p></article>
                   <article class="solution-card pain-card"><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-refresh"></use></svg></span><h3>数据更新效率低下</h3><p>人工整理耗时耗力，数据到手即过期，难以支撑动态决策。</p></article>
@@ -182,7 +402,7 @@
               </section>
 
               <section class="solution-section solution-section-muted" aria-labelledby="solutionDeliveryTitle">
-                <div class="solution-section-heading centered"><div><span class="section-kicker">DELIVERY FRAMEWORK</span><h2 id="solutionDeliveryTitle">四步交付您的专属产业链</h2><p>标准化上链 · 可视化呈现 · 精准化应用</p></div></div>
+                <div class="solution-section-heading centered"><div><h2 id="solutionDeliveryTitle">四步交付您的专属产业链</h2><p>标准化上链 · 可视化呈现 · 精准化应用</p></div></div>
                 <div class="solution-card-grid four-columns delivery-grid">
                   <article class="solution-card delivery-card"><span class="delivery-index">01</span><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-search"></use></svg></span><h3>产业链深度梳理</h3><p>“解构—识别—梳理”三步闭环，完成产业链上中下游结构拆解，明确核心数据与关联关系。</p></article>
                   <article class="solution-card delivery-card"><span class="delivery-index">02</span><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-link"></use></svg></span><h3>标准化上链</h3><p>将企业、知识产权、资质、政策等全链路数据统一入链，建立数据更新制度。</p></article>
@@ -192,7 +412,7 @@
               </section>
 
               <section class="solution-section" aria-labelledby="solutionCapabilityTitle">
-                <div class="solution-section-heading centered"><div><span class="section-kicker">CORE CAPABILITIES</span><h2 id="solutionCapabilityTitle">四大核心能力支撑</h2><p>数据 × 工具 × 研究 × 开发，全栈自研</p></div></div>
+                <div class="solution-section-heading centered"><div><h2 id="solutionCapabilityTitle">四大核心能力支撑</h2><p>数据 × 工具 × 研究 × 开发，全栈自研</p></div></div>
                 <div class="solution-card-grid four-columns capability-grid">
                   <article class="solution-card capability-card"><span class="solution-card-icon blue"><svg class="ui-icon"><use href="#icon-database"></use></svg></span><h3>全量数据基座</h3><p>覆盖全国各地区、各行业的企业实体与全量数据，为产业分析提供统一底座。</p></article>
                   <article class="solution-card capability-card"><span class="solution-card-icon teal"><svg class="ui-icon"><use href="#icon-sliders"></use></svg></span><h3>标准化上链工具</h3><p>数据标准化处理、关联关系构建与持续更新维护一体化。</p></article>
@@ -202,11 +422,11 @@
               </section>
 
               <section class="solution-section solution-section-muted" aria-labelledby="solutionCompareTitle">
-                <div class="solution-section-heading centered"><div><span class="section-kicker">SERVICE OPTIONS</span><h2 id="solutionCompareTitle">标准数据包 vs 定制方案</h2><p>按需选择，标准包即买即用，定制方案深度适配。</p></div></div>
+                <div class="solution-section-heading centered"><div><h2 id="solutionCompareTitle">标准数据包 vs 定制方案</h2><p>按需选择，标准包即买即用，定制方案深度适配。</p></div></div>
                 <div class="solution-table-wrap"><table class="solution-table"><thead><tr><th>对比维度</th><th>标准数据包</th><th>产业链定制方案</th></tr></thead><tbody><tr><th>产业链范围</th><td>在售产业链，开箱即选</td><td>任意产业链 / 细分赛道，从零定义</td></tr><tr><th>区域覆盖</th><td>重点城市与全国区域</td><td>指定省 / 市 / 园区，可下钻至区县</td></tr><tr><th>数据维度</th><td>企业基础信息相关维度</td><td>字段级定制，可接入客户自有数据</td></tr><tr><th>交付形式</th><td>Excel 清单 + 图谱 + 数据字典</td><td>数据包 + 可视化系统 + API 接口</td></tr><tr><th>更新机制</th><td>跟随数据更新时间同步</td><td>专属更新方案，支持持续对接</td></tr><tr><th>适用场景</th><td>招商地图、投研筛选、供应链初筛</td><td>产业大脑、招商系统、监测平台建设</td></tr></tbody></table></div>
               </section>
 
-              <section class="solution-cta" aria-labelledby="solutionCtaTitle"><div><span class="section-kicker">START A PROJECT</span><h2 id="solutionCtaTitle">告诉我们您的产业链需求</h2><p>提交需求后，产业研究顾问将在 1 个工作日内与您联系，提供产业链梳理建议与方案。</p></div><button class="button secondary" type="button" id="solutionCtaButton"><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg>免费获取定制方案</button></section>
+              <section class="solution-cta" aria-labelledby="solutionCtaTitle"><div><h2 id="solutionCtaTitle">告诉我们您的产业链需求</h2><p>提交需求后，产业研究顾问将在 1 个工作日内与您联系，提供产业链梳理建议与方案。</p></div><button class="button secondary" type="button" id="solutionCtaButton"><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg>免费获取定制方案</button></section>
             </div>
           </section>
         </div>
@@ -215,18 +435,70 @@
 
     <div class="drawer-backdrop" id="drawerBackdrop" hidden>
       <aside class="node-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
-        <div class="drawer-header"><div><span class="section-kicker">NODE COMPANY LIST</span><h2 id="drawerTitle">微处理器</h2><p id="drawerSubtitle">设计 · 微处理器 · 代表企业样本</p></div><button class="icon-button" type="button" id="closeDrawer" aria-label="关闭企业清单" title="关闭企业清单"><svg class="ui-icon"><use href="#icon-x"></use></svg></button></div>
-        <div class="drawer-summary"><div><span>代表企业</span><strong id="drawerCompanyTotal">0</strong></div><div><span>核心记录</span><strong id="drawerStrongTotal">0</strong></div><div><span>层级记录</span><strong id="drawerProvinceTotal">0</strong></div></div>
-        <div class="drawer-filters"><label class="drawer-search"><svg class="ui-icon mini"><use href="#icon-search"></use></svg><input id="drawerSearch" type="search" placeholder="搜索企业名称"/></label><div class="drawer-filter-row"><label><select id="drawerProvince"></select></label><label><select id="drawerType"><option value="全部类型">企业类型</option><option value="核心产品企业">核心产品企业</option><option value="技术潜力企业">技术潜力企业</option><option value="上下游/使用方">上下游/使用方</option></select></label><label><select id="drawerEvidence"><option value="全部证据">证据</option><option value="强证据">强证据</option><option value="待补证">待补证</option></select></label></div><div class="drawer-filter-summary"><span id="drawerFilterResult">显示 8 / 428 家</span><button class="text-button" type="button" id="clearDrawerFilters">清空筛选</button></div></div>
+        <div class="drawer-header"><div><h2 id="drawerTitle">微处理器</h2><p id="drawerSubtitle">设计 · 微处理器 · 代表企业样本</p></div><button class="icon-button" type="button" id="closeDrawer" aria-label="关闭企业清单" title="关闭企业清单"><svg class="ui-icon"><use href="#icon-x"></use></svg></button></div>
+        <div class="drawer-filters">
+          <div class="company-filter-bar is-drawer" id="drawerFilterBar" data-filter-scope="drawer">
+            <div class="company-filter-row">
+              <div class="company-filter-primary">
+                <div class="company-filter-groups" id="drawerFilterGroups" data-filter-groups></div>
+                <button type="button" class="company-filter-more" id="toggleDrawerAdvanced" data-advanced-toggle="drawer" aria-expanded="true" aria-controls="drawerFilterAdvanced"><span>更多筛选</span><b class="company-filter-more-count" data-advanced-count hidden>0</b><i class="filter-drop-caret" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="company-filter-advanced" id="drawerFilterAdvanced" data-filter-advanced></div>
+          </div>
+          <div class="company-filter-chips" id="drawerFilterChips" data-filter-chips="drawer" data-filter-scope="drawer" hidden></div>
+          <div class="drawer-filter-summary"><span id="drawerFilterResult">显示 0 / 0 家</span><button class="text-button" type="button" data-clear-filters="drawer">清空筛选</button></div>
+        </div>
         <div class="company-list" id="drawerCompanyList"></div>
         <div class="drawer-footer"><span>结果需经人工复核后正式发布</span><button class="button secondary" type="button" id="drawerExportButton"><svg class="ui-icon mini"><use href="#icon-download"></use></svg>导出清单</button></div>
       </aside>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="detail-modal" id="patent-detail-modal" hidden>
+      <div class="detail-modal-mask" data-patent-modal-close></div>
+      <div class="detail-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="patent-detail-modal-title">
+        <div class="detail-modal-head">
+          <h3 id="patent-detail-modal-title">专利详情</h3>
+          <button type="button" class="patent-detail-close" data-patent-modal-close aria-label="关闭专利详情"></button>
+        </div>
+        <div class="detail-modal-body" data-patent-detail-body></div>
+      </div>
+    </div>
+
+    <div class="detail-modal" id="legal-detail-modal" hidden>
+      <div class="detail-modal-mask" data-legal-modal-close></div>
+      <div class="detail-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="legal-detail-modal-title">
+        <div class="detail-modal-head">
+          <h3 id="legal-detail-modal-title">详情</h3>
+          <button type="button" class="patent-detail-close" data-legal-modal-close aria-label="关闭详情"></button>
+        </div>
+        <div class="detail-modal-body" data-legal-detail-body></div>
+      </div>
+    </div>
+
+    <div class="detail-modal" id="ai-report-modal" hidden>
+      <div class="detail-modal-mask" data-ai-report-close></div>
+      <div class="detail-modal-dialog ai-report-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-report-modal-title">
+        <div class="detail-modal-head">
+          <h3 id="ai-report-modal-title">AI尽调报告</h3>
+          <button type="button" class="patent-detail-close" data-ai-report-close aria-label="关闭尽调报告"></button>
+        </div>
+        <div class="detail-modal-body" id="aiReportBody"></div>
+        <div class="ai-report-footer">
+          <span>报告由 AI 基于企业详情、产业定位与区域营商环境自动生成，仅供参考，正式决策需人工复核</span>
+          <div class="ai-report-footer-actions">
+            <button class="button secondary" type="button" id="aiReportDownload"><svg class="ui-icon mini"><use href="#icon-download"></use></svg>下载报告</button>
+            <button class="button primary" type="button" data-ai-report-close>关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="industry-data.js?v=202609111520"></script>
     <script src="national-industry-data.js?v=202609111520"></script>
     <script src="china-map-data.js?v=202609141500"></script>
-    <script src="app.js?v=202609201600"></script>
+    <script src="app.js?v=202610271033"></script>
+    <script src="company-detail.js?v=202610232225"></script>
     <script src="auth.js?v=202609151530"></script>
   </body>
 </html>
