@@ -2608,6 +2608,7 @@ function renderGraph() {
     $('#graphCompanyCount').textContent = '—';
     $('#mapLegend').innerHTML = '';
     chainMap.innerHTML = '';
+    chainMap.style.gridTemplateColumns = '';
     renderAnalysis(null);
     return;
   }
@@ -2616,6 +2617,7 @@ function renderGraph() {
     $('#graphNodeCount').textContent = '—';
     $('#graphCompanyCount').textContent = '—';
     $('#mapLegend').innerHTML = '';
+    chainMap.style.gridTemplateColumns = '';
     chainMap.innerHTML = `<div class="empty-graph-state"><div class="empty-graph-icon">${icon('layers', 'ui-icon')}</div><strong>${escapeHtml(currentIndustry || '当前筛选')}</strong><p>当前筛选结果只有官方产业体系命名，暂无对应的产业链明细工作簿。</p><small>可继续调整筛选条件，或选择“集成电路 / 半导体与集成电路”查看已接入图谱。</small></div>`;
     renderAnalysis(null);
     return;
@@ -2626,6 +2628,8 @@ function renderGraph() {
   $('#mapLegend').innerHTML = '<span class="legend-explainer"><i class="node-status-dot advantage"></i>优势环节</span><span class="legend-explainer"><i class="node-status-dot weak"></i>弱势环节</span><span class="legend-explainer"><i class="node-status-dot break"></i>断链环节</span>';
   const nodeStatusIndex = buildNodeStatusIndex(profile);
   const companyMatchNodes = new Set(nodeCompanies.filter((company) => company.name.toLowerCase().includes(query)).map((company) => company.node));
+  // 列宽自适应：最小 240px 保底（放不下横向拖拉），列少时均摊铺满整行（如航空航天 3 列）
+  chainMap.style.gridTemplateColumns = `repeat(${Math.max(profile.stages.length, 1)}, minmax(240px, 1fr))`;
   chainMap.innerHTML = profile.stages.map((stage, index) => {
     const stageNodes = stage.nodes;
     const stageCountLabel = `${stage.count} 类`;
