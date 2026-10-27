@@ -349,7 +349,7 @@ function expandNodeCompanies(node) {
   return names;
 }
 
-function buildSemiconductorCompanyRecords(nodes) {
+function buildChainCompanyRecords(nodes, displayNamePrefix = '芯链示范企业') {
   let recordIndex = 0;
   return nodes.flatMap((node) => expandNodeCompanies(node).map((name) => {
     const index = recordIndex++;
@@ -384,7 +384,7 @@ function buildSemiconductorCompanyRecords(nodes) {
     const stockCode = listed === '是' ? `${index % 2 ? '688' : '002'}${String(100 + (index % 899))}.${index % 2 ? 'SH' : 'SZ'}` : '';
     return {
       name,
-      displayName: `芯链示范企业${String(index + 1).padStart(2, '0')}`,
+      displayName: `${displayNamePrefix}${String(index + 1).padStart(2, '0')}`,
       legalPerson,
       phones,
       emails,
@@ -416,7 +416,61 @@ function buildSemiconductorCompanyRecords(nodes) {
 
 industryProfiles['半导体与集成电路'] = createSemiconductorProfile();
 
-const nodeCompanies = buildSemiconductorCompanyRecords(semiconductorNodes);
+// 航空航天产业链（数据源：桌面/航空航天.xlsx，"低空经济与空天"三级体系）
+const aviationStageMeta = {
+  航天产业: { key: 'space', subtitle: '运载火箭、卫星与深空探测', color: 'blue' },
+  航空产业: { key: 'aviation', subtitle: '航空器制造与配套服务', color: 'teal' },
+  低空经济产业: { key: 'lowaltitude', subtitle: '无人机、eVTOL 与低空运营保障', color: 'amber' }
+};
+
+function createAviationProfile() {
+  const stageOrder = Object.keys(aviationStageMeta);
+  const totalRows = aviationNodes.reduce((sum, node) => sum + node.rowCount, 0);
+  const companyTotal = new Set(aviationNodes.flatMap((node) => expandNodeCompanies(node))).size;
+  return {
+    title: '航空航天',
+    type: '战略性新兴产业',
+    industryTypes: ['战略性新兴产业'],
+    nodeCount: totalRows,
+    total: companyTotal.toLocaleString('zh-CN'),
+    tip: '图谱将航空航天产业拆分为航天、航空、低空经济三大一级环节、11 个二级环节和 149 条最长五级细分路径。',
+    intro: '航空航天产业链覆盖航天运输、空间基础设施与深空探测，航空器原材料、零部件与整机及配套服务，以及低空制造、基础设施保障、飞行活动与综合服务等完整产业协作链条。',
+    stages: stageOrder.map((stageName) => {
+      const meta = aviationStageMeta[stageName];
+      const sourceNodes = aviationNodes.filter((node) => node.l1 === stageName);
+      return {
+        ...meta,
+        title: stageName,
+        count: sourceNodes.length,
+        nodes: sourceNodes.map((sourceNode) => ({
+          isCore: sourceNode.isCore === true,
+          corePaths: Array.isArray(sourceNode.corePaths) ? sourceNode.corePaths : [],
+          name: sourceNode.l2,
+          meta: `${sourceNode.rowCount} 条层级记录 · ${sourceNode.paths.length} 个细分环节`,
+          companyTotal: Number(sourceNode.companyTotal || 0),
+          companies: sourceNode.companyTotal.toLocaleString('zh-CN'),
+          evidence: sourceNode.isCore ? '核心环节' : '产业配套',
+          role: sourceNode.isCore ? '核心环节' : '产业配套',
+          featured: sourceNode.isCore === true,
+          coreCount: sourceNode.coreCount,
+          rowCount: sourceNode.rowCount,
+          paths: sourceNode.paths,
+          terms: sourceNode.terms,
+          companyNames: expandNodeCompanies(sourceNode),
+          nodeSearchable: [sourceNode.l1, sourceNode.l2, ...sourceNode.paths, ...sourceNode.terms].join(' '),
+          searchable: [sourceNode.l1, sourceNode.l2, ...sourceNode.paths, ...sourceNode.terms, ...expandNodeCompanies(sourceNode)].join(' ')
+        }))
+      };
+    })
+  };
+}
+
+industryProfiles['航空航天'] = createAviationProfile();
+
+const nodeCompanies = [
+  ...buildChainCompanyRecords(semiconductorNodes),
+  ...buildChainCompanyRecords(aviationNodes, '航空航天示范企业')
+];
 
 const distribution = [...officialRegionCatalog.reduce((counts, item) => {
   if (/半导体|集成电路/.test(item.coreChains)) counts.set(item.province, (counts.get(item.province) || 0) + 1);
