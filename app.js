@@ -3486,13 +3486,15 @@ function init() {
   $('#newConversationButton').addEventListener('click', createConversation);
   $('#onchainContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   const homeQueryInput = $('#homeQueryInput');
+  // 首页检索框：跳转产业图谱并按关键词检索产业链
   const submitHomeQuery = () => {
     const text = homeQueryInput.value.trim();
-    if (!text) { showToast('请输入企业名称或查询问题'); homeQueryInput.focus(); return; }
-    setView('ai');
-    $('#chatInput').value = text;
+    if (!text) { showToast('请输入检索关键词'); homeQueryInput.focus(); return; }
+    setView('graph');
+    $('#graphSearch').value = text;
+    syncGraphSearchClear();
     homeQueryInput.value = '';
-    sendChat();
+    runGraphSearch();
   };
   $('#homeQuerySend').addEventListener('click', submitHomeQuery);
   homeQueryInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitHomeQuery(); } });
