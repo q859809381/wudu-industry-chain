@@ -1183,13 +1183,13 @@ function syncGraphSearchClear() {
   if (input && button) button.hidden = !input.value.trim();
 }
 
-// Search on the chain card list page filters the cards by chain name.
+// Search on the chain card list page filters the cards by chain name, node (level/path) and company name.
 function runGraphSearch() {
   const query = getSearchText();
   renderGraph();
   if (!query) { showToast('已展示全部产业链'); return; }
   const count = $$('#chainPickerGroups .chain-picker-item').length;
-  showToast(count ? `已筛选出 ${count} 条匹配产业链` : `未找到与“${query}”匹配的产业链`);
+  showToast(count ? `已筛选出 ${count} 条相关产业链 · 支持链名 / 环节 / 企业匹配` : `未找到与“${query}”匹配的产业链、环节或企业`);
 }
 
 function getFilterContext() {
@@ -1268,17 +1268,72 @@ function showChainPicker() {
 // into view.
 const chainFilterState = { tab: 'type', value: '' };
 
+/* 产业链检索索引：链名 / 产业环节（含细分路径、关键词）/ 上链企业名称
+ * 只在有图谱明细的产业链上建立，未接入明细的链仅按链名匹配。结果缓存，避免每次渲染重算。 */
+const chainSearchIndexCache = new Map();
+
+function getChainProfileByName(name) {
+  return industryProfiles[name] || (name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
+}
+
+function getChainSearchIndex(name) {
+  if (chainSearchIndexCache.has(name)) return chainSearchIndexCache.get(name);
+  const profile = getChainProfileByName(name);
+  let nodeText = '';
+  let companies = [];
+  if (profile) {
+    // 环节索引只取环节自身的名称 / 路径 / 关键词，不含企业名，避免把企业命中误记为环节命中
+    nodeText = profile.stages
+      .flatMap((stage) => stage.nodes)
+      .map((node) => String(node.nodeSearchable || node.searchable || ''))
+      .join(' ')
+      .toLowerCase();
+    companies = getProfileCompanyRecords(profile);
+  }
+  const index = {
+    profile,
+    nodeText,
+    nodeList: profile ? profile.stages.flatMap((stage) => stage.nodes) : [],
+    companies,
+    companyText: companies.map((company) => `${company.name}${company.displayName || ''}`).join(' ').toLowerCase()
+  };
+  chainSearchIndexCache.set(name, index);
+  return index;
+}
+
+// 关键词命中情况：按链名 / 环节 / 企业三类分别统计，用于卡片提示
+function matchChainKeyword(name, query) {
+  if (!query) return { hit: true, byName: true, nodeHits: 0, companyHits: 0 };
+  const byName = String(name).toLowerCase().includes(query);
+  const index = getChainSearchIndex(name);
+  let nodeHits = 0;
+  if (index.nodeText.includes(query)) {
+    nodeHits = index.nodeList.filter((node) => String(node.nodeSearchable || node.searchable || '').toLowerCase().includes(query)).length;
+    // 关键词只命中链名时不要重复计为环节命中
+    if (!nodeHits) nodeHits = 1;
+  }
+  const companyHits = index.companies.filter((company) => `${company.name}${company.displayName || ''}`.toLowerCase().includes(query)).length;
+  return { hit: byName || nodeHits > 0 || companyHits > 0, byName, nodeHits, companyHits };
+}
+
 function getChainGroups() {
   const query = getSearchText();
-  const matchesQuery = (name) => !query || String(name).toLowerCase().includes(query);
+  const matchesQuery = (name) => !query || matchChainKeyword(name, query).hit;
+  const withMatch = (name, types) => ({ name, types, match: query ? matchChainKeyword(name, query) : null });
+  // 别名链（如「集成电路」复用“半导体与集成电路”的画像）在没有命中自身链名时不再重复列出
+  const keepEntry = (name) => {
+    if (!query) return true;
+    if (String(name).toLowerCase().includes(query)) return true;
+    return Boolean(industryProfiles[name]);
+  };
   const systemGroups = industryTypeOrder.map((type) => ({
     kind: 'system',
     value: type,
     label: type,
     sublabel: '',
     entries: nationalIndustryEntries
-      .filter((entry) => entry.type === type && matchesQuery(entry.name))
-      .map((entry) => ({ name: entry.name, types: [entry.type] }))
+      .filter((entry) => entry.type === type && matchesQuery(entry.name) && keepEntry(entry.name))
+      .map((entry) => withMatch(entry.name, [entry.type]))
   }));
   // 17 个产业大类（产业链清单1022 归并口径），与三大产业体系并列展示
   const categoryGroups = industryCategoryGroups.map((category) => ({
@@ -1287,8 +1342,8 @@ function getChainGroups() {
     label: category.name,
     sublabel: '',
     entries: [...new Set(category.chains)]
-      .filter((name) => matchesQuery(name))
-      .map((name) => ({ name, types: [category.name] }))
+      .filter((name) => matchesQuery(name) && keepEntry(name))
+      .map((name) => withMatch(name, [category.name]))
   }));
   return [...systemGroups, ...categoryGroups];
 }
@@ -1324,7 +1379,16 @@ function renderChainCard(entry, selectedIndustry) {
     nodeCount = mock.nodeCount;
     companyCount = mock.companyCount;
   }
-  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}"><strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
+  const hitParts = [];
+  if (entry.match) {
+    if (entry.match.nodeHits) hitParts.push(`环节 ${entry.match.nodeHits}`);
+    if (entry.match.companyHits) hitParts.push(`企业 ${entry.match.companyHits}`);
+  }
+  // 链名本身就命中时不额外加提示，只在靠环节/企业命中时说明原因
+  const hitBadge = hitParts.length && !entry.match.byName
+    ? `<span class="picker-item-hit">命中 ${hitParts.join(' · ')}</span>`
+    : '';
+  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}"><strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong>${hitBadge}<span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
 }
 
 function renderChainFilterSidebar() {
@@ -1452,7 +1516,7 @@ function renderChainPicker(profile) {
     const visibleGroups = query ? groups.filter((group) => group.entries.length > 0) : groups;
     if (query && visibleGroups.length === 0) {
       const keyword = ($('#graphSearch')?.value || '').trim();
-      groupsContainer.innerHTML = `<div class="chain-picker-empty"><strong>未找到与“${escapeHtml(keyword)}”匹配的产业链</strong><small>请更换关键词重试，或点击搜索框右侧的叉清空关键词查看全部产业链</small></div>`;
+      groupsContainer.innerHTML = `<div class="chain-picker-empty"><strong>未找到与“${escapeHtml(keyword)}”匹配的产业链、环节或企业</strong><small>请更换关键词重试，或点击搜索框右侧的叉清空关键词查看全部产业链</small></div>`;
     } else {
       groupsContainer.innerHTML = visibleGroups.map((group) => {
         const cards = group.entries.map((entry) => renderChainCard(entry, selectedIndustry)).join('');
@@ -2930,6 +2994,25 @@ function renderHomeChainChips() {
     setView('graph');
     renderGraph();
   }));
+  // 产业大类：点击后进入图谱的产业链清单，并定位到该大类分组
+  const categoryContainer = $('#homeCategoryChips');
+  if (categoryContainer) {
+    categoryContainer.innerHTML = industryCategoryGroups
+      .map((category) => `<button class="home-category-chip" type="button" data-category="${escapeHtml(category.name)}"><b>${escapeHtml(category.name)}</b><small>${[...new Set(category.chains)].length} 条</small></button>`)
+      .join('');
+    $$('.home-category-chip', categoryContainer).forEach((chip) => chip.addEventListener('click', () => {
+      setView('graph');
+      chainSelectionActive = false;
+      setChainSelectionMode(false);
+      currentIndustry = '';
+      $('#graphSearch').value = '';
+      syncGraphSearchClear();
+      chainFilterState.value = chip.dataset.category;
+      renderGraph();
+      selectChainFilterOption(chip.dataset.category);
+      showToast(`已定位到「${chip.dataset.category}」分类下的产业链`);
+    }));
+  }
   $$('[data-goto]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.goto)));
 }
 

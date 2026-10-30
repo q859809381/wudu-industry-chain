@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#102a43" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102a43'/%3E%3Cpath d='M8 16 16 7l8 9-8 9-8-9Z' fill='none' stroke='%2353b9ff' stroke-width='2'/%3E%3Cpath d='M16 11v10' stroke='%2326d5c3' stroke-width='2'/%3E%3C/svg%3E" />
     <title>五度易链 | 产业上链 Agent</title>
-    <link rel="stylesheet" href="styles.css?v=202610301514" />
+    <link rel="stylesheet" href="styles.css?v=202610301528" />
     <link rel="stylesheet" href="company-detail.css?v=202610271141" />
     <link rel="stylesheet" href="auth.css?v=202609151530" />
   </head>
@@ -63,7 +63,7 @@
             <section class="home-hero">
               <div class="home-hero-copy">
                 <h1>把数据装进产业链 让企业上链<em>有据可依</em></h1>
-                <p>以 3.8 亿+ 企业主体数据为底座，覆盖三大产业体系、18 条重点产业链，提供产业链图谱洞察、AI 智能分析、企业上链核验与解决方案交付的一站式服务。</p>
+                <p>以 3.8 亿+ 企业主体数据为底座，覆盖三大产业体系、17 个产业大类与 153 条产业链，提供产业链图谱洞察、AI 智能分析、企业上链核验与解决方案交付的一站式服务。</p>
               </div>
               <div class="home-hero-query">
                 <div class="home-query-box">
@@ -77,7 +77,7 @@
               <div class="home-hero-panel" aria-hidden="true">
                 <div class="home-hero-stat"><div><strong>3.8 亿+</strong><span>企业实体数据</span></div></div>
                 <div class="home-hero-stat"><div><strong>120 亿+</strong><span>全量数据覆盖</span></div></div>
-                <div class="home-hero-stat"><div><strong>18 条</strong><span>重点产业链覆盖</span></div></div>
+                <div class="home-hero-stat"><div><strong>153 条</strong><span>产业链覆盖</span></div></div>
                 <div class="home-hero-stat"><div><strong>3,344 个</strong><span>标准产业节点</span></div></div>
               </div>
             </section>
@@ -93,11 +93,15 @@
             </section>
 
             <section class="home-section home-systems">
-              <div class="home-section-head"><h2>三大产业体系 · 18 条重点产业链</h2><p>点击任一产业链，直接进入图谱查看环节与代表企业</p></div>
+              <div class="home-section-head"><h2>三大产业体系 · 17 个产业大类</h2><p>共 153 条产业链，点击任一产业链或大类，直接进入图谱查看环节与代表企业</p></div>
               <div class="home-system-grid">
                 <div class="home-system-column"><h3>六大新兴支柱产业</h3><div class="home-chain-chips" data-system="六大新兴支柱产业"></div></div>
                 <div class="home-system-column"><h3>六大未来产业</h3><div class="home-chain-chips" data-system="六大未来产业"></div></div>
                 <div class="home-system-column"><h3>六张网</h3><div class="home-chain-chips" data-system="六张网"></div></div>
+              </div>
+              <div class="home-category-panel">
+                <div class="home-category-heading"><b>产业大类</b><span>各地方政府产业体系归并口径 · 135 条细分产业链</span></div>
+                <div class="home-category-chips" id="homeCategoryChips"></div>
               </div>
             </section>
 
@@ -121,7 +125,7 @@
             <section class="graph-query" aria-label="产业链查询">
               <div class="query-topline"><div><span class="section-kicker">SEARCH &amp; FILTER</span><h2>产业链查询</h2></div></div>
               <div class="query-row">
-                <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索产业链名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
+                <label class="search-box"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="graphSearch" type="search" placeholder="搜索产业链 / 产业环节 / 企业名称" autocomplete="off"/><button class="clear-button" id="clearGraphSearch" type="button" aria-label="清空关键词" title="清空关键词"><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button></label>
                 <button class="button primary search-button" id="graphSearchButton" type="button"><svg class="ui-icon mini"><use href="#icon-search"></use></svg>查询</button>
               </div>
             </section>
@@ -492,7 +496,7 @@
     <script src="industry-category-data.js?v=202610271620"></script>
     <script src="china-map-data.js?v=202609141500"></script>
     <script src="coze-chat.js?v=202610301005"></script>
-    <script src="app.js?v=202610301514"></script>
+    <script src="app.js?v=202610301528"></script>
     <script src="company-detail.js?v=202610271141"></script>
     <script src="auth.js?v=202609151530"></script>
   </body>

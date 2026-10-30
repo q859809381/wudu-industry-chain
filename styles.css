@@ -181,6 +181,8 @@ h1, h2, h3, p { margin: 0; }
 .chain-picker-item.selected .picker-item-name { color: var(--blue); }
 .picker-item-stats { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 6px; border-top: 1px solid #e8f0f6; background: #f6fafd; color: #7c93a4; font-size: 11px; white-space: nowrap; }
 .picker-item-stats b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* 检索命中提示：关键词命中的是环节或企业时，在链名下方标注命中数量 */
+.picker-item-hit { display: inline-block; align-self: center; margin: -10px 0 12px; padding: 2px 9px; border: 1px solid #ffe0b8; border-radius: 999px; background: #fff8ec; color: #a76a12; font-size: 10.5px; line-height: 1.6; white-space: nowrap; }
 .picker-item-stats i { width: 1px; height: 11px; background: #d8e4ec; }
 .picker-levels { padding: 14px 15px 12px; border-top: 1px solid #edf1f4; border-bottom: 1px solid #edf1f4; }
 .level-list { display: grid; gap: 7px; margin-top: 10px; }
@@ -2103,6 +2105,19 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 .home-chain-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .home-chain-chip { padding: 6px 13px; border: 1px solid #dbe8f1; border-radius: 999px; background: #fff; color: #476b88; font: inherit; font-size: 12px; cursor: pointer; transition: .18s ease; }
 .home-chain-chip:hover { border-color: #2f8fe0; background: #eaf4fd; color: #1d5fa8; }
+
+/* 产业大类：与三大产业体系并列的第二组入口（青绿调，呼应图谱侧栏分类色） */
+.home-category-panel { margin-top: 18px; padding: 20px 30px 22px; border: 1px solid #e4edf4; border-radius: 12px; background: #fff; box-shadow: 0 1px 4px rgba(31,66,99,.04); }
+.home-category-heading { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.home-category-heading b { color: #1d3a54; font-size: 14px; font-weight: 700; }
+.home-category-heading b::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 8px; border-radius: 1.5px; background: #1d7a6d; transform: translateY(-2px) rotate(45deg); }
+.home-category-heading span { color: #93a5b1; font-size: 11.5px; }
+.home-category-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.home-category-chip { display: inline-flex; align-items: baseline; gap: 7px; padding: 6px 13px; border: 1px solid #d6e8e4; border-radius: 999px; background: #f7fcfb; color: #2f6159; font: inherit; font-size: 12px; cursor: pointer; transition: .18s ease; }
+.home-category-chip b { font-weight: 600; }
+.home-category-chip small { color: #86a8a1; font-size: 10.5px; }
+.home-category-chip:hover { border-color: #1d7a6d; background: #eaf7f3; color: #145d52; }
+.home-category-chip:hover small { color: #1d7a6d; }
 
 /* 四步流程：渐变实心圆节点 + 箭头连线 */
 .home-steps { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 0; padding: 0; list-style: none; }
