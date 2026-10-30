@@ -1785,6 +1785,9 @@ html, body { overflow-x: hidden; }
 
 /* Chain selector: left category sidebar + right grouped long list. */
 .chain-picker-layout { display: grid; grid-template-columns: 208px minmax(0, 1fr); }
+/* 搜索时隐藏产业分类侧栏，结果区独占整行 */
+.chain-picker-layout.searching { grid-template-columns: minmax(0, 1fr); }
+.chain-picker-layout.searching .chain-filter-sidebar { display: none; }
 .chain-filter-sidebar { position: sticky; top: 12px; align-self: start; display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line); background: #fbfcfd; }
 .chain-filter-heading { padding: 12px 14px 10px; border-bottom: 1px solid var(--line); background: #fff; }
 .chain-filter-heading strong { display: block; color: #1d4a70; font-size: 13px; font-weight: 700; letter-spacing: .5px; }
@@ -1848,6 +1851,17 @@ html, body { overflow-x: hidden; }
 .search-company-pager .pager-button.next svg { transform: none; }
 .search-company-pager .pager-info { color: #7890a2; font-size: 11px; font-variant-numeric: tabular-nums; }
 .search-company-pager .pager-info b { color: #2c6fb5; font-weight: 700; }
+/* 搜索结果的产业链命中列表行 */
+.search-chain-list { display: grid; gap: 7px; }
+.search-chain-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 13px; border: 1px solid #e3ebf1; border-radius: 6px; background: #fff; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
+.search-chain-item:hover { border-color: #9ec7e8; background: #f5fafd; }
+.search-chain-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.search-chain-name { color: #24485f; font-size: 13px; }
+.search-chain-name mark { background: #fdeeb8; color: inherit; border-radius: 2px; padding: 0 1px; }
+.search-chain-meta { display: flex; align-items: center; gap: 7px; color: #7890a2; font-size: 10.5px; }
+.search-chain-meta i { width: 1px; height: 9px; background: #d8e4ec; }
+.search-chain-meta b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }
+.search-chain-side { display: flex; flex: 0 0 auto; align-items: center; margin-left: auto; color: #9babb6; }
 .search-company-list { display: grid; gap: 7px; }
 .search-company-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 13px; border: 1px solid #e3ebf1; border-radius: 6px; background: #fff; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
 .search-company-item:hover { border-color: #9ec7e8; background: #f5fafd; }
