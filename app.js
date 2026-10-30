@@ -630,7 +630,7 @@ let regionScopeState = { province: '不限', city: '不限', district: '不限' 
 let regionScopePickerEventsReady = false;
 let toastTimer;
 
-const aiWelcomeMessage = '你好，我可以帮你分析半导体与集成电路的产业链层级、代表企业和省市产业体系。你可以直接问我“哪些环节代表企业最多”或“查看某个省份的官方产业体系”。';
+const aiWelcomeMessage = '你好，我可以帮你查询企业信息，比如企业基础信息、法定代表人、经营状态、注册资本等。你可以直接问我“查一下名称包含笃威尔的企业”或“深圳笃威尔数字技术有限公司的法定代表人是谁”。';
 const aiConversations = [
   {
     id: 'conversation-1',
@@ -1576,7 +1576,9 @@ const COMPANY_FILTER_CONFIG = [
   {
     key: 'capital', label: '注册资本', group: 'advanced', empty: '不限', mode: 'multi',
     options: [['lt100', '100 万以内'], ['b100_200', '100-200 万'], ['b200_500', '200-500 万'], ['b500_1000', '500-1000 万'], ['b1000_5000', '1000-5000 万'], ['gt5000', '5000 万以上']]
-  }
+  },
+  // 产业分析·上链企业分布头部的环节多选（独立 scope，不影响清单/抽屉）
+  { key: 'analysisNode', label: '产业环节', group: 'analysis', empty: '全部环节', mode: 'multi', tree: true, searchable: true, searchHint: '搜索环节 / 节点 / 路径' }
 ];
 
 function createCompanyFilterState() {
@@ -1586,6 +1588,7 @@ function createCompanyFilterState() {
     honor: new Set(),
     found: new Set(),
     capital: new Set(),
+    analysisNode: new Set(),
     listed: 'all',
     phone: 'all',
     email: 'all'
@@ -1595,7 +1598,8 @@ function createCompanyFilterState() {
 // 筛选上下文：上链企业清单（list）与产业环节侧边栏（drawer）各持一份独立状态
 const COMPANY_FILTER_SCOPES = {
   list: { state: createCompanyFilterState(), options: {}, optionsSource: '', advancedOpen: true, treeExpanded: { region: new Set(), node: new Set() } },
-  drawer: { state: createCompanyFilterState(), options: {}, optionsSource: '', advancedOpen: true, treeExpanded: { region: new Set(), node: new Set() } }
+  drawer: { state: createCompanyFilterState(), options: {}, optionsSource: '', advancedOpen: true, treeExpanded: { region: new Set(), node: new Set() } },
+  analysis: { state: createCompanyFilterState(), options: {}, optionsSource: '', advancedOpen: true, treeExpanded: { analysisNode: new Set() } }
 };
 let companyFilterEventsReady = false;
 
@@ -1773,6 +1777,10 @@ function buildCompanyFilterOptions(sourceRecords) {
     regionFlat: flattenFilterTree(regionTree),
     nodeTree,
     nodeFlat: flattenFilterTree(nodeTree),
+    // 产业分析头部的环节多选复用同一棵环节树
+    analysisNodeTree: nodeTree,
+    analysisNodeFlat: flattenFilterTree(nodeTree),
+    analysisNodeIndex: nodeIndex,
     honor: countBy((company) => company.honors || []),
     found: buckets(getFoundedBucketKey, foundFilter.options),
     capital: buckets(getCapitalBucketKey, capitalFilter.options),
@@ -1964,18 +1972,21 @@ function renderCompanyFilterItem(filter, scope = 'list') {
 }
 
 // 清单与侧边栏共用同一套筛选组件，各自维护 DOM（data-filter-scope）与状态
+// 抽屉由产业环节点开，环节条件冗余，且筛选项全部平铺一行、不设「更多筛选」
 function renderCompanyFilterBar(scope = 'list') {
   const root = filterRoot(scope);
   if (!root) return;
   const groups = root.querySelector('[data-filter-groups]');
   const advanced = root.querySelector('[data-filter-advanced]');
-  if (!groups || !advanced) return;
+  const isDrawer = scope === 'drawer';
+  if (!groups || (!isDrawer && !advanced)) return;
   const ctx = filterCtx(scope);
   const records = getFilterSourceRecords(scope);
   const source = scope === 'drawer'
     ? `${currentNode?.name || ''}|${currentNodePath}|${records.length}`
     : `${getProfile()?.title || ''}|${getProfile()?.nodeCount || 0}|${records.length}`;
-  if (ctx.optionsSource === source && groups.childElementCount && advanced.childElementCount) {
+  const renderReady = isDrawer ? groups.childElementCount : (groups.childElementCount && advanced.childElementCount);
+  if (ctx.optionsSource === source && renderReady) {
     syncCompanyFilterTriggers(scope);
     return;
   }
@@ -1983,8 +1994,13 @@ function renderCompanyFilterBar(scope = 'list') {
   ctx.options = buildCompanyFilterOptions(records);
   ctx.treeExpanded.region = new Set();
   ctx.treeExpanded.node = new Set();
-  groups.innerHTML = COMPANY_FILTER_CONFIG.filter((filter) => filter.group === 'primary').map((filter) => renderCompanyFilterItem(filter, scope)).join('');
-  advanced.innerHTML = COMPANY_FILTER_CONFIG.filter((filter) => filter.group !== 'primary').map((filter) => renderCompanyFilterItem(filter, scope)).join('');
+  if (isDrawer) {
+    groups.innerHTML = COMPANY_FILTER_CONFIG.filter((filter) => filter.group !== 'analysis' && filter.key !== 'node').map((filter) => renderCompanyFilterItem(filter, scope)).join('');
+    if (advanced) advanced.innerHTML = '';
+  } else {
+    groups.innerHTML = COMPANY_FILTER_CONFIG.filter((filter) => filter.group === 'primary').map((filter) => renderCompanyFilterItem(filter, scope)).join('');
+    advanced.innerHTML = COMPANY_FILTER_CONFIG.filter((filter) => filter.group !== 'primary' && filter.group !== 'analysis').map((filter) => renderCompanyFilterItem(filter, scope)).join('');
+  }
   syncCompanyFilterTriggers(scope);
 }
 
@@ -2021,6 +2037,12 @@ function closeCompanyFilterPanels(exceptKey, scope = '') {
 }
 
 function applyCompanyFilters(scope = 'list') {
+  if (scope === 'analysis') {
+    // 产业分析：重建下拉触发态并重算分布数据
+    renderAnalysisNodeFilter();
+    renderAnalysis(getProfile());
+    return;
+  }
   renderCompanyFilterBar(scope);
   syncCompanyFilterTriggers(scope);
   syncCompanyFilterOptionStates(scope);
@@ -2489,18 +2511,43 @@ function renderDualTrendChart(id, entries, emptyText = '当前条件暂无数据
 let analysisRegionFilter = '';
 let analysisRegionOwner = '';
 
+// 产业分析头部的"产业环节"多选下拉：复用企业清单筛选组件（analysis 作用域）
+function renderAnalysisNodeFilter(profile = getProfile()) {
+  const root = filterRoot('analysis');
+  const mount = root?.querySelector('[data-filter-groups]');
+  if (!root || !mount) return;
+  const ctx = filterCtx('analysis');
+  const records = getUniqueCompanyRecords(getVisibleCompanyRecords(profile));
+  const source = `${profile?.title || ''}|${records.length}`;
+  if (ctx.optionsSource !== source || !mount.childElementCount) {
+    ctx.optionsSource = source;
+    ctx.options = buildCompanyFilterOptions(records);
+    ctx.treeExpanded.analysisNode = new Set();
+    const filter = COMPANY_FILTER_CONFIG.find((item) => item.key === 'analysisNode');
+    mount.innerHTML = renderCompanyFilterItem(filter, 'analysis');
+  }
+  syncCompanyFilterTriggers('analysis');
+  syncCompanyFilterOptionStates('analysis');
+}
+
 function renderAnalysis(profile = getProfile()) {
   const records = getVisibleCompanyRecords(profile);
   const companies = getUniqueCompanyRecords(records);
-  // 切换产业链后重置地区筛选
+  // 切换产业链后重置地区与环节筛选
   const regionOwner = profile?.title || currentIndustry || '';
   if (analysisRegionOwner !== regionOwner) {
     analysisRegionOwner = regionOwner;
     analysisRegionFilter = '';
+    filterCtx('analysis').state.analysisNode.clear();
   }
-  const scopedCompanies = analysisRegionFilter
+  const regionScopedCompanies = analysisRegionFilter
     ? companies.filter((company) => company.province === analysisRegionFilter)
     : companies;
+  // 产业环节多选：命中环节任一层级（一级环节 / 节点 / 细分路径）即保留
+  const analysisNodeState = filterCtx('analysis').state.analysisNode;
+  const scopedCompanies = analysisNodeState.size
+    ? regionScopedCompanies.filter((company) => companyNodePaths(company).some((path) => analysisNodeState.has(path)))
+    : regionScopedCompanies;
   const total = scopedCompanies.length;
   const coreCompanies = scopedCompanies.filter((company) => companyChainScore(company) >= 50).length;
   const provinceCounts = new Map();
@@ -2578,6 +2625,7 @@ function renderAnalysis(profile = getProfile()) {
     regionSelect.value = analysisRegionFilter;
     syncCustomSelect(regionSelect);
   }
+  renderAnalysisNodeFilter(profile);
   $('#distributionCompanyTotal').textContent = total.toLocaleString('zh-CN');
   $('#distributionCompanyNote').textContent = topProvince && total ? `Top1 ${shortProvince(topProvince[0])} ${topProvince[1].toLocaleString('zh-CN')} 家 · 占 ${topProvinceShare}%` : '当前条件暂无企业样本';
   $('#distributionCompanyBar').style.width = `${topProvinceShare}%`;
@@ -3019,13 +3067,17 @@ function getAiContextSnapshot() {
   return `${industry} / ${regionLabel} / ${activeFilters.length ? activeFilters.join(' · ') : '全部企业'}`;
 }
 
-function renderChatMessage(role, text) {
+function renderChatMessage(role, text, think) {
   const isUser = role === 'user';
   const message = document.createElement('div');
   message.className = `chat-message ${role}`;
+  // 思考过程折叠条（默认收起，点击展开查看全文）
+  const thinkBlock = !isUser && think
+    ? `<div class="think-block"><button type="button" class="think-toggle" aria-expanded="false"><span>思考过程</span><i class="think-caret" aria-hidden="true"></i></button><div class="think-content">${escapeHtml(think)}</div></div>`
+    : '';
   message.innerHTML = isUser
     ? `<div class="message-body"><span class="message-meta">你 · 刚刚</span><p>${escapeHtml(text)}</p></div>`
-    : `<div class="message-avatar">${icon('spark', 'ui-icon mini')}</div><div class="message-body"><span class="message-meta">产业研究助手 · 刚刚</span><p>${text}</p><div class="message-actions"><button type="button" data-copy-message="${escapeHtml(text.replace(/<[^>]+>/g, ''))}">复制</button><button type="button" class="feedback-button">有帮助</button></div></div>`;
+    : `<div class="message-avatar">${icon('spark', 'ui-icon mini')}</div><div class="message-body"><span class="message-meta">产业研究助手 · 刚刚</span>${thinkBlock}<p>${text}</p><div class="message-actions"><button type="button" data-copy-message="${escapeHtml(text.replace(/<[^>]+>/g, ''))}">复制</button><button type="button" class="feedback-button">有帮助</button></div></div>`;
   return message;
 }
 
@@ -3046,7 +3098,7 @@ function renderActiveConversation() {
   const conversation = getActiveConversation();
   const messages = $('#chatMessages');
   if (!conversation || !messages) return;
-  messages.replaceChildren(...conversation.messages.map(({ role, text }) => renderChatMessage(role, text)));
+  messages.replaceChildren(...conversation.messages.map(({ role, text, think }) => renderChatMessage(role, text, think)));
   messages.scrollTop = messages.scrollHeight;
   const contextLabel = $('#chatContextLabel');
   if (contextLabel) contextLabel.textContent = `当前上下文：${conversation.context}`;
@@ -3106,25 +3158,111 @@ function generateAnswer(question, conversation = getActiveConversation()) {
   return `我已结合当前“${conversation?.context || `${profile.title} · 全国`}”进行判断。你可以继续问我区域产业体系、链上企业、层级节点或证据核验问题。`;
 }
 
+// 会话历史转纯文本（去掉 HTML 标记），供扣子上下文使用
+function conversationHistoryForAi(conversation) {
+  return conversation.messages
+    .filter((message) => message.role === 'user' || message.role === 'assistant')
+    .slice(-12)
+    .map((message) => ({ role: message.role, content: String(message.text || '').replace(/<[^>]+>/g, '').trim() }))
+    .filter((message) => message.content);
+}
+
 function sendChat() {
   const input = $('#chatInput');
   const question = input.value.trim();
-  if (!question) return;
+  if (!question || sendChat.busy) return;
   input.value = '';
   const conversation = getActiveConversation();
   if (!conversation) return;
   if (conversation.title === '新对话') conversation.title = getConversationTitle(question);
   conversation.messages.push({ role: 'user', text: question });
-  conversation.messages.push({ role: 'assistant', text: generateAnswer(question, conversation) });
   conversation.updated = '刚刚';
   renderConversationList();
+  // 用户消息立即上屏，不等回复完成
   renderActiveConversation();
+
+  const messages = $('#chatMessages');
+  // 流式回答：气泡先上屏（思考中占位），增量更新；失败回落规则回答
+  const pending = { role: 'assistant', text: '', pending: true };
+  conversation.messages.push(pending);
+  const pendingNode = renderChatMessage('assistant', '正在思考…');
+  pendingNode.classList.add('is-pending');
+  if (messages) {
+    messages.appendChild(pendingNode);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  const finishPending = (text) => {
+    pending.text = text;
+    delete pending.pending;
+    conversation.updated = '刚刚';
+    renderConversationList();
+    renderActiveConversation();
+  };
+
+  const fallback = () => {
+    if (messages) pendingNode.remove();
+    delete pending.think;
+    finishPending(generateAnswer(question, conversation));
+  };
+
+  if (!window.CozeChat?.configured()) {
+    fallback();
+    return;
+  }
+
+  sendChat.busy = true;
+  // 续接同一扣子会话（conversationId），保证与扣子 UI 内多轮对话上下文一致
+  window.CozeChat.stream(conversationHistoryForAi(conversation), {
+    // 深度思考模型：思考中在气泡内展开"思考过程"区块，全文实时滚动展示
+    onThink: (think) => {
+      pending.think = String(think);
+      const body = pendingNode.querySelector('.message-body');
+      if (!body) return;
+      let block = body.querySelector('.think-block');
+      if (!block) {
+        body.querySelector('p').insertAdjacentHTML('beforebegin',
+          '<div class="think-block is-open"><button type="button" class="think-toggle" aria-expanded="true"><span>思考过程</span><i class="think-caret" aria-hidden="true"></i></button><div class="think-content"></div></div>');
+        block = body.querySelector('.think-block');
+      }
+      const content = block.querySelector('.think-content');
+      content.textContent = pending.think;
+      content.scrollTop = content.scrollHeight;
+      if (messages) messages.scrollTop = messages.scrollHeight;
+    },
+    onDelta: (fullText) => {
+      // 正式回答开始：折叠思考过程，正文展示结果
+      const block = pendingNode.querySelector('.think-block');
+      if (block) {
+        block.classList.remove('is-open');
+        block.querySelector('.think-toggle')?.setAttribute('aria-expanded', 'false');
+      }
+      const body = pendingNode.querySelector('.message-body p');
+      if (body) body.innerHTML = window.CozeChat.format(fullText);
+      if (messages) messages.scrollTop = messages.scrollHeight;
+    }
+  }, conversation.cozeId || '')
+    // 完成后把 Markdown 转为 HTML 存入会话，重渲染时格式不丢；保存扣子会话 ID 供后续续接
+    .then((result) => {
+      if (result.conversationId) conversation.cozeId = result.conversationId;
+      finishPending(window.CozeChat.format(result.text));
+    })
+    .catch((error) => {
+      // 扣子会话可能失效，清掉 ID 让下次重新建会话
+      delete conversation.cozeId;
+      console.warn('[Coze] 对话失败，回落本地回答：', error);
+      fallback();
+    })
+    .finally(() => {
+      sendChat.busy = false;
+    });
 }
 
 function clearActiveConversation() {
   const conversation = getActiveConversation();
   if (!conversation) return;
   conversation.messages = [{ role: 'assistant', text: '对话已清空。你可以继续询问半导体与集成电路的企业、节点、区域产业体系和证据情况。' }];
+  delete conversation.cozeId;
   conversation.updated = '刚刚';
   renderConversationList();
   renderActiveConversation();
@@ -3334,6 +3472,14 @@ function init() {
   });
   $('#companyDetailBack')?.addEventListener('click', closeCompanyDetail);
   $('#sendChatButton').addEventListener('click', sendChat);
+  // 思考过程折叠条：事件委托（会话重渲染后依然有效）
+  $('#chatMessages').addEventListener('click', (event) => {
+    const toggle = event.target.closest('.think-toggle');
+    if (!toggle) return;
+    const block = toggle.closest('.think-block');
+    const open = block.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
   $('#chatInput').addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChat(); } });
   $$('.topic-button').forEach((button) => button.addEventListener('click', () => { $('#chatInput').value = button.dataset.prompt; sendChat(); }));
   $('#clearChatButton').addEventListener('click', clearActiveConversation);
@@ -3342,7 +3488,7 @@ function init() {
   const homeQueryInput = $('#homeQueryInput');
   const submitHomeQuery = () => {
     const text = homeQueryInput.value.trim();
-    if (!text) { showToast('请输入行业标签或问题'); homeQueryInput.focus(); return; }
+    if (!text) { showToast('请输入企业名称或查询问题'); homeQueryInput.focus(); return; }
     setView('ai');
     $('#chatInput').value = text;
     homeQueryInput.value = '';

@@ -8,3 +8,4 @@ output/
 *.log
 
 .tmp/
+*.genie
