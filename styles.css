@@ -1872,15 +1872,17 @@ html, body { overflow-x: hidden; }
 .search-drilldown-copy { display: flex; align-items: baseline; gap: 9px; min-width: 0; }
 .search-drilldown-copy strong { color: #24485f; font-size: 14px; }
 .search-drilldown-copy span { overflow: hidden; color: #93a5b1; font-size: 10.5px; text-overflow: ellipsis; white-space: nowrap; }
-/* 图谱详情的环节搜索条 */
-.node-search-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+/* 图谱详情的环节搜索条：位于图谱工具栏（map-meta）内，全屏/放大时依然可用 */
+.node-search-bar { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; width: 330px; margin-left: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
 .node-search-bar > .ui-icon { flex: 0 0 auto; color: #6d9bc4; }
-.node-search-bar input { flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; color: #294c66; font-size: 12px; }
+.node-search-bar input { flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; color: #294c66; font-size: 11px; }
 .node-search-bar input::placeholder { color: #9fb0bc; }
-.node-search-bar .clear-button { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 22px; height: 22px; border: none; border-radius: 50%; background: transparent; color: #9babb6; cursor: pointer; }
+.node-search-bar .clear-button { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 18px; height: 18px; padding: 0; border: none; border-radius: 50%; background: transparent; color: #9babb6; cursor: pointer; }
 .node-search-bar .clear-button:hover { background: #eef4f8; color: #527087; }
 .node-search-bar[hidden] { display: none; }
-.node-search-status { flex: 0 0 auto; color: #1d7a6d; font-size: 10.5px; white-space: nowrap; }
+.node-search-status { flex: 0 0 auto; color: #1d7a6d; font-size: 10px; white-space: nowrap; }
+/* 细分环节命中：名称标黄 + 轻微强调 */
+.node-path-item.node-path-hit .node-path-name { color: #0f7d6f; font-weight: 600; }
 /* 命中环节的高亮：与外层检索的 search-match 同一视觉语言，另加青色描边区分来源 */
 .node-card.node-search-match { border-color: #55bdb0; box-shadow: 0 4px 13px rgba(14, 159, 141, .16); transform: translateY(-1px); }
 .node-card.node-search-match .node-card-top > i { background: var(--teal); box-shadow: 0 0 0 3px rgba(19, 164, 147, .1); }
@@ -2013,7 +2015,7 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 .node-drawer .filter-chip-clear { display: none; }
 
 /* 搜索框：隐藏浏览器原生清空叉，自定义叉仅在有输入时显示 */
-#graphSearch::-webkit-search-cancel-button, #graphSearch::-webkit-search-decoration { display: none; }
+#graphSearch::-webkit-search-cancel-button, #graphSearch::-webkit-search-decoration, #nodeSearchInput::-webkit-search-cancel-button, #nodeSearchInput::-webkit-search-decoration { display: none; }
 .search-box .clear-button[hidden] { display: none; }
 
 /* 搜索无匹配时的空状态提示 */

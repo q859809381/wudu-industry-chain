@@ -2976,6 +2976,17 @@ function applyGraphNodeHighlight() {
       title.innerHTML = query ? highlightChainKeyword(raw, query) : escapeHtml(raw);
     }
   });
+  // 细分环节（含层级链路里的各级名称）命中同样标黄，避免只亮卡片标题、子环节看不出命中
+  $$('#chainMap .node-path-item').forEach((item) => {
+    const nameEl = item.querySelector('.node-path-name');
+    if (!nameEl) return;
+    const raw = nameEl.dataset.raw || (nameEl.dataset.raw = nameEl.textContent);
+    const hit = Boolean(query) && raw.toLowerCase().includes(query);
+    item.classList.toggle('node-path-hit', hit);
+    const dot = nameEl.querySelector('.node-path-dot');
+    const dotHtml = dot ? `<i class="${dot.getAttribute('class')}"></i>` : '';
+    nameEl.innerHTML = dotHtml + (query ? highlightChainKeyword(raw, query) : escapeHtml(raw));
+  });
   const status = $('#nodeSearchStatus');
   if (status) status.textContent = query ? (hitCount ? `命中 ${hitCount} 个环节` : '未命中相关环节') : '';
   const clearButton = $('#clearNodeSearch');
@@ -2992,6 +3003,9 @@ function renderGraph() {
   const profile = getProfile();
   const query = getSearchText();
   const chainMap = $('#chainMap');
+  // 环节搜索条随图谱详情显隐：仅在已选中产业链且有图谱明细时出现在工具栏
+  const nodeSearchBar = $('#nodeSearchBar');
+  if (nodeSearchBar) nodeSearchBar.hidden = !(chainSelectionActive && profile);
   renderChainPicker(profile);
   if (!chainSelectionActive) {
     $('#graphNodeCount').textContent = '—';
