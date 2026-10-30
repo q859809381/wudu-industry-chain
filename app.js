@@ -1189,10 +1189,12 @@ function runGraphSearch() {
   renderGraph();
   if (!query) { showToast('已展示全部产业链'); return; }
   const chainCount = $$('#chainPickerGroups .chain-picker-item').length;
+  const nodeCount = $$('#chainPickerGroups .search-node-item').length;
   const companyCount = $$('#chainPickerGroups .search-company-item').length;
-  if (!chainCount && !companyCount) { showToast(`未找到与“${query}”匹配的产业链、环节或企业`); return; }
+  if (!chainCount && !nodeCount && !companyCount) { showToast(`未找到与“${query}”匹配的产业链、环节或企业`); return; }
   const parts = [];
   if (chainCount) parts.push(`图谱 ${chainCount} 条`);
+  if (nodeCount) parts.push(`环节 ${nodeCount} 个`);
   if (companyCount) parts.push(`企业 ${companyCount} 家`);
   showToast(`已找到 ${parts.join(' · ')}`);
 }
@@ -1513,8 +1515,73 @@ function handleChainGroupsScroll() {
   });
 }
 
-/* 搜索结果分两组展示：① 产业图谱（链名 / 环节命中的产业链卡片）② 企业清单（企业名称命中的上链企业，点击进企业详情） */
-const SEARCH_COMPANY_PREVIEW_LIMIT = 12;
+/* 搜索结果分三组展示：① 产业图谱（链名命中的产业链卡片）② 产业环节（环节命中的链路列表，点击跳转图谱并打开企业抽屉）③ 企业清单（企业名称命中，分页展示） */
+const SEARCH_COMPANY_PAGE_SIZE = 20;
+let searchCompanyPage = 0;
+let searchCompanyQueryKey = '';
+
+function collectKeywordNodeHits(query) {
+  if (!query) return [];
+  const hits = [];
+  Object.keys(industryProfiles).forEach((chainName) => {
+    const profile = industryProfiles[chainName];
+    const index = getChainSearchIndex(chainName);
+    profile.stages.forEach((stage) => {
+      stage.nodes.forEach((node) => {
+        const paths = Array.isArray(node.paths) ? node.paths : [];
+        const stageHit = String(stage.title || '').toLowerCase().includes(query);
+        const nodeHit = String(node.name).toLowerCase().includes(query);
+        const termsHit = String(node.nodeSearchable || '').toLowerCase().includes(query);
+        const matchedPaths = query ? paths.filter((path) => path.toLowerCase().includes(query)) : [];
+        const companyCount = new Set(index.companies.filter((company) => company.node === node.name).map((company) => company.name)).size;
+        const base = { chainName, stageTitle: stage.title, nodeName: node.name, companyCount };
+        // 二级环节自身（名称 / 一级环节 / 关键词）命中 → 一条环节记录；细分路径命中 → 每条命中路径一条记录
+        if (nodeHit || stageHit || (termsHit && !matchedPaths.length)) {
+          hits.push({ ...base, displayName: node.name, subpath: '', pathCount: paths.length });
+        }
+        matchedPaths.forEach((path) => {
+          hits.push({ ...base, displayName: path.split(' > ').slice(-1)[0], subpath: path, pathCount: paths.length });
+        });
+      });
+    });
+  });
+  return hits;
+}
+
+function buildNodeHitBreadcrumb(hit, query) {
+  const parts = [hit.chainName, hit.stageTitle, hit.nodeName];
+  if (hit.subpath) parts.push(...hit.subpath.split(' > '));
+  // 链路中与关键词匹配的段做高亮（通常是最末段）
+  return parts.map((part) => String(part).toLowerCase().includes(query) ? highlightChainKeyword(part, query) : escapeHtml(part)).join('<i class="crumb-sep">›</i>');
+}
+
+function renderSearchNodeRow(hit, query) {
+  return `<button class="search-node-item" type="button" data-chain="${escapeHtml(hit.chainName)}" data-node="${escapeHtml(hit.nodeName)}" data-subpath="${escapeHtml(hit.subpath)}"><span class="search-node-main"><strong class="search-node-name">${highlightChainKeyword(hit.displayName, query)}</strong><span class="search-node-path">${buildNodeHitBreadcrumb(hit, query)}</span></span><span class="search-node-side">${hit.pathCount > 1 && !hit.subpath ? `<small>${hit.pathCount} 条细分路径</small>` : ''}<small>上链企业 ${hit.companyCount.toLocaleString('zh-CN')}</small><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></span></button>`;
+}
+
+function renderSearchNodeBlock(hits, query) {
+  const rows = hits.map((hit) => renderSearchNodeRow(hit, query)).join('');
+  return `<div class="search-result-block node-block"><div class="search-result-block-head"><strong>产业环节</strong><small>产业环节命中的结果，点击进入所属产业链图谱并查看该环节企业</small><span>${hits.length.toLocaleString('zh-CN')} 个</span></div><div class="search-node-list">${rows}</div></div>`;
+}
+
+function bindSearchNodeBlock(container) {
+  $$('.search-node-item', container).forEach((button) => {
+    button.addEventListener('click', () => {
+      jumpToChainNode(button.dataset.chain, button.dataset.node, button.dataset.subpath);
+    });
+  });
+}
+
+// 从搜索结果跳转：进入环节所属产业链图谱，并自动展开该环节的企业清单抽屉
+function jumpToChainNode(chainName, nodeName, subpath) {
+  currentIndustry = chainName;
+  chainSelectionActive = true;
+  setChainSelectionMode(true);
+  setView('graph');
+  renderGraph();
+  setWorkbenchSection('graphSection');
+  openDrawer(nodeName, subpath || '');
+}
 
 function collectKeywordCompanyHits(query) {
   if (!query) return [];
@@ -1538,26 +1605,39 @@ function renderSearchCompanyRow(hit, query) {
 }
 
 function renderSearchCompanyBlock(hits, query) {
+  // 关键词变化时重置到第一页
+  if (searchCompanyQueryKey !== query) {
+    searchCompanyQueryKey = query;
+    searchCompanyPage = 0;
+  }
   const rows = hits.map((hit) => renderSearchCompanyRow(hit, query)).join('');
-  const hiddenCount = Math.max(hits.length - SEARCH_COMPANY_PREVIEW_LIMIT, 0);
-  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>企业名称命中的上链企业，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span></div><div class="search-company-list">${rows}</div>${hiddenCount ? `<button class="search-company-more" type="button" data-extra="${hiddenCount}">展开其余 ${hiddenCount} 家企业</button>` : ''}</div>`;
+  const pageCount = Math.ceil(hits.length / SEARCH_COMPANY_PAGE_SIZE);
+  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>企业名称命中的上链企业，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span></div><div class="search-company-list">${rows}</div>${pageCount > 1 ? `<div class="search-company-pager"><button class="pager-button" type="button" data-pager="prev" aria-label="上一页"><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button><span class="pager-info">第 <b class="pager-current">1</b> / ${pageCount} 页 · 共 ${hits.length.toLocaleString('zh-CN')} 家</span><button class="pager-button next" type="button" data-pager="next" aria-label="下一页"><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></div>` : ''}</div>`;
 }
 
 function bindSearchCompanyBlock(container) {
-  $$('.search-company-item', container).forEach((button, index) => {
-    button.classList.toggle('extra', index >= SEARCH_COMPANY_PREVIEW_LIMIT);
+  const rows = $$('.search-company-item', container);
+  const pageCount = Math.ceil(rows.length / SEARCH_COMPANY_PAGE_SIZE);
+  rows.forEach((button) => {
     button.addEventListener('click', () => {
       const record = nodeCompanies.find((company) => company.name === button.dataset.company);
       openCompanyDetailRecord(record);
     });
   });
-  const moreButton = $('.search-company-more', container);
-  if (moreButton) {
-    moreButton.addEventListener('click', () => {
-      const expanded = container.classList.toggle('company-expanded');
-      moreButton.textContent = expanded ? '收起企业清单' : `展开其余 ${moreButton.dataset.extra} 家企业`;
+  const pager = $('.search-company-pager', container);
+  if (!pager) return;
+  const applyPage = () => {
+    searchCompanyPage = Math.min(Math.max(searchCompanyPage, 0), pageCount - 1);
+    rows.forEach((row, index) => {
+      row.style.display = index >= searchCompanyPage * SEARCH_COMPANY_PAGE_SIZE && index < (searchCompanyPage + 1) * SEARCH_COMPANY_PAGE_SIZE ? '' : 'none';
     });
-  }
+    $('.pager-current', pager).textContent = String(searchCompanyPage + 1);
+    $('[data-pager=prev]', pager).disabled = searchCompanyPage === 0;
+    $('[data-pager=next]', pager).disabled = searchCompanyPage === pageCount - 1;
+  };
+  $('[data-pager=prev]', pager).addEventListener('click', () => { searchCompanyPage -= 1; applyPage(); });
+  $('[data-pager=next]', pager).addEventListener('click', () => { searchCompanyPage += 1; applyPage(); });
+  applyPage();
 }
 
 function renderChainPicker(profile) {
@@ -1570,8 +1650,9 @@ function renderChainPicker(profile) {
   if (groupsContainer) {
     const query = getSearchText();
     const visibleGroups = query ? groups.filter((group) => group.entries.length > 0) : groups;
+    const nodeHits = query ? collectKeywordNodeHits(query) : [];
     const companyHits = query ? collectKeywordCompanyHits(query) : [];
-    if (query && visibleGroups.length === 0 && companyHits.length === 0) {
+    if (query && visibleGroups.length === 0 && nodeHits.length === 0 && companyHits.length === 0) {
       const keyword = ($('#graphSearch')?.value || '').trim();
       groupsContainer.innerHTML = `<div class="chain-picker-empty"><strong>未找到与“${escapeHtml(keyword)}”匹配的产业链、环节或企业</strong><small>请更换关键词重试，或点击搜索框右侧的叉清空关键词查看全部产业链</small></div>`;
     } else {
@@ -1579,13 +1660,14 @@ function renderChainPicker(profile) {
         const cards = group.entries.map((entry) => renderChainCard(entry, selectedIndustry)).join('');
         return `<div class="chain-picker-group ${group.kind === 'category' ? 'category' : ''}" data-group-value="${escapeHtml(group.value)}"><div class="chain-picker-group-heading"><strong>${escapeHtml(group.label)}</strong>${group.sublabel ? `<small>${escapeHtml(group.sublabel)}</small>` : ''}<span>${group.entries.length} 条</span></div><div class="chain-picker-group-list">${cards || '<div class="empty-chain-list">该分类下暂无匹配的产业链</div>'}</div></div>`;
       }).join('');
-      // 搜索时结果分两组：产业图谱（链名/环节命中）在前，企业清单在后
+      // 搜索时结果分三组：产业图谱（链名/环节命中）→ 产业环节（链路列表）→ 企业清单（分页）
       const graphCount = visibleGroups.reduce((sum, group) => sum + group.entries.length, 0);
       const graphHead = query && graphCount
         ? `<div class="search-result-block graph-block"><div class="search-result-block-head"><strong>产业图谱</strong><small>产业链名称或产业环节命中的结果</small><span>${graphCount.toLocaleString('zh-CN')} 条</span></div>`
         : '';
       const graphTail = graphHead ? '</div>' : '';
-      groupsContainer.innerHTML = `${graphHead}${groupCardsHtml}${graphTail}${query && companyHits.length ? renderSearchCompanyBlock(companyHits, query) : ''}`;
+      groupsContainer.innerHTML = `${graphHead}${groupCardsHtml}${graphTail}${query && nodeHits.length ? renderSearchNodeBlock(nodeHits, query) : ''}${query && companyHits.length ? renderSearchCompanyBlock(companyHits, query) : ''}`;
+      if (query && nodeHits.length) bindSearchNodeBlock(groupsContainer);
       if (query && companyHits.length) bindSearchCompanyBlock(groupsContainer);
     }
     $$('.chain-picker-item', groupsContainer).forEach((button) => button.addEventListener('click', () => {
