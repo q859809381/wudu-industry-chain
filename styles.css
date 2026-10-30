@@ -1843,14 +1843,14 @@ html, body { overflow-x: hidden; }
 .search-node-path mark { background: #e4f4f1; color: #1d7a6d; border-radius: 2px; padding: 0 1px; font-weight: 600; }
 .search-node-side { display: flex; flex: 0 0 auto; align-items: center; gap: 9px; margin-left: auto; color: #9babb6; }
 .search-node-side small { color: #1d7a6d; font-size: 10px; white-space: nowrap; }
-.search-company-pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; }
-.search-company-pager .pager-button { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid #d8e4ec; border-radius: 5px; background: #fff; color: #527087; cursor: pointer; transition: border-color .15s, color .15s; }
-.search-company-pager .pager-button:hover:not(:disabled) { border-color: #2c6fb5; color: #2c6fb5; }
-.search-company-pager .pager-button:disabled { opacity: .4; cursor: default; }
-.search-company-pager .pager-button svg { transform: rotate(180deg); }
-.search-company-pager .pager-button.next svg { transform: none; }
-.search-company-pager .pager-info { color: #7890a2; font-size: 11px; font-variant-numeric: tabular-nums; }
-.search-company-pager .pager-info b { color: #2c6fb5; font-weight: 700; }
+.search-result-pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 12px; }
+.search-result-pager .pager-button { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid #d8e4ec; border-radius: 5px; background: #fff; color: #527087; cursor: pointer; transition: border-color .15s, color .15s; }
+.search-result-pager .pager-button:hover:not(:disabled) { border-color: #2c6fb5; color: #2c6fb5; }
+.search-result-pager .pager-button:disabled { opacity: .4; cursor: default; }
+.search-result-pager .pager-button svg { transform: rotate(180deg); }
+.search-result-pager .pager-button.next svg { transform: none; }
+.search-result-pager .pager-info { color: #7890a2; font-size: 11px; font-variant-numeric: tabular-nums; }
+.search-result-pager .pager-info b { color: #2c6fb5; font-weight: 700; }
 /* 搜索结果的产业链命中列表行 */
 .search-chain-list { display: grid; gap: 7px; }
 .search-chain-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 13px; border: 1px solid #e3ebf1; border-radius: 6px; background: #fff; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
@@ -1862,6 +1862,29 @@ html, body { overflow-x: hidden; }
 .search-chain-meta i { width: 1px; height: 9px; background: #d8e4ec; }
 .search-chain-meta b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }
 .search-chain-side { display: flex; flex: 0 0 auto; align-items: center; margin-left: auto; color: #9babb6; }
+/* 分组头部「查看全部」入口 */
+.search-result-block-head .search-more-link { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 3px; margin-left: 6px; padding: 2px 9px; border: 1px solid #cfe2f0; border-radius: 999px; background: #fff; color: #2c6fb5; font-size: 10.5px; cursor: pointer; transition: border-color .15s, background .15s; }
+.search-result-block-head .search-more-link:hover { border-color: #2c6fb5; background: #f0f7fd; }
+/* 检索结果二级页 */
+.search-drilldown-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.search-drilldown-back { display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px; border: 1px solid #d8e4ec; border-radius: 999px; background: #fff; color: #527087; font-size: 11.5px; cursor: pointer; transition: border-color .15s, color .15s; }
+.search-drilldown-back:hover { border-color: #2c6fb5; color: #2c6fb5; }
+.search-drilldown-copy { display: flex; align-items: baseline; gap: 9px; min-width: 0; }
+.search-drilldown-copy strong { color: #24485f; font-size: 14px; }
+.search-drilldown-copy span { overflow: hidden; color: #93a5b1; font-size: 10.5px; text-overflow: ellipsis; white-space: nowrap; }
+/* 图谱详情的环节搜索条 */
+.node-search-bar { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.node-search-bar > .ui-icon { flex: 0 0 auto; color: #6d9bc4; }
+.node-search-bar input { flex: 1 1 auto; min-width: 0; border: none; outline: none; background: transparent; color: #294c66; font-size: 12px; }
+.node-search-bar input::placeholder { color: #9fb0bc; }
+.node-search-bar .clear-button { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 22px; height: 22px; border: none; border-radius: 50%; background: transparent; color: #9babb6; cursor: pointer; }
+.node-search-bar .clear-button:hover { background: #eef4f8; color: #527087; }
+.node-search-bar[hidden] { display: none; }
+.node-search-status { flex: 0 0 auto; color: #1d7a6d; font-size: 10.5px; white-space: nowrap; }
+/* 命中环节的高亮：与外层检索的 search-match 同一视觉语言，另加青色描边区分来源 */
+.node-card.node-search-match { border-color: #55bdb0; box-shadow: 0 4px 13px rgba(14, 159, 141, .16); transform: translateY(-1px); }
+.node-card.node-search-match .node-card-top > i { background: var(--teal); box-shadow: 0 0 0 3px rgba(19, 164, 147, .1); }
+.node-card.node-search-match strong mark, .node-card mark { background: #fdeeb8; color: inherit; border-radius: 2px; padding: 0 1px; }
 .search-company-list { display: grid; gap: 7px; }
 .search-company-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 13px; border: 1px solid #e3ebf1; border-radius: 6px; background: #fff; cursor: pointer; text-align: left; transition: border-color .15s, background .15s; }
 .search-company-item:hover { border-color: #9ec7e8; background: #f5fafd; }

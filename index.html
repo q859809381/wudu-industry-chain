@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#102a43" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102a43'/%3E%3Cpath d='M8 16 16 7l8 9-8 9-8-9Z' fill='none' stroke='%2353b9ff' stroke-width='2'/%3E%3Cpath d='M16 11v10' stroke='%2326d5c3' stroke-width='2'/%3E%3C/svg%3E" />
     <title>五度易链 | 产业上链 Agent</title>
-    <link rel="stylesheet" href="styles.css?v=202610301720" />
+    <link rel="stylesheet" href="styles.css?v=202610301745" />
     <link rel="stylesheet" href="company-detail.css?v=202610271141" />
     <link rel="stylesheet" href="auth.css?v=202609151530" />
   </head>
@@ -142,6 +142,7 @@
               </div>
               <div class="selected-chain-view" id="selectedChainView" hidden>
                 <div class="selected-chain-back-row"><button class="selected-chain-back" id="changeChainButton" type="button"><svg class="ui-icon mini"><use href="#icon-arrow-left"></use></svg>产业链选择</button><span>当前产业链</span></div>
+                <div class="node-search-bar"><svg class="ui-icon"><use href="#icon-search"></use></svg><input id="nodeSearchInput" type="search" placeholder="搜索产业环节，命中的环节高亮显示" autocomplete="off"/><button class="clear-button" id="clearNodeSearch" type="button" aria-label="清空关键词" title="清空关键词" hidden><svg class="ui-icon mini"><use href="#icon-x"></use></svg></button><span class="node-search-status" id="nodeSearchStatus"></span></div>
                 <div class="selected-chain-heading">
                   <div class="selected-chain-copy"><h2 id="selectedChainTitle">半导体与集成电路</h2><p id="selectedChainContext">全国 31 省市 · 战略性新兴产业</p></div>
                   <div class="selected-chain-stats" id="selectedChainStats"></div>
@@ -496,7 +497,7 @@
     <script src="industry-category-data.js?v=202610271620"></script>
     <script src="china-map-data.js?v=202609141500"></script>
     <script src="coze-chat.js?v=202610301005"></script>
-    <script src="app.js?v=202610301720"></script>
+    <script src="app.js?v=202610301745"></script>
     <script src="company-detail.js?v=202610271141"></script>
     <script src="auth.js?v=202609151530"></script>
   </body>
