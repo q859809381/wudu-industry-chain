@@ -1632,7 +1632,17 @@ function collectKeywordCompanyHits(query) {
       }
     });
   });
-  return Array.from(grouped.values());
+  const hits = Array.from(grouped.values());
+  // 演示案例企业（demoMultiNodeCompanySpecs）置顶展示，保证检索结果一眼能看到多环节聚合的案例；其余保持原顺序
+  const demoOrder = new Map(demoMultiNodeCompanySpecs.map((spec, index) => [spec.name, index]));
+  if (demoOrder.size) {
+    hits.sort((first, second) => {
+      const firstOrder = demoOrder.has(first.company.name) ? demoOrder.get(first.company.name) : Number.MAX_SAFE_INTEGER;
+      const secondOrder = demoOrder.has(second.company.name) ? demoOrder.get(second.company.name) : Number.MAX_SAFE_INTEGER;
+      return firstOrder - secondOrder;
+    });
+  }
+  return hits;
 }
 
 function renderSearchCompanyRow(hit, query) {
