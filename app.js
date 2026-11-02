@@ -1589,7 +1589,7 @@ function renderSearchMoreLink(type, count, unitLabel) {
 
 function renderSearchNodeBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((hit) => renderSearchNodeRow(hit, query)).join('');
-  return `<div class="search-result-block node-block"><div class="search-result-block-head"><strong>产业环节</strong><small>按环节名称或链路路径命中的产业环节，点击进入所属产业链图谱并查看该环节企业</small><span>${hits.length.toLocaleString('zh-CN')} 个</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('node', hits.length, '个') : ''}</div><div class="search-node-list">${rows}</div></div>`;
+  return `<div class="search-result-block node-block"><div class="search-result-block-head"><strong>产业环节</strong><small>按产业环节名称命中的产业环节，点击进入所属产业链图谱并查看该环节企业</small><span>${hits.length.toLocaleString('zh-CN')} 个</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('node', hits.length, '个') : ''}</div><div class="search-node-list">${rows}</div></div>`;
 }
 
 function bindSearchNodeBlock(container) {
@@ -1652,7 +1652,7 @@ function renderSearchCompanyRow(hit, query) {
 
 function renderSearchCompanyBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((hit) => renderSearchCompanyRow(hit, query)).join('');
-  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>按企业名称命中的企业，仅代表名称匹配，不代表其处于关键词对应的产业环节，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('company', hits.length, '家') : ''}</div><div class="search-company-list">${rows}</div></div>`;
+  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>按企业名称命中的企业，仅代表名称匹配，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('company', hits.length, '家') : ''}</div><div class="search-company-list">${rows}</div></div>`;
 }
 
 function bindSearchCompanyBlock(container) {
@@ -1666,9 +1666,9 @@ function bindSearchCompanyBlock(container) {
 
 /* 检索结果二级页：查看某一类型的完整结果列表 */
 const SEARCH_DRILLDOWN_META = {
-  chain: { label: '产业图谱', desc: '按产业链名称命中的产业链，仅代表名称匹配，不代表关键词命中的环节属于该链，点击进入图谱', unit: '条' },
-  node: { label: '产业环节', desc: '按环节名称或链路路径命中的产业环节，点击进入所属产业链图谱并查看该环节企业', unit: '个' },
-  company: { label: '企业清单', desc: '按企业名称命中的企业，仅代表名称匹配，不代表其处于关键词对应的产业环节，点击查看企业详情', unit: '家' }
+  chain: { label: '产业图谱', desc: '按产业链名称命中的产业链，点击查看产业图谱', unit: '条' },
+  node: { label: '产业环节', desc: '按产业环节名称命中的产业环节，点击进入所属产业链图谱并查看该环节企业', unit: '个' },
+  company: { label: '企业清单', desc: '按企业名称命中的企业，仅代表名称匹配，点击查看企业详情', unit: '家' }
 };
 
 function renderSearchDrilldownPage(groupsContainer, query) {
@@ -1732,7 +1732,7 @@ function renderSearchChainRow(name, query) {
 
 function renderSearchChainBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((entry) => renderSearchChainRow(entry.name, query)).join('');
-  return `<div class="search-result-block graph-block"><div class="search-result-block-head"><strong>产业图谱</strong><small>按产业链名称命中的产业链，仅代表名称匹配，不代表关键词命中的环节属于该链，点击进入图谱</small><span>${hits.length.toLocaleString('zh-CN')} 条</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('chain', hits.length, '条') : ''}</div><div class="search-chain-list">${rows}</div></div>`;
+  return `<div class="search-result-block graph-block"><div class="search-result-block-head"><strong>产业图谱</strong><small>按产业链名称命中的产业链，点击查看产业图谱</small><span>${hits.length.toLocaleString('zh-CN')} 条</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('chain', hits.length, '条') : ''}</div><div class="search-chain-list">${rows}</div></div>`;
 }
 
 function bindSearchChainBlock(container) {
