@@ -1599,30 +1599,43 @@ function jumpToChainNode(chainName, nodeName, subpath) {
   openDrawer(nodeName, subpath || '');
 }
 
+// 企业命中按企业聚合：同一企业可能上链多个产业环节、甚至多条产业链，
+// 只出一行并展示全部归属（chainName 仅保留作兼容字段），避免一个企业重复出现多行
 function collectKeywordCompanyHits(query) {
   if (!query) return [];
-  const hits = [];
+  const grouped = new Map();
   Object.keys(industryProfiles).forEach((chainName) => {
     const index = getChainSearchIndex(chainName);
     index.companies.forEach((company) => {
-      if (`${company.name}${company.displayName || ''}`.toLowerCase().includes(query)) {
-        hits.push({ company, chainName });
+      if (!`${company.name}${company.displayName || ''}`.toLowerCase().includes(query)) return;
+      if (!grouped.has(company.name)) grouped.set(company.name, { company, assignments: [] });
+      const entry = grouped.get(company.name);
+      if (!entry.assignments.some((item) => item.chain === chainName && item.node === company.node)) {
+        entry.assignments.push({ chain: chainName, node: company.node });
       }
     });
   });
-  return hits;
+  return Array.from(grouped.values());
 }
 
 function renderSearchCompanyRow(hit, query) {
-  const { company, chainName } = hit;
+  const { company, assignments } = hit;
   const region = [company.province, company.city].filter(Boolean).join(' · ');
   const tags = [company.listed === '是' ? '上市' : '', company.capital || ''].filter(Boolean).join(' / ');
-  return `<button class="search-company-item" type="button" data-company="${escapeHtml(company.name)}"><span class="search-company-main"><strong class="search-company-name">${highlightChainKeyword(company.name, query)}</strong><span class="search-company-meta"><span class="search-company-chain">${escapeHtml(chainName)}</span><i aria-hidden="true"></i><span>环节：${escapeHtml(company.node)}</span>${region ? `<i aria-hidden="true"></i><span>${escapeHtml(region)}</span>` : ''}</span></span><span class="search-company-side">${tags ? `<small>${escapeHtml(tags)}</small>` : ''}<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></span></button>`;
+  const chainNames = [...new Set(assignments.map((item) => item.chain))];
+  const chainLabel = chainNames.length > 1 ? `${chainNames[0]} 等 ${chainNames.length} 条链` : (chainNames[0] || '');
+  // 单链时只列环节名；跨链时带上链名前缀；超过 3 个收敛为“等 N 个环节”，完整归属在企业详情查看
+  const formatNode = (item) => (chainNames.length > 1 ? `${item.chain}·${item.node}` : item.node);
+  const nodeText = assignments.length > 3
+    ? `${assignments.slice(0, 3).map(formatNode).join('、')} 等 ${assignments.length} 个环节`
+    : assignments.map(formatNode).join('、');
+  const nodeTitle = assignments.map((item) => `${item.chain} · ${item.node}`).join('\n');
+  return `<button class="search-company-item" type="button" data-company="${escapeHtml(company.name)}" title="${escapeHtml(nodeTitle)}"><span class="search-company-main"><strong class="search-company-name">${highlightChainKeyword(company.name, query)}</strong><span class="search-company-meta">${chainLabel ? `<span class="search-company-chain">${escapeHtml(chainLabel)}</span><i aria-hidden="true"></i>` : ''}<span class="search-company-nodes">环节：${escapeHtml(nodeText)}</span>${region ? `<i aria-hidden="true"></i><span>${escapeHtml(region)}</span>` : ''}</span></span><span class="search-company-side">${tags ? `<small>${escapeHtml(tags)}</small>` : ''}<svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></span></button>`;
 }
 
 function renderSearchCompanyBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((hit) => renderSearchCompanyRow(hit, query)).join('');
-  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>企业名称命中的上链企业，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('company', hits.length, '家') : ''}</div><div class="search-company-list">${rows}</div></div>`;
+  return `<div class="search-result-block company-block"><div class="search-result-block-head"><strong>企业清单</strong><small>按企业名称命中的企业，仅代表名称匹配，不代表其处于关键词对应的产业环节，点击查看企业详情</small><span>${hits.length.toLocaleString('zh-CN')} 家</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('company', hits.length, '家') : ''}</div><div class="search-company-list">${rows}</div></div>`;
 }
 
 function bindSearchCompanyBlock(container) {
@@ -1638,7 +1651,7 @@ function bindSearchCompanyBlock(container) {
 const SEARCH_DRILLDOWN_META = {
   chain: { label: '产业图谱', desc: '产业链名称命中的结果，点击进入图谱', unit: '条' },
   node: { label: '产业环节', desc: '产业环节命中的结果，点击进入所属产业链图谱并查看该环节企业', unit: '个' },
-  company: { label: '企业清单', desc: '企业名称命中的上链企业，点击查看企业详情', unit: '家' }
+  company: { label: '企业清单', desc: '按企业名称命中的企业，仅代表名称匹配，不代表其处于关键词对应的产业环节，点击查看企业详情', unit: '家' }
 };
 
 function renderSearchDrilldownPage(groupsContainer, query) {
