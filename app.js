@@ -472,6 +472,23 @@ const nodeCompanies = [
   ...buildChainCompanyRecords(aviationNodes, '航空航天示范企业')
 ];
 
+// 「集成」关键词的演示案例企业：一条记录代表企业在某一环节的上链关系，
+// 用于覆盖企业清单多环节聚合展示的几种场景——
+// 2~3 个环节全列出 / 超过 3 个收敛为"等 N 个环节" / 跨产业链（环节名带链名前缀）
+const demoMultiNodeCompanySpecs = [
+  { name: '苏州集成微电子有限公司', nodes: ['逻辑集成电路制造', '模拟集成电路制造'] },
+  { name: '深圳集成芯半导体有限公司', nodes: ['逻辑集成电路制造', '存储集成电路制造', '芯片设计服务'] },
+  { name: '华东集成电路制造集团有限公司', nodes: ['逻辑集成电路制造', '模拟集成电路制造', '存储集成电路制造', '功率器件制造', '传感器制造'] },
+  // 跨链场景：同一企业在半导体与集成电路、航空航天两条产业链均有上链环节
+  { name: '中航集成电子系统股份有限公司', nodes: ['逻辑集成电路制造', '航空装备零部件'] }
+];
+const demoMultiNodeCompanyRecords = demoMultiNodeCompanySpecs.flatMap((spec) => spec.nodes.map((node) => {
+  const template = nodeCompanies.find((company) => company.node === node);
+  if (!template) return null;
+  return { ...template, name: spec.name, displayName: spec.name, node };
+})).filter(Boolean);
+nodeCompanies.push(...demoMultiNodeCompanyRecords);
+
 const distribution = [...officialRegionCatalog.reduce((counts, item) => {
   if (/半导体|集成电路/.test(item.coreChains)) counts.set(item.province, (counts.get(item.province) || 0) + 1);
   return counts;
@@ -1572,7 +1589,7 @@ function renderSearchMoreLink(type, count, unitLabel) {
 
 function renderSearchNodeBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((hit) => renderSearchNodeRow(hit, query)).join('');
-  return `<div class="search-result-block node-block"><div class="search-result-block-head"><strong>产业环节</strong><small>产业环节命中的结果，点击进入所属产业链图谱并查看该环节企业</small><span>${hits.length.toLocaleString('zh-CN')} 个</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('node', hits.length, '个') : ''}</div><div class="search-node-list">${rows}</div></div>`;
+  return `<div class="search-result-block node-block"><div class="search-result-block-head"><strong>产业环节</strong><small>按环节名称或链路路径命中的产业环节，点击进入所属产业链图谱并查看该环节企业</small><span>${hits.length.toLocaleString('zh-CN')} 个</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('node', hits.length, '个') : ''}</div><div class="search-node-list">${rows}</div></div>`;
 }
 
 function bindSearchNodeBlock(container) {
@@ -1649,8 +1666,8 @@ function bindSearchCompanyBlock(container) {
 
 /* 检索结果二级页：查看某一类型的完整结果列表 */
 const SEARCH_DRILLDOWN_META = {
-  chain: { label: '产业图谱', desc: '产业链名称命中的结果，点击进入图谱', unit: '条' },
-  node: { label: '产业环节', desc: '产业环节命中的结果，点击进入所属产业链图谱并查看该环节企业', unit: '个' },
+  chain: { label: '产业图谱', desc: '按产业链名称命中的产业链，仅代表名称匹配，不代表关键词命中的环节属于该链，点击进入图谱', unit: '条' },
+  node: { label: '产业环节', desc: '按环节名称或链路路径命中的产业环节，点击进入所属产业链图谱并查看该环节企业', unit: '个' },
   company: { label: '企业清单', desc: '按企业名称命中的企业，仅代表名称匹配，不代表其处于关键词对应的产业环节，点击查看企业详情', unit: '家' }
 };
 
@@ -1715,7 +1732,7 @@ function renderSearchChainRow(name, query) {
 
 function renderSearchChainBlock(hits, query) {
   const rows = hits.slice(0, SEARCH_PREVIEW_LIMIT).map((entry) => renderSearchChainRow(entry.name, query)).join('');
-  return `<div class="search-result-block graph-block"><div class="search-result-block-head"><strong>产业图谱</strong><small>产业链名称命中的结果，点击进入图谱</small><span>${hits.length.toLocaleString('zh-CN')} 条</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('chain', hits.length, '条') : ''}</div><div class="search-chain-list">${rows}</div></div>`;
+  return `<div class="search-result-block graph-block"><div class="search-result-block-head"><strong>产业图谱</strong><small>按产业链名称命中的产业链，仅代表名称匹配，不代表关键词命中的环节属于该链，点击进入图谱</small><span>${hits.length.toLocaleString('zh-CN')} 条</span>${hits.length > SEARCH_PREVIEW_LIMIT ? renderSearchMoreLink('chain', hits.length, '条') : ''}</div><div class="search-chain-list">${rows}</div></div>`;
 }
 
 function bindSearchChainBlock(container) {
