@@ -1383,7 +1383,7 @@ function getChainCardMockStats(name) {
   return { nodeCount, companyCount };
 }
 
-function renderChainCard(entry, selectedIndustry) {
+function renderChainCard(entry, selectedIndustry, isHot = false) {
   const entryProfile = industryProfiles[entry.name] || (entry.name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
   const isSelected = chainSelectionActive && entry.name === selectedIndustry;
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
@@ -1397,7 +1397,7 @@ function renderChainCard(entry, selectedIndustry) {
     nodeCount = mock.nodeCount;
     companyCount = mock.companyCount;
   }
-  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}"><strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
+  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''} ${isHot ? 'hot' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}">${isHot ? '<em class="hot-tag">热门</em>' : ''}<strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
 }
 
 function renderChainFilterSidebar() {
@@ -1788,8 +1788,10 @@ function renderChainPicker(profile) {
       bindSearchMoreLinks(groupsContainer);
     } else {
       groupsContainer.innerHTML = groups.map((group) => {
-        const cards = group.entries.map((entry) => renderChainCard(entry, selectedIndustry)).join('');
-        return `<div class="chain-picker-group ${group.kind === 'category' ? 'category' : ''}" data-group-value="${escapeHtml(group.value)}"><div class="chain-picker-group-heading"><strong>${escapeHtml(group.label)}</strong>${group.sublabel ? `<small>${escapeHtml(group.sublabel)}</small>` : ''}<span>${group.entries.length} 条</span></div><div class="chain-picker-group-list">${cards || '<div class="empty-chain-list">该分类下暂无匹配的产业链</div>'}</div></div>`;
+        // 六大未来产业为热门赛道，卡片做突出展示
+        const isHotGroup = group.kind === 'system' && group.value === '六大未来产业';
+        const cards = group.entries.map((entry) => renderChainCard(entry, selectedIndustry, isHotGroup)).join('');
+        return `<div class="chain-picker-group ${group.kind === 'category' ? 'category' : ''} ${isHotGroup ? 'future-hot' : ''}" data-group-value="${escapeHtml(group.value)}"><div class="chain-picker-group-heading"><strong>${escapeHtml(group.label)}</strong>${isHotGroup ? '<em class="hot-track-badge">🔥 最具前景 · 热门赛道</em>' : ''}${group.sublabel ? `<small>${escapeHtml(group.sublabel)}</small>` : ''}<span>${group.entries.length} 条</span></div><div class="chain-picker-group-list">${cards || '<div class="empty-chain-list">该分类下暂无匹配的产业链</div>'}</div></div>`;
       }).join('');
     }
     $$('.chain-picker-item', groupsContainer).forEach((button) => button.addEventListener('click', () => {

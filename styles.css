@@ -179,6 +179,15 @@ h1, h2, h3, p { margin: 0; }
 .chain-picker-item:hover, .chain-picker-item.selected { border-color: #7eb6e8; box-shadow: 0 4px 14px rgba(39,111,171,.14); }
 .picker-item-name { display: block; padding: 22px 10px 18px; overflow: hidden; color: #1e405b; font-size: 18px; font-weight: 700; letter-spacing: .5px; text-overflow: ellipsis; white-space: nowrap; }
 .chain-picker-item.selected .picker-item-name { color: var(--blue); }
+/* 六大未来产业热门赛道突出展示：暖色渐变描边 + 热门角标 */
+.chain-picker-group.future-hot .chain-picker-group-heading { border-left-color: #ef6820; }
+.chain-picker-group.future-hot .chain-picker-group-heading strong { color: #c2410c; }
+.chain-picker-group.future-hot.active .chain-picker-group-heading { border-left-color: #ef6820; }
+.chain-picker-group.future-hot.active .chain-picker-group-heading strong { color: #c2410c; }
+.hot-track-badge { flex: 0 0 auto; display: inline-flex; align-items: center; padding: 2px 9px; border: 1px solid #fdba74; border-radius: 999px; background: linear-gradient(120deg, #fff7ed, #ffedd5); color: #c2410c; font-size: 10px; font-style: normal; font-weight: 600; line-height: 1.7; white-space: nowrap; }
+.chain-picker-group.future-hot .chain-picker-item { position: relative; border: 1px solid transparent; background: linear-gradient(#fff, #fff) padding-box, linear-gradient(120deg, #fb923c, #ef6820 55%, #f59e0b) border-box; box-shadow: 0 5px 14px rgba(239,104,32,.1); }
+.chain-picker-group.future-hot .chain-picker-item:hover, .chain-picker-group.future-hot .chain-picker-item.selected { box-shadow: 0 8px 20px rgba(239,104,32,.22); }
+.chain-picker-item .hot-tag { position: absolute; top: 0; right: 0; padding: 2px 8px; background: linear-gradient(120deg, #f97316, #ef6820); color: #fff; font-size: 9px; font-style: normal; font-weight: 600; letter-spacing: .5px; line-height: 1.7; }
 .picker-item-stats { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 6px; border-top: 1px solid #e8f0f6; background: #f6fafd; color: #7c93a4; font-size: 11px; white-space: nowrap; }
 .picker-item-stats b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }
 /* 检索命中提示：关键词命中的是环节或企业时，在链名下方标注命中数量 */
