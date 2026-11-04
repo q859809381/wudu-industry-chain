@@ -187,7 +187,8 @@ h1, h2, h3, p { margin: 0; }
 .hot-track-badge { flex: 0 0 auto; display: inline-flex; align-items: center; padding: 2px 9px; border: 1px solid #bcd9f0; border-radius: 999px; background: #eef5fb; color: #2c6fb5; font-size: 10px; font-style: normal; font-weight: 600; line-height: 1.7; white-space: nowrap; }
 .chain-picker-group.future-hot .chain-picker-item { position: relative; border-color: #9cc6e8; background: linear-gradient(180deg, #f4faff, #ffffff 70%); box-shadow: 0 4px 12px rgba(44,111,181,.1); }
 .chain-picker-group.future-hot .chain-picker-item:hover, .chain-picker-group.future-hot .chain-picker-item.selected { border-color: #5d9bd4; box-shadow: 0 6px 16px rgba(44,111,181,.18); }
-.chain-picker-item .hot-tag { position: absolute; top: 0; right: 0; padding: 2px 8px; background: linear-gradient(120deg, #5d9bd4, #2c6fb5); color: #fff; font-size: 9px; font-style: normal; font-weight: 600; letter-spacing: .5px; line-height: 1.7; }
+.chain-picker-item .hot-tag { position: absolute; top: 7px; right: 7px; padding: 2px 8px; border-radius: 999px; background: linear-gradient(135deg, #ffb03a, #f4750c); color: #fff; font-size: 9px; font-style: normal; font-weight: 600; letter-spacing: .5px; line-height: 1.7; box-shadow: 0 2px 5px rgba(244,117,12,.25); }
+.chain-picker-group.future-hot .picker-item-name { padding-top: 27px; }
 .picker-item-stats { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 6px; border-top: 1px solid #e8f0f6; background: #f6fafd; color: #7c93a4; font-size: 11px; white-space: nowrap; }
 .picker-item-stats b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }
 /* 检索命中提示：关键词命中的是环节或企业时，在链名下方标注命中数量 */
