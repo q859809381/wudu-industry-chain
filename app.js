@@ -1,4 +1,4 @@
-const industryTypeOrder = ['六大新兴支柱产业', '六大未来产业', '六张网'];
+const industryTypeOrder = ['六大未来产业', '六大新兴支柱产业', '六张网'];
 
 const nationalIndustryEntries = (Array.isArray(nationalIndustryCatalog) ? nationalIndustryCatalog : [])
   .map((entry, order) => ({ ...entry, order }));
