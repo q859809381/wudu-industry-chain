@@ -1353,7 +1353,7 @@ function getChainGroups() {
       .filter((entry) => entry.type === type && matchesQuery(entry.name))
       .map((entry) => ({ name: entry.name, types: [entry.type], match: null }))
   }));
-  // 17 个产业大类（产业链清单1022 归并口径），与三大产业体系并列展示
+  // 21 个产业大类（产业链清单1022 归并口径），与三大产业体系并列展示
   const categoryGroups = industryCategoryGroups.map((category) => ({
     kind: 'category',
     value: category.name,
