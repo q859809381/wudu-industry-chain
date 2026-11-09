@@ -2915,8 +2915,9 @@ function renderAnalysis(profile = getProfile()) {
   const financingCompanies = scopedCompanies.filter((company) => company.financingEvents > 0);
   const financingEvents = financingCompanies.reduce((sum, company) => sum + company.financingEvents, 0);
   const financingAmountWan = financingCompanies.reduce((sum, company) => sum + (company.financingAmountWan || 0), 0);
+  // 融资轮次环形图按事件数汇总：每家企业的融资事件次数计入其对应轮次，与顶部融资事件总数口径一致
   const financingBuckets = ['天使轮', 'A轮', 'B轮', 'C轮及以上', '战略融资']
-    .map((round) => [round, financingCompanies.filter((company) => company.financingRound === round).length]);
+    .map((round) => [round, financingCompanies.filter((company) => company.financingRound === round).reduce((sum, company) => sum + company.financingEvents, 0)]);
 
   // 年度融资事件：按企业名确定性散列把事件分摊到统计年份，主年份占比更高以形成自然波动
   const financingYearEntries = analysisTrendYears.map((year) => [String(year), 0]);
