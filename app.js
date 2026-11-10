@@ -4036,6 +4036,11 @@ function init() {
   };
   $('#homeQuerySend').addEventListener('click', submitHomeQuery);
   homeQueryInput.addEventListener('keydown', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); submitHomeQuery(); } });
+  // 热门搜索：点击后填入关键词并直接执行全景检索
+  $$('.home-hot-chip').forEach((chip) => chip.addEventListener('click', () => {
+    homeQueryInput.value = chip.dataset.hotQuery || chip.textContent.trim();
+    submitHomeQuery();
+  }));
   $('#solutionContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   $('#solutionCtaButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   $('#solutionCatalogButton').addEventListener('click', () => setView('graph'));

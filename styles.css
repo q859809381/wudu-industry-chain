@@ -2341,3 +2341,10 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 body.picker-mode #graphView.active { overflow: visible; }
 /* 产业图谱链条选择页不显示通用底部，仅在选中产业链后的图谱详情内展示 */
 body.picker-mode #graphView .site-footer { display: none; }
+
+/* 首页首屏：热门搜索与全景检索按钮（查询框为白底，文字用深色） */
+.home-hot-search { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.home-hot-label { color: #7e94a4; font-size: 12px; font-weight: 600; }
+.home-hot-chip { padding: 3px 11px; border: 1px solid #dbe5ee; border-radius: 999px; background: #f3f7fa; color: #42586b; font-size: 12px; cursor: pointer; transition: .18s ease; white-space: nowrap; }
+.home-hot-chip:hover { border-color: #2f8fe0; background: #eaf3fc; color: #1d6fae; }
+.home-query-send-text { flex: 0 0 auto; width: auto; height: auto; min-height: 34px; padding: 6px 18px; border-radius: 9px; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
