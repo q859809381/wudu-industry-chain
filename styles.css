@@ -2339,3 +2339,5 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 }
 /* 产业图谱链条选择页（picker-mode）下允许通栏页脚溢出展示，否则负外边距会被 overflow:hidden 裁掉 */
 body.picker-mode #graphView.active { overflow: visible; }
+/* 产业图谱链条选择页不显示通用底部，仅在选中产业链后的图谱详情内展示 */
+body.picker-mode #graphView .site-footer { display: none; }
