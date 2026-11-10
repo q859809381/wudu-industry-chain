@@ -1450,12 +1450,14 @@ function getChainCardMockStats(name) {
 function renderChainCard(entry, selectedIndustry, isHot = false) {
   const entryProfile = industryProfiles[entry.name] || (entry.name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
   const isSelected = chainSelectionActive && entry.name === selectedIndustry;
-  // 游客 / 注册用户当前可免费查看的产业链卡片：右上角加“限免”标识，引导点击体验
-  // 仅精确匹配授权链名（游客的半导体与集成电路额外对应“集成电路”卡片），避免别名模糊匹配误标其他链
+  // 限免标识：集成电路（含半导体与集成电路）对游客/注册用户长期限免；
+  // 游客另可看授权链（半导体与集成电路），注册用户另可看航空航天；收费用户全部可见不标
   const scope = getChainScope();
+  const userType = getUserType();
   const normalizedScope = normalizeIndustryName(scope.chain || '');
   const normalizedName = normalizeIndustryName(entry.name);
-  const isFreeSample = Boolean(normalizedScope) && (normalizedName === normalizedScope || (normalizedScope === '半导体与集成电路' && normalizedName === '集成电路'));
+  const isIcFree = normalizedName === '集成电路' || normalizedName === '半导体与集成电路';
+  const isFreeSample = userType !== 'paid' && (isIcFree || (Boolean(normalizedScope) && normalizedName === normalizedScope));
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
   let nodeCount = null;
   let companyCount = null;
