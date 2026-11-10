@@ -30,7 +30,6 @@
       '<div class="auth-brand-mark">W</div>',
       '<h1>五度易链</h1>',
       '<p class="auth-login-subtitle">产业链数据洞察工作台</p>',
-      '<p class="auth-modal-hint" id="authModalHint" hidden></p>',
       '<div class="auth-tabs" role="tablist"><button type="button" class="auth-tab is-active" data-auth-tab="sms">短信登录</button><button type="button" class="auth-tab" data-auth-tab="password">密码登录</button></div>',
       '<form class="auth-form is-active" id="smsLoginForm" novalidate>',
       '<label class="auth-input-group"><input id="smsPhone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" placeholder="请输入手机号" required></label>',
@@ -120,7 +119,6 @@
     document.body.appendChild(authShell);
 
     const loginView = document.getElementById('loginView');
-    const authModalHint = document.getElementById('authModalHint');
     const tabs = [...authShell.querySelectorAll('.auth-tab')];
     const smsForm = document.getElementById('smsLoginForm');
     const passwordForm = document.getElementById('passwordLoginForm');
@@ -285,11 +283,9 @@
     });
 
     /* ---------- 弹窗开关 ---------- */
-    function openLogin(message) {
+    function openLogin() {
       closeAvatarMenu();
       upgradeLayer.classList.remove('is-open');
-      authModalHint.hidden = !message;
-      authModalHint.textContent = message || '';
       clearErrors();
       switchTab('sms');
       loginView.classList.add('is-open');
