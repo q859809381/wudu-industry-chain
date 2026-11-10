@@ -484,9 +484,8 @@ h1, h2, h3, p { margin: 0; }
 .app-shell { display: flex; flex-direction: column; }
 .top-navigation { flex: 0 0 76px; display: flex; align-items: center; min-width: 0; color: #dceaf5; background: var(--navy-deep); }
 /* 头部内容与主内容区共用同一基准框架（居中 + 两侧留白），导航分组贴框架两边 */
-.top-navigation-inner { width: 100%; max-width: 1460px; margin: 0 auto; min-width: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 0 clamp(28px, 4.5vw, 72px); }
-.top-navigation-nav { min-width: 0; display: flex; align-items: stretch; justify-content: center; gap: 2px; }
-.top-navigation-nav .primary-nav-secondary { margin-left: 6px; }
+.top-navigation-inner { width: 100%; max-width: 1460px; margin: 0 auto; min-width: 0; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 10px; padding: 0 clamp(28px, 4.5vw, 72px); }
+.top-navigation .primary-nav-secondary { margin-left: 6px; }
 .top-navigation .brand-lockup { min-width: 0; padding: 0; }
 .top-navigation .brand-lockup > div:last-child { min-width: 0; }
 .top-navigation .brand-lockup strong { font-size: 17px; }
@@ -847,7 +846,7 @@ html, body { overflow-x: hidden; }
 }
 
 @media (max-width: 1020px) {
-  .top-navigation-inner { grid-template-columns: 1fr auto 1fr; padding: 0 18px; }
+  .top-navigation-inner { grid-template-columns: auto 1fr auto auto; padding: 0 18px; }
   .top-navigation .primary-nav-item { min-width: 84px; padding: 0 10px; }
   .top-navigation .primary-nav-item b, .top-navigation .primary-nav-item small { display: block; }
   .top-navigation .primary-nav-item b { font-size: 12px; }
