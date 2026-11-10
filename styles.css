@@ -480,11 +480,11 @@ h1, h2, h3, p { margin: 0; }
 
 /* Workbench layout: app navigation is horizontal, graph content is vertical. */
 .app-shell { display: flex; flex-direction: column; }
-.top-navigation { flex: 0 0 76px; min-width: 0; display: grid; grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr); align-items: center; gap: 20px; padding: 0 34px; color: #dceaf5; background: var(--navy-deep); }
+.top-navigation { flex: 0 0 76px; min-width: 0; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 20px; padding: 0 34px; color: #dceaf5; background: var(--navy-deep); }
 .top-navigation .brand-lockup { min-width: 0; padding: 0; }
 .top-navigation .brand-lockup > div:last-child { min-width: 0; }
 .top-navigation .brand-lockup strong { font-size: 17px; }
-.top-navigation .primary-nav { display: flex; align-items: stretch; justify-content: center; gap: 6px; }
+.top-navigation .primary-nav { display: flex; align-items: stretch; justify-content: flex-start; gap: 6px; }
 .top-navigation .primary-nav-item { width: auto; min-width: 96px; min-height: 52px; justify-content: center; gap: 9px; padding: 0 15px; border-radius: 5px; text-align: left; }
 .top-navigation .primary-nav-item b { white-space: nowrap; }
 .top-navigation .primary-nav-item.active { background: var(--navy-soft); box-shadow: inset 0 -3px #50c9e5; }
@@ -841,7 +841,7 @@ html, body { overflow-x: hidden; }
 }
 
 @media (max-width: 1020px) {
-  .top-navigation { grid-template-columns: minmax(150px, 1fr) auto minmax(120px, 1fr); padding: 0 18px; }
+  .top-navigation { grid-template-columns: auto 1fr auto auto; padding: 0 18px; }
   .top-navigation .primary-nav-item { min-width: 84px; padding: 0 10px; }
   .top-navigation .primary-nav-item b, .top-navigation .primary-nav-item small { display: block; }
   .top-navigation .primary-nav-item b { font-size: 12px; }
@@ -855,6 +855,7 @@ html, body { overflow-x: hidden; }
   body { overflow: auto; }
   .app-shell { min-height: 100vh; }
   .top-navigation { flex-basis: 62px; min-height: 62px; grid-template-columns: max-content minmax(0, 1fr); gap: 9px; padding: 7px 10px; }
+  .top-navigation .primary-nav-secondary { display: none; }
   .top-navigation .brand-lockup { padding: 0; }
   .top-navigation .brand-lockup > div:last-child, .top-navigation-status { display: none; }
   .top-navigation .brand-mark { width: 29px; height: 29px; }
