@@ -175,7 +175,7 @@ h1, h2, h3, p { margin: 0; }
 .chain-picker { overflow: auto; }
 .picker-context { flex: 0 0 auto; padding: 10px 15px; border-bottom: 1px solid #edf1f4; color: #7b909f; background: #fbfcfd; font-size: 10px; line-height: 1.55; }
 .chain-picker-list { display: grid; gap: 8px; padding: 12px; }
-.chain-picker-item { min-width: 0; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #cfe0ec; border-radius: 6px; background: #fff; text-align: center; cursor: pointer; transition: .2s ease; }
+.chain-picker-item { position: relative; min-width: 0; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #cfe0ec; border-radius: 6px; background: #fff; text-align: center; cursor: pointer; transition: .2s ease; }
 .chain-picker-item:hover, .chain-picker-item.selected { border-color: #7eb6e8; box-shadow: 0 4px 14px rgba(39,111,171,.14); }
 .picker-item-name { display: block; padding: 22px 10px 18px; overflow: hidden; color: #1e405b; font-size: 18px; font-weight: 700; letter-spacing: .5px; text-overflow: ellipsis; white-space: nowrap; }
 .chain-picker-item.selected .picker-item-name { color: var(--blue); }
@@ -188,6 +188,8 @@ h1, h2, h3, p { margin: 0; }
 .chain-picker-group.future-hot .chain-picker-item { position: relative; border-color: #9cc6e8; background: linear-gradient(180deg, #f4faff, #ffffff 70%); box-shadow: 0 4px 12px rgba(44,111,181,.1); }
 .chain-picker-group.future-hot .chain-picker-item:hover, .chain-picker-group.future-hot .chain-picker-item.selected { border-color: #5d9bd4; box-shadow: 0 6px 16px rgba(44,111,181,.18); }
 .chain-picker-item .hot-tag { position: absolute; top: 7px; right: 7px; padding: 2px 8px; border-radius: 999px; background: linear-gradient(135deg, #ffb03a, #f4750c); color: #fff; font-size: 9px; font-style: normal; font-weight: 600; letter-spacing: .5px; line-height: 1.7; box-shadow: 0 2px 5px rgba(244,117,12,.25); }
+/* 限免标识：游客/注册用户可免费查看的产业链卡片，右上角红色胶囊，区别于橙色“热门” */
+.chain-picker-item .free-tag { position: absolute; top: 7px; right: 7px; padding: 2px 8px; border-radius: 999px; background: linear-gradient(135deg, #ff7d52, #e8400f); color: #fff; font-size: 9px; font-style: normal; font-weight: 600; letter-spacing: .5px; line-height: 1.7; box-shadow: 0 2px 5px rgba(232,64,15,.25); }
 .chain-picker-group.future-hot .picker-item-name { padding-top: 27px; }
 .picker-item-stats { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 6px; border-top: 1px solid #e8f0f6; background: #f6fafd; color: #7c93a4; font-size: 11px; white-space: nowrap; }
 .picker-item-stats b { color: #2c6fb5; font-weight: 700; font-variant-numeric: tabular-nums; }

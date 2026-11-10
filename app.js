@@ -1450,6 +1450,12 @@ function getChainCardMockStats(name) {
 function renderChainCard(entry, selectedIndustry, isHot = false) {
   const entryProfile = industryProfiles[entry.name] || (entry.name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
   const isSelected = chainSelectionActive && entry.name === selectedIndustry;
+  // 游客 / 注册用户当前可免费查看的产业链卡片：右上角加“限免”标识，引导点击体验
+  // 仅精确匹配授权链名（游客的半导体与集成电路额外对应“集成电路”卡片），避免别名模糊匹配误标其他链
+  const scope = getChainScope();
+  const normalizedScope = normalizeIndustryName(scope.chain || '');
+  const normalizedName = normalizeIndustryName(entry.name);
+  const isFreeSample = Boolean(normalizedScope) && (normalizedName === normalizedScope || (normalizedScope === '半导体与集成电路' && normalizedName === '集成电路'));
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
   let nodeCount = null;
   let companyCount = null;
@@ -1461,7 +1467,7 @@ function renderChainCard(entry, selectedIndustry, isHot = false) {
     nodeCount = mock.nodeCount;
     companyCount = mock.companyCount;
   }
-  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''} ${isHot ? 'hot' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}">${isHot ? '<em class="hot-tag">热门</em>' : ''}<strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
+  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''} ${isHot ? 'hot' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}">${isHot ? '<em class="hot-tag">热门</em>' : ''}${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
 }
 
 function renderChainFilterSidebar() {
@@ -3912,19 +3918,26 @@ function init() {
   populateIndustryNameOptions(false);
   initializeRegionScopePicker();
   renderGraph();
-  $$('.primary-nav-item').forEach((item) => item.addEventListener('click', () => setView(item.dataset.view)));
-  // 登录 / 退出 / 会员类型变化：按新的用户权限重置产业链范围并重渲染
+  // 点击顶部导航“产业图谱”：始终先进入产业链选择页（而非上次查看的链），
+  // 让用户看到图谱已覆盖的产业链全貌；点具体链后再进入图谱详情
+  $$('.primary-nav-item').forEach((item) => item.addEventListener('click', () => {
+    if (item.dataset.view === 'graph') {
+      showChainPicker();
+      setView('graph');
+      return;
+    }
+    setView(item.dataset.view);
+  }));
+  // 登录 / 退出 / 会员类型变化：按新的用户权限重置产业链范围，并回到产业链选择页
   document.addEventListener('wudu-auth-change', () => {
     closeDrawer();
     const scope = getChainScope();
     if (scope.chain) {
       if (currentIndustry && !chainAllowed(currentIndustry)) currentIndustry = scope.chain;
       if (!currentIndustry) currentIndustry = scope.chain;
-      chainSelectionActive = true;
-      setChainSelectionMode(true);
-    } else {
-      chainSelectionActive = false;
     }
+    chainSelectionActive = false;
+    setChainSelectionMode(false);
     renderGraph();
     if ($('.view-panel.active')?.dataset.panel === 'graph') setWorkbenchSection('graphSection');
   });
