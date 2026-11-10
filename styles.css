@@ -2337,3 +2337,5 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
   .site-footer-contact { flex: none; }
   .site-footer-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+/* 产业图谱链条选择页（picker-mode）下允许通栏页脚溢出展示，否则负外边距会被 overflow:hidden 裁掉 */
+body.picker-mode #graphView.active { overflow: visible; }
