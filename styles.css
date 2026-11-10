@@ -480,7 +480,9 @@ h1, h2, h3, p { margin: 0; }
 
 /* Workbench layout: app navigation is horizontal, graph content is vertical. */
 .app-shell { display: flex; flex-direction: column; }
-.top-navigation { flex: 0 0 76px; min-width: 0; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 20px; padding: 0 34px; color: #dceaf5; background: var(--navy-deep); }
+.top-navigation { flex: 0 0 76px; display: flex; align-items: center; min-width: 0; color: #dceaf5; background: var(--navy-deep); }
+/* 头部内容与主内容区共用同一基准框架（居中 + 两侧留白），导航分组贴框架两边 */
+.top-navigation-inner { width: 100%; max-width: 1460px; margin: 0 auto; min-width: 0; display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 20px; padding: 0 clamp(28px, 4.5vw, 72px); }
 .top-navigation .brand-lockup { min-width: 0; padding: 0; }
 .top-navigation .brand-lockup > div:last-child { min-width: 0; }
 .top-navigation .brand-lockup strong { font-size: 17px; }
@@ -841,7 +843,7 @@ html, body { overflow-x: hidden; }
 }
 
 @media (max-width: 1020px) {
-  .top-navigation { grid-template-columns: auto 1fr auto auto; padding: 0 18px; }
+  .top-navigation-inner { grid-template-columns: auto 1fr auto auto; padding: 0 18px; }
   .top-navigation .primary-nav-item { min-width: 84px; padding: 0 10px; }
   .top-navigation .primary-nav-item b, .top-navigation .primary-nav-item small { display: block; }
   .top-navigation .primary-nav-item b { font-size: 12px; }
@@ -854,7 +856,8 @@ html, body { overflow-x: hidden; }
 @media (max-width: 760px) {
   body { overflow: auto; }
   .app-shell { min-height: 100vh; }
-  .top-navigation { flex-basis: 62px; min-height: 62px; grid-template-columns: max-content minmax(0, 1fr); gap: 9px; padding: 7px 10px; }
+  .top-navigation { flex-basis: 62px; min-height: 62px; padding: 7px 10px; }
+  .top-navigation-inner { grid-template-columns: max-content minmax(0, 1fr); gap: 9px; padding: 0; }
   .top-navigation .primary-nav-secondary { display: none; }
   .top-navigation .brand-lockup { padding: 0; }
   .top-navigation .brand-lockup > div:last-child, .top-navigation-status { display: none; }
