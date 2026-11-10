@@ -3395,12 +3395,24 @@ function setView(view) {
 }
 
 /* ===================== 首页 ===================== */
+// 首页产业标签统计：优先真实图谱明细，其次按链名确定性生成模拟统计
+function getChainStats(name) {
+  const entryProfile = industryProfiles[name] || (name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
+  if (entryProfile) {
+    return { nodeCount: entryProfile.nodeCount, companyCount: new Set(getProfileCompanyRecords(entryProfile).map((company) => company.name)).size };
+  }
+  return getChainCardMockStats(name);
+}
+
 function renderHomeChainChips() {
   $$('.home-chain-chips').forEach((container) => {
     const system = container.dataset.system;
     container.innerHTML = nationalIndustryEntries
       .filter((entry) => entry.type === system)
-      .map((entry) => `<button class="home-chain-chip" type="button" data-industry="${escapeHtml(entry.name)}">${escapeHtml(entry.name)}</button>`)
+      .map((entry) => {
+        const stats = getChainStats(entry.name);
+        return `<button class="home-chain-chip" type="button" data-industry="${escapeHtml(entry.name)}"><strong>${escapeHtml(entry.name)}</strong><span class="home-chip-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
+      })
       .join('');
   });
   $$('.home-chain-chip').forEach((chip) => chip.addEventListener('click', () => {
@@ -3988,6 +4000,15 @@ function init() {
   });
   syncGraphSearchClear();
   renderHomeChainChips();
+  // 核心能力：默认展示第一项描述，鼠标悬停切换展开对应描述
+  const homeCapabilityList = $('#homeCapabilityList');
+  if (homeCapabilityList) {
+    homeCapabilityList.addEventListener('mouseover', (event) => {
+      const item = event.target.closest('.home-cap-item');
+      if (!item || item.classList.contains('is-active')) return;
+      $$('.home-cap-item', homeCapabilityList).forEach((el) => el.classList.toggle('is-active', el === item));
+    });
+  }
   ['#regionScope'].forEach((selector) => $(selector)?.addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); applyGraphFilters(); }));
   $('#changeChainButton').addEventListener('click', () => { showChainPicker(); showToast('请选择要查看的产业链'); });
   $('#fullscreenButton').addEventListener('click', () => setGraphFullscreen(!$('.graph-board').classList.contains('fullscreen-map')));
