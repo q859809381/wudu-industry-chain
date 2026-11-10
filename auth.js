@@ -62,7 +62,7 @@
       '</div></div>',
       // 二维码付款弹窗 + 右下角客服咨询窗口
       '<style>',
-      '.pay-dialog-layer{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(16,34,51,.5);}',
+      '.pay-dialog-layer{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(16,34,51,.5);pointer-events:auto;}',
       '.pay-dialog-layer.is-open{display:flex;}',
       '.pay-dialog{width:320px;max-width:calc(100vw - 32px);background:#fff;border-radius:12px;padding:20px;box-shadow:0 20px 50px rgba(16,34,51,.25);text-align:center;}',
       '.pay-dialog .account-dialog-header{text-align:left;}',
@@ -73,7 +73,7 @@
       '.pay-amount span{color:#8a97a5;font-weight:400;}',
       '#payQrCanvas{display:block;margin:0 auto 10px;border:1px solid #dfe7ee;border-radius:8px;}',
       '.pay-note{margin:0 0 14px;font-size:11px;color:#8a97a5;}',
-      '.service-chat{position:fixed;right:20px;bottom:20px;z-index:1250;width:300px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 16px 44px rgba(16,34,51,.28);display:none;flex-direction:column;overflow:hidden;}',
+      '.service-chat{position:fixed;right:20px;bottom:20px;z-index:1250;width:300px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 16px 44px rgba(16,34,51,.28);display:none;flex-direction:column;overflow:hidden;pointer-events:auto;}',
       '.service-chat.is-open{display:flex;}',
       '.service-chat-header{display:flex;flex-direction:column;padding:12px 14px;background:linear-gradient(135deg,#123c58,#1e5f86);color:#fff;}',
       '.service-chat-header strong{font-size:14px;}',
@@ -87,6 +87,11 @@
       '.service-chat-input input{flex:1;min-width:0;border:1px solid #d7e1e9;border-radius:8px;padding:7px 10px;font-size:12px;outline:none;}',
       '.service-chat-input input:focus{border-color:#5d9bd4;}',
       '.service-chat-input button{border:0;border-radius:8px;padding:0 14px;background:#1e6f9f;color:#fff;font-size:12px;cursor:pointer;}',
+      '.service-fab{position:fixed;right:20px;bottom:20px;z-index:1240;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:56px;height:56px;border:0;border-radius:50%;background:linear-gradient(135deg,#1e6f9f,#123c58);color:#fff;font-size:11px;font-weight:600;cursor:pointer;box-shadow:0 8px 22px rgba(18,60,88,.35);pointer-events:auto;transition:transform .2s ease,opacity .2s ease;}',
+      '.service-fab:hover{transform:translateY(-2px);}',
+      '.service-fab svg{width:22px;height:22px;}',
+      '.service-fab small{font-size:10px;line-height:1;}',
+      '.service-fab.is-hidden{opacity:0;pointer-events:none;}',
       '</style>',
       '<div class="pay-dialog-layer" id="payDialogLayer" aria-hidden="true">',
       '<div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payDialogTitle">',
@@ -97,6 +102,7 @@
       '<p class="pay-note">演示环境：扫码后点击下方按钮模拟支付成功，开通对应产业链</p>',
       '<button type="button" class="auth-primary-button" id="payConfirmButton">已完成支付（演示）</button>',
       '</div></div>',
+      '<button type="button" class="service-fab" id="serviceFab" aria-label="咨询客服" title="咨询客服"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.1-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg><small>客服</small></button>',
       '<div class="service-chat" id="serviceChat" aria-hidden="true">',
       '<div class="service-chat-header"><strong>客服咨询</strong><small>在线客服 · 工作日 9:00 - 18:00</small><button type="button" class="service-chat-close" id="serviceChatClose" aria-label="关闭">×</button></div>',
       '<div class="service-chat-body" id="serviceChatBody"><div class="service-chat-msg agent"><span>您好，我是五度易链客服。产业链开通（¥199/条）、企业清单导出与数据合作都可以在这里咨询～</span></div></div>',
@@ -397,16 +403,24 @@
     }
 
     /* ---------- 右下角客服咨询窗口 ---------- */
+    const serviceFab = document.getElementById('serviceFab');
     function openServiceChat() {
       serviceChat.classList.add('is-open');
       serviceChat.setAttribute('aria-hidden', 'false');
+      serviceFab.classList.add('is-hidden');
       serviceChatBody.scrollTop = serviceChatBody.scrollHeight;
     }
 
     function closeServiceChat() {
       serviceChat.classList.remove('is-open');
       serviceChat.setAttribute('aria-hidden', 'true');
+      serviceFab.classList.remove('is-hidden');
     }
+
+    serviceFab.addEventListener('click', () => {
+      if (serviceChat.classList.contains('is-open')) closeServiceChat();
+      else openServiceChat();
+    });
 
     document.getElementById('serviceChatClose').addEventListener('click', closeServiceChat);
     function sendServiceChatMessage() {
