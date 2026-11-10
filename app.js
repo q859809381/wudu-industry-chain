@@ -3939,7 +3939,8 @@ function init() {
   renderGraph();
   // 点击顶部导航“产业图谱”：始终先进入产业链选择页（而非上次查看的链），
   // 让用户看到图谱已覆盖的产业链全貌；点具体链后再进入图谱详情
-  $$('.primary-nav-item').forEach((item) => item.addEventListener('click', () => {
+  // 仅绑定视图类导航（data-view）；外链（产业资讯）与下拉菜单（更多产品/更多服务）不参与视图切换
+  $$('.primary-nav-item[data-view]').forEach((item) => item.addEventListener('click', () => {
     if (item.dataset.view === 'graph') {
       showChainPicker();
       setView('graph');
