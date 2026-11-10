@@ -29,7 +29,7 @@
       '<button type="button" class="auth-modal-close" data-auth-close aria-label="关闭登录窗口">×</button>',
       '<div class="auth-brand-mark">W</div>',
       '<h1>五度易链</h1>',
-      '<p class="auth-login-subtitle">产业链数据洞察工作台</p>',
+      '<p class="auth-login-subtitle">产业链全景图谱平台</p>',
       '<div class="auth-tabs" role="tablist"><button type="button" class="auth-tab is-active" data-auth-tab="sms">短信登录</button><button type="button" class="auth-tab" data-auth-tab="password">密码登录</button></div>',
       '<form class="auth-form is-active" id="smsLoginForm" novalidate>',
       '<label class="auth-input-group"><input id="smsPhone" name="phone" type="tel" inputmode="numeric" maxlength="11" autocomplete="tel" placeholder="请输入手机号" required></label>',
