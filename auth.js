@@ -86,11 +86,14 @@
       '.service-chat-input input{flex:1;min-width:0;border:1px solid #d7e1e9;border-radius:8px;padding:7px 10px;font-size:12px;outline:none;}',
       '.service-chat-input input:focus{border-color:#5d9bd4;}',
       '.service-chat-input button{border:0;border-radius:8px;padding:0 14px;background:#1e6f9f;color:#fff;font-size:12px;cursor:pointer;}',
-      '.service-fab{position:fixed;right:20px;bottom:20px;z-index:1240;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:56px;height:56px;border:0;border-radius:50%;background:linear-gradient(135deg,#1e6f9f,#123c58);color:#fff;font-size:11px;font-weight:600;cursor:pointer;box-shadow:0 8px 22px rgba(18,60,88,.35);pointer-events:auto;transition:transform .2s ease,opacity .2s ease;}',
-      '.service-fab:hover{transform:translateY(-2px);}',
-      '.service-fab svg{width:22px;height:22px;}',
-      '.service-fab small{font-size:10px;line-height:1;}',
-      '.service-fab.is-hidden{opacity:0;pointer-events:none;}',
+      '.side-widget{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:1240;display:flex;flex-direction:column;align-items:center;width:66px;padding:10px 0 6px;border:1px solid #e7edf2;border-right:0;border-radius:12px 0 0 12px;background:#fff;box-shadow:-6px 8px 24px rgba(16,34,51,.12);pointer-events:auto;}',
+      '.side-widget-mascot{width:42px;height:42px;margin-bottom:8px;}',
+      '.side-widget-item{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%;padding:10px 0;border:0;background:none;color:#42586b;font-size:11px;font-weight:600;text-decoration:none;cursor:pointer;transition:color .2s ease;}',
+      '.side-widget-item svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}',
+      '.side-widget-item:hover{color:#1e6f9f;}',
+      '.side-widget-item + .side-widget-item{border-top:1px solid #eef3f7;}',
+      '.side-widget-backtop{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s ease;}',
+      '.side-widget-backtop.is-visible{opacity:1;visibility:visible;pointer-events:auto;}',
       '</style>',
       '<div class="pay-dialog-layer" id="payDialogLayer" aria-hidden="true">',
       '<div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payDialogTitle">',
@@ -101,7 +104,12 @@
       '<p class="pay-note">演示环境：扫码后点击下方按钮模拟支付成功，开通对应产业链</p>',
       '<button type="button" class="auth-primary-button" id="payConfirmButton">已完成支付（演示）</button>',
       '</div></div>',
-      '<button type="button" class="service-fab" id="serviceFab" aria-label="咨询客服" title="咨询客服"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.1-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/></svg><small>客服</small></button>',
+      '<div class="side-widget" id="sideWidget" aria-label="咨询工具栏">',
+      '<span class="side-widget-mascot" aria-hidden="true"><svg viewBox="0 0 48 48"><g fill="#e23a3a"><circle cx="24" cy="15" r="11"/><path d="M11 42c0-9 6-15 13-15s13 6 13 15z"/></g><circle cx="19.5" cy="14" r="2" fill="#fff"/><circle cx="28.5" cy="14" r="2" fill="#fff"/><path d="M20 20c1.4 1.6 6.6 1.6 8 0" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg></span>',
+      '<a class="side-widget-item" href="tel:010-68321050"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>电话咨询</span></a>',
+      '<a class="side-widget-item" href="https://affim.baidu.com/unique_64623122/chat?siteId=23037126&userId=64623122&siteToken=05cfe878b2e0ceed3e913161a3c4cdea&cp&cr&cw=www.datadowell.com" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-2.9-.4-4.1-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5z"/><path d="M8 10h8M8 13.5h5"/></svg><span>在线咨询</span></a>',
+      '<button type="button" class="side-widget-item side-widget-backtop" id="backTopButton" aria-label="返回顶部" title="返回顶部"><svg viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg><span>返回顶部</span></button>',
+      '</div>',
       '<div class="service-chat" id="serviceChat" aria-hidden="true">',
       '<div class="service-chat-header"><strong>客服咨询</strong><small>在线客服 · 工作日 9:00 - 18:00</small><button type="button" class="service-chat-close" id="serviceChatClose" aria-label="关闭">×</button></div>',
       '<div class="service-chat-body" id="serviceChatBody"><div class="service-chat-msg agent"><span>您好，我是五度易链客服。产业链开通（¥199/条）、企业清单导出与数据合作都可以在这里咨询～</span></div></div>',
@@ -398,24 +406,31 @@
       notify(chainName ? `「${chainName}」开通成功（演示支付），可查看该产业链图谱与上链企业` : '开通成功（演示支付）');
     }
 
-    /* ---------- 右下角客服咨询窗口 ---------- */
-    const serviceFab = document.getElementById('serviceFab');
+    /* ---------- 右侧咨询工具栏（电话咨询 / 在线咨询 / 返回顶部） ---------- */
     function openServiceChat() {
       serviceChat.classList.add('is-open');
       serviceChat.setAttribute('aria-hidden', 'false');
-      serviceFab.classList.add('is-hidden');
       serviceChatBody.scrollTop = serviceChatBody.scrollHeight;
     }
 
     function closeServiceChat() {
       serviceChat.classList.remove('is-open');
       serviceChat.setAttribute('aria-hidden', 'true');
-      serviceFab.classList.remove('is-hidden');
     }
 
-    serviceFab.addEventListener('click', () => {
-      if (serviceChat.classList.contains('is-open')) closeServiceChat();
-      else openServiceChat();
+    // 返回顶部：跟随页面滚动自动出现/隐藏（滚动超过一屏的 40% 时出现）
+    const backTopButton = document.getElementById('backTopButton');
+    const scrollRoot = document.querySelector('.main-content') || document.documentElement;
+    function updateBackTopVisibility() {
+      const scrollTop = Math.max(scrollRoot.scrollTop, window.scrollY || 0);
+      backTopButton.classList.toggle('is-visible', scrollTop > 400);
+    }
+    scrollRoot.addEventListener('scroll', updateBackTopVisibility, { passive: true });
+    window.addEventListener('scroll', updateBackTopVisibility, { passive: true });
+    updateBackTopVisibility();
+    backTopButton.addEventListener('click', () => {
+      scrollRoot.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     document.getElementById('serviceChatClose').addEventListener('click', closeServiceChat);
