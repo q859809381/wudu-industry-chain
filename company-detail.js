@@ -1825,6 +1825,10 @@ window.addEventListener("resize", () => syncDetailExpandables());
     if (!action) return;
     const type = action.dataset.detailAction;
     if (type === 'dd-report') {
+      // AI尽调报告为收费用户专属：游客弹登录窗，注册用户弹开通服务窗
+      const userType = window.WuduAuth ? window.WuduAuth.getUserType() : 'paid';
+      if (userType === 'visitor') { window.WuduAuth?.openLogin('AI尽调报告为收费用户专属功能，请先登录。'); return; }
+      if (userType === 'registered') { window.WuduAuth?.openUpgrade('AI尽调报告为收费用户专属功能，开通服务或联系客服后使用。'); return; }
       openAiReport();
       return;
     }

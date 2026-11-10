@@ -647,6 +647,70 @@ let regionScopeState = { province: '不限', city: '不限', district: '不限' 
 let regionScopePickerEventsReady = false;
 let toastTimer;
 
+/* ===================== 用户权限（游客 / 注册用户 / 收费用户） =====================
+ * 游客：首页、产业图谱（产业分析、上链企业清单，不能导出）、上链说明、解决方案，仅可查看集成电路产业链
+ * 注册用户：模块同游客（不能导出），仅可查看航空航天产业链
+ * 收费用户：全部产业链、企业清单导出、AI智能
+ */
+const USER_ACCESS_RULES = {
+  visitor: { label: '游客', chain: '半导体与集成电路', chainLabel: '集成电路产业链' },
+  registered: { label: '注册用户', chain: '航空航天', chainLabel: '航空航天产业链' },
+  paid: { label: '收费用户', chain: null, chainLabel: '全部产业链' }
+};
+
+function getUserType() {
+  if (window.WuduAuth && typeof window.WuduAuth.getUserType === 'function') return window.WuduAuth.getUserType();
+  return 'visitor';
+}
+
+function getChainScope() {
+  return USER_ACCESS_RULES[getUserType()] || USER_ACCESS_RULES.visitor;
+}
+
+function chainAllowed(name) {
+  const scope = getChainScope();
+  if (!scope.chain) return true;
+  if (name === scope.chain) return true;
+  return Boolean(industryNameMatches(name, scope.chain));
+}
+
+// 点击未授权的产业链：游客弹登录窗，注册用户弹开通服务窗
+function gateChainEntry(name) {
+  if (chainAllowed(name)) return true;
+  const type = getUserType();
+  const scope = getChainScope();
+  if (type === 'visitor') {
+    window.WuduAuth?.openLogin(`您当前为游客，仅可查看「${scope.chainLabel}」。登录后可查看更多产业链。`);
+  } else {
+    window.WuduAuth?.openUpgrade(`您当前为注册用户，可查看的产业链范围为「${scope.chainLabel}」，开通服务后可查看全部 153 条产业链。`);
+  }
+  return false;
+}
+
+// 企业清单导出：仅收费用户
+function requireExportPermission() {
+  const type = getUserType();
+  if (type === 'paid') return true;
+  if (type === 'visitor') {
+    window.WuduAuth?.openLogin('企业清单导出为收费用户专属功能，请先登录。');
+  } else {
+    window.WuduAuth?.openUpgrade('企业清单导出为收费用户专属功能，开通服务或联系客服后使用。');
+  }
+  return false;
+}
+
+// AI 功能（AI智能模块、AI尽调报告）：仅收费用户
+function requireAiPermission(featureName) {
+  const type = getUserType();
+  if (type === 'paid') return true;
+  if (type === 'visitor') {
+    window.WuduAuth?.openLogin(`${featureName}为收费用户专属功能，请先登录。`);
+  } else {
+    window.WuduAuth?.openUpgrade(`${featureName}为收费用户专属功能，开通服务或联系客服后使用。`);
+  }
+  return false;
+}
+
 const aiWelcomeMessage = '你好，我可以帮你查询企业信息，比如企业基础信息、法定代表人、经营状态、注册资本等。你可以直接问我“查一下名称包含笃威尔的企业”或“深圳笃威尔数字技术有限公司的法定代表人是谁”。';
 const aiConversations = [
   {
@@ -1603,6 +1667,7 @@ function bindSearchNodeBlock(container) {
 // 从搜索结果跳转：进入环节所属产业链图谱，并自动展开该环节的企业清单抽屉；
 // 同时把检索词带入图谱详情的环节搜索框，关闭抽屉后命中环节仍保持高亮
 function jumpToChainNode(chainName, nodeName, subpath) {
+  if (!gateChainEntry(chainName)) return;
   searchDrilldown = null;
   currentIndustry = chainName;
   chainSelectionActive = true;
@@ -1748,6 +1813,7 @@ function renderSearchChainBlock(hits, query) {
 function bindSearchChainBlock(container) {
   $$('.search-chain-item', container).forEach((button) => {
     button.addEventListener('click', () => {
+      if (!gateChainEntry(button.dataset.industry)) return;
       searchDrilldown = null;
       currentIndustry = button.dataset.industry;
       setChainSelectionMode(true);
@@ -1795,6 +1861,7 @@ function renderChainPicker(profile) {
       }).join('');
     }
     $$('.chain-picker-item', groupsContainer).forEach((button) => button.addEventListener('click', () => {
+      if (!gateChainEntry(button.dataset.industry)) return;
       currentIndustry = button.dataset.industry;
       setChainSelectionMode(true);
       renderGraph();
@@ -2647,6 +2714,7 @@ function csvCell(value) {
 }
 
 function exportCompanyTable() {
+  if (!requireExportPermission()) return;
   const profile = getProfile();
   if (!profile) {
     showToast('当前产业链暂无可导出的企业清单');
@@ -3291,6 +3359,8 @@ function closeDrawer() {
 
 function setView(view) {
   if (view === 'analysis') view = 'graph';
+  // AI智能为收费用户专属：游客弹登录窗，注册用户弹开通服务窗
+  if (view === 'ai' && !requireAiPermission('AI智能')) return;
   const meta = viewMeta[view];
   if (!meta) return;
   $$('.primary-nav-item').forEach((item) => item.classList.toggle('active', item.dataset.view === view));
@@ -3310,6 +3380,7 @@ function renderHomeChainChips() {
       .join('');
   });
   $$('.home-chain-chip').forEach((chip) => chip.addEventListener('click', () => {
+    if (!gateChainEntry(chip.dataset.industry)) return;
     currentIndustry = chip.dataset.industry;
     chainSelectionActive = true;
     setChainSelectionMode(true);
@@ -3842,6 +3913,21 @@ function init() {
   initializeRegionScopePicker();
   renderGraph();
   $$('.primary-nav-item').forEach((item) => item.addEventListener('click', () => setView(item.dataset.view)));
+  // 登录 / 退出 / 会员类型变化：按新的用户权限重置产业链范围并重渲染
+  document.addEventListener('wudu-auth-change', () => {
+    closeDrawer();
+    const scope = getChainScope();
+    if (scope.chain) {
+      if (currentIndustry && !chainAllowed(currentIndustry)) currentIndustry = scope.chain;
+      if (!currentIndustry) currentIndustry = scope.chain;
+      chainSelectionActive = true;
+      setChainSelectionMode(true);
+    } else {
+      chainSelectionActive = false;
+    }
+    renderGraph();
+    if ($('.view-panel.active')?.dataset.panel === 'graph') setWorkbenchSection('graphSection');
+  });
   $$('.workbench-tab').forEach((tab) => {
     tab.setAttribute('aria-selected', String(tab.classList.contains('active')));
     tab.addEventListener('click', () => setWorkbenchSection(tab.dataset.section));
@@ -3879,7 +3965,10 @@ function init() {
   });
   $('#closeDrawer').addEventListener('click', closeDrawer);
   $('#drawerBackdrop').addEventListener('click', (event) => { if (event.target === $('#drawerBackdrop')) closeDrawer(); });
-  $('#drawerExportButton').addEventListener('click', () => showToast('企业清单导出任务已创建'));
+  $('#drawerExportButton').addEventListener('click', () => {
+    if (!requireExportPermission()) return;
+    showToast('企业清单导出任务已创建');
+  });
   ['#drawerCompanyList', '#onchainCompanyList'].forEach((selector) => {
     $(selector)?.addEventListener('click', (event) => {
       const nameLink = event.target.closest('[data-company-key]');
