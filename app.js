@@ -3405,17 +3405,17 @@ function getChainStats(name) {
 }
 
 function renderHomeChainChips() {
-  $$('.home-chain-chips').forEach((container) => {
+  $$('.home-industry-list').forEach((container) => {
     const system = container.dataset.system;
     container.innerHTML = nationalIndustryEntries
       .filter((entry) => entry.type === system)
       .map((entry) => {
         const stats = getChainStats(entry.name);
-        return `<button class="home-chain-chip" type="button" data-industry="${escapeHtml(entry.name)}"><strong>${escapeHtml(entry.name)}</strong><span class="home-chip-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
+        return `<button class="home-industry-item" type="button" data-industry="${escapeHtml(entry.name)}"><strong>${escapeHtml(entry.name)}</strong><span class="home-industry-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
       })
       .join('');
   });
-  $$('.home-chain-chip').forEach((chip) => chip.addEventListener('click', () => {
+  $$('.home-industry-item').forEach((chip) => chip.addEventListener('click', () => {
     if (!gateChainEntry(chip.dataset.industry)) return;
     currentIndustry = chip.dataset.industry;
     chainSelectionActive = true;
@@ -4000,13 +4000,23 @@ function init() {
   });
   syncGraphSearchClear();
   renderHomeChainChips();
-  // 核心能力：默认展示第一项描述，鼠标悬停切换展开对应描述
+  // 核心能力：左侧标题导航悬停/点击，右侧大面板切换展示对应标题与描述
   const homeCapabilityList = $('#homeCapabilityList');
   if (homeCapabilityList) {
-    homeCapabilityList.addEventListener('mouseover', (event) => {
-      const item = event.target.closest('.home-cap-item');
-      if (!item || item.classList.contains('is-active')) return;
-      $$('.home-cap-item', homeCapabilityList).forEach((el) => el.classList.toggle('is-active', el === item));
+    const capTabs = $$('.home-cap-tab', homeCapabilityList);
+    const capPanel = $('.home-cap-panel', homeCapabilityList);
+    const capTitle = $('#homeCapTitle');
+    const capDesc = $('#homeCapDesc');
+    const activateCapTab = (tab) => {
+      capTabs.forEach((el) => el.classList.toggle('is-active', el === tab));
+      if (capTitle) capTitle.textContent = tab.dataset.title;
+      if (capDesc) capDesc.textContent = tab.dataset.desc;
+      if (capPanel) capPanel.dataset.num = (tab.querySelector('span')?.textContent || '').trim();
+    };
+    capTabs.forEach((tab) => {
+      tab.addEventListener('mouseenter', () => activateCapTab(tab));
+      tab.addEventListener('focus', () => activateCapTab(tab));
+      tab.addEventListener('click', () => activateCapTab(tab));
     });
   }
   ['#regionScope'].forEach((selector) => $(selector)?.addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); applyGraphFilters(); }));
