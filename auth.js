@@ -528,9 +528,11 @@
       document.getElementById('menuUpgradeItem').hidden = !user || user.type === 'paid';
       document.getElementById('menuDowngradeItem').hidden = !user || user.type !== 'paid';
       if (avatarButton) {
-        avatarButton.textContent = user ? (user.type === 'paid' ? 'V' : '会') : '登录';
-        avatarButton.title = user ? `${user.phone}（${typeLabel}）` : '点击登录';
-        avatarButton.setAttribute('aria-label', user ? `当前用户：${user.phone}（${typeLabel}）` : '点击登录');
+        // 未登录显示「登录/注册」胶囊按钮，登录后恢复圆形头像徽标
+        avatarButton.textContent = user ? (user.type === 'paid' ? 'V' : '会') : '登录/注册';
+        avatarButton.classList.toggle('login-pill', !user);
+        avatarButton.title = user ? `${user.phone}（${typeLabel}）` : '点击登录/注册';
+        avatarButton.setAttribute('aria-label', user ? `当前用户：${user.phone}（${typeLabel}）` : '点击登录/注册');
       }
     }
 

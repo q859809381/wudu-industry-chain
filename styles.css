@@ -74,6 +74,8 @@ h1, h2, h3, p { margin: 0; }
 .icon-button:hover { border-color: #a8c9ed; background: #f4f9ff; color: var(--blue); }
 .icon-button.subtle { width: 26px; height: 26px; border-color: transparent; background: transparent; }
 .avatar-button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--blue); color: #fff; font-size: 11px; }
+/* 未登录态：「登录/注册」胶囊按钮 */
+.avatar-button.login-pill { width: auto; min-width: 0; padding: 0 13px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .02em; cursor: pointer; }
 
 .page-wrap { width: 100%; max-width: 1650px; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; margin: 0 auto; padding: 25px 34px 17px; }
 .page-heading { flex: 0 0 auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -482,14 +484,14 @@ h1, h2, h3, p { margin: 0; }
 .app-shell { display: flex; flex-direction: column; }
 .top-navigation { flex: 0 0 76px; display: flex; align-items: center; min-width: 0; color: #dceaf5; background: var(--navy-deep); }
 /* 头部内容与主内容区共用同一基准框架（居中 + 两侧留白），导航分组贴框架两边 */
-.top-navigation-inner { width: 100%; max-width: 1460px; margin: 0 auto; min-width: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; padding: 0 clamp(28px, 4.5vw, 72px); }
-.top-navigation-nav { min-width: 0; display: flex; align-items: stretch; justify-content: center; gap: 6px; }
-.top-navigation-nav .primary-nav-secondary { margin-left: 12px; }
+.top-navigation-inner { width: 100%; max-width: 1460px; margin: 0 auto; min-width: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 0 clamp(28px, 4.5vw, 72px); }
+.top-navigation-nav { min-width: 0; display: flex; align-items: stretch; justify-content: center; gap: 2px; }
+.top-navigation-nav .primary-nav-secondary { margin-left: 6px; }
 .top-navigation .brand-lockup { min-width: 0; padding: 0; }
 .top-navigation .brand-lockup > div:last-child { min-width: 0; }
 .top-navigation .brand-lockup strong { font-size: 17px; }
 .top-navigation .primary-nav { display: flex; align-items: stretch; justify-content: flex-start; gap: 6px; }
-.top-navigation .primary-nav-item { width: auto; min-width: 96px; min-height: 52px; justify-content: center; gap: 9px; padding: 0 15px; border-radius: 5px; text-align: left; }
+.top-navigation .primary-nav-item { width: auto; min-width: 84px; min-height: 52px; justify-content: center; gap: 8px; padding: 0 10px; border-radius: 5px; text-align: left; }
 .top-navigation .primary-nav-item b { white-space: nowrap; }
 .top-navigation .primary-nav-item.active { background: var(--navy-soft); box-shadow: inset 0 -3px #50c9e5; }
 .top-navigation .primary-nav-item .nav-icon { width: 20px; height: 20px; }
@@ -2202,7 +2204,7 @@ body.picker-mode .chain-filter-list { flex: 1 1 auto; min-height: 0; max-height:
 .home-hero-stat strong { display: block; color: #ffffff; font-size: 30px; font-weight: 800; letter-spacing: -.2px; }
 .home-hero-stat span { display: block; margin-top: 5px; color: #9fb9cf; font-size: 12.5px; }
 
-.home-section { margin-top: 34px; padding: 0 6px; }
+.home-section { margin-top: 34px; padding: 0; }
 .home-section-head { margin-bottom: 18px; }
 .home-section-head h2 { margin: 4px 0 6px; color: #1d3a54; font-size: 22px; font-weight: 700; letter-spacing: .3px; }
 .home-section-head p { margin: 0; color: #7e94a4; font-size: 12px; }
