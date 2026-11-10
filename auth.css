@@ -25,6 +25,8 @@
 
 .auth-login-view.is-open {
   display: grid;
+  /* 固定列宽为整行，避免面板随当前页签内容多少而变窄 */
+  grid-template-columns: minmax(0, 1fr);
   place-items: center;
 }
 
