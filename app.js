@@ -648,9 +648,9 @@ let regionScopePickerEventsReady = false;
 let toastTimer;
 
 /* ===================== 用户权限（游客 / 注册用户 / 收费用户·按链开通） =====================
- * 集成电路（半导体与集成电路）对所有用户限免开放
+ * 限免产业链：集成电路（半导体与集成电路）对所有用户开放；登录用户（注册/收费）另可限免查看航空航天
  * 游客：首页、产业图谱、上链说明、解决方案，仅限免产业链
- * 注册用户：模块同游客，另可查看航空航天产业链
+ * 注册用户：模块同游客，另可限免查看航空航天产业链
  * 收费用户：按条开通产业链（¥199/条），开通哪条看哪条；企业清单导出、AI 智能为收费用户专属
  */
 const USER_ACCESS_RULES = {
@@ -660,6 +660,10 @@ const USER_ACCESS_RULES = {
 };
 
 const CHAIN_PRICE = 199;
+
+// 限免产业链（精确归一化名）：集成电路对所有人开放，航空航天对登录用户开放
+const FREE_CHAIN_NAMES = ['集成电路', '半导体与集成电路'];
+const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天'];
 
 function getUserPurchasedChains() {
   const user = window.WuduAuth && typeof window.WuduAuth.getUser === 'function' ? window.WuduAuth.getUser() : null;
@@ -676,9 +680,10 @@ function getChainScope() {
 }
 
 function chainAllowed(name) {
-  // 集成电路（含半导体与集成电路）对所有用户限免开放，精确匹配避免别名误放行
+  // 限免产业链精确匹配（避免别名误放行）：集成电路对所有人开放，航空航天对登录用户开放
   const normalized = normalizeIndustryName(name);
-  if (normalized === '集成电路' || normalized === '半导体与集成电路') return true;
+  if (FREE_CHAIN_NAMES.includes(normalized)) return true;
+  if (getUserType() !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalized)) return true;
   const type = getUserType();
   if (type === 'paid') {
     // 收费用户按条开通：仅可查看已开通的产业链
@@ -694,7 +699,7 @@ function gateChainEntry(name) {
   const type = getUserType();
   const scope = getChainScope();
   if (type === 'visitor') {
-    window.WuduAuth?.openLogin(`您当前为游客，仅可查看「${scope.chainLabel}」。登录后可查看更多产业链。`);
+    window.WuduAuth?.openLogin();
   } else {
     window.WuduAuth?.openUpgrade(`查看「${name}」需单独开通（¥${CHAIN_PRICE}/条），开通后即可查看该产业链图谱与上链企业。`, name);
   }
@@ -1464,14 +1469,10 @@ function getChainCardMockStats(name) {
 function renderChainCard(entry, selectedIndustry, isHot = false) {
   const entryProfile = industryProfiles[entry.name] || (entry.name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
   const isSelected = chainSelectionActive && entry.name === selectedIndustry;
-  // 限免标识：集成电路（含半导体与集成电路）对游客/注册用户长期限免；
-  // 游客另可看授权链（半导体与集成电路），注册用户另可看航空航天；收费用户全部可见不标
-  const scope = getChainScope();
+  // 限免标识：集成电路（含半导体与集成电路）对所有用户限免；航空航天对登录用户（注册/收费）限免
   const userType = getUserType();
-  const normalizedScope = normalizeIndustryName(scope.chain || '');
   const normalizedName = normalizeIndustryName(entry.name);
-  const isIcFree = normalizedName === '集成电路' || normalizedName === '半导体与集成电路';
-  const isFreeSample = userType !== 'paid' && (isIcFree || (Boolean(normalizedScope) && normalizedName === normalizedScope));
+  const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName) || (userType !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalizedName));
   // 当前账号可查看的产业链卡片：边框高亮，一眼区分可点开与需开通的链
   const isAllowed = chainAllowed(entry.name);
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
