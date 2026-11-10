@@ -2347,4 +2347,4 @@ body.picker-mode #graphView .site-footer { display: none; }
 .home-hot-label { color: #7e94a4; font-size: 12px; font-weight: 600; }
 .home-hot-chip { padding: 3px 11px; border: 1px solid #dbe5ee; border-radius: 999px; background: #f3f7fa; color: #42586b; font-size: 12px; cursor: pointer; transition: .18s ease; white-space: nowrap; }
 .home-hot-chip:hover { border-color: #2f8fe0; background: #eaf3fc; color: #1d6fae; }
-.home-query-send-text { flex: 0 0 auto; width: auto; height: auto; min-height: 34px; padding: 6px 18px; border-radius: 9px; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.home-query-send-text { display: inline-flex; place-items: unset; align-items: center; flex: 0 0 auto; width: auto; height: auto; min-height: 34px; padding: 6px 18px; border-radius: 9px; gap: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; }
