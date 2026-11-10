@@ -55,11 +55,53 @@
       '<p class="dialog-description" id="upgradeDialogMessage"></p>',
       '<div class="upgrade-benefit-list">',
       '<span>收费用户专属权益</span>',
-      '<ul><li>查看全部 153 条产业链</li><li>企业清单导出</li><li>AI 智能分析</li></ul>',
+      '<ul><li>按产业链开通：¥199 / 条，开通哪条看哪条</li><li>开通后可查看该产业链图谱与上链企业</li><li>企业清单导出、AI 智能分析</li></ul>',
       '</div>',
       '<div class="upgrade-actions"><button type="button" class="upgrade-secondary-button" id="upgradeContactButton">联系客服</button><button type="button" class="auth-primary-button upgrade-primary-button" id="upgradeBuyButton">开通服务</button></div>',
-      '<p class="auth-upgrade-note">演示环境：点击「开通服务」直接体验收费用户权益</p>',
+      '<p class="auth-upgrade-note">演示环境：点击「开通服务」体验扫码付款，点击「联系客服」在右下角咨询</p>',
       '</div></div>',
+      // 二维码付款弹窗 + 右下角客服咨询窗口
+      '<style>',
+      '.pay-dialog-layer{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;background:rgba(16,34,51,.5);}',
+      '.pay-dialog-layer.is-open{display:flex;}',
+      '.pay-dialog{width:320px;max-width:calc(100vw - 32px);background:#fff;border-radius:12px;padding:20px;box-shadow:0 20px 50px rgba(16,34,51,.25);text-align:center;}',
+      '.pay-dialog .account-dialog-header{text-align:left;}',
+      '.pay-chain-line{margin:4px 0 10px;font-size:12px;color:#5b6b7c;}',
+      '.pay-chain-line strong{color:#17232e;}',
+      '.pay-amount{margin:2px 0 12px;color:#e8400f;font-size:13px;font-weight:600;}',
+      '.pay-amount b{font-size:30px;letter-spacing:-.5px;margin:0 2px;}',
+      '.pay-amount span{color:#8a97a5;font-weight:400;}',
+      '#payQrCanvas{display:block;margin:0 auto 10px;border:1px solid #dfe7ee;border-radius:8px;}',
+      '.pay-note{margin:0 0 14px;font-size:11px;color:#8a97a5;}',
+      '.service-chat{position:fixed;right:20px;bottom:20px;z-index:1250;width:300px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 16px 44px rgba(16,34,51,.28);display:none;flex-direction:column;overflow:hidden;}',
+      '.service-chat.is-open{display:flex;}',
+      '.service-chat-header{display:flex;flex-direction:column;padding:12px 14px;background:linear-gradient(135deg,#123c58,#1e5f86);color:#fff;}',
+      '.service-chat-header strong{font-size:14px;}',
+      '.service-chat-header small{font-size:11px;opacity:.8;margin-top:2px;}',
+      '.service-chat-close{position:absolute;top:8px;right:10px;width:24px;height:24px;border:0;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;font-size:14px;cursor:pointer;line-height:1;}',
+      '.service-chat-body{height:210px;overflow-y:auto;padding:12px;background:#f4f7fa;display:flex;flex-direction:column;gap:8px;}',
+      '.service-chat-msg{max-width:82%;padding:8px 11px;border-radius:10px;font-size:12px;line-height:1.6;white-space:pre-line;}',
+      '.service-chat-msg.agent{align-self:flex-start;background:#fff;border:1px solid #e2e9ef;color:#2c3e50;border-top-left-radius:2px;}',
+      '.service-chat-msg.user{align-self:flex-end;background:#1e6f9f;color:#fff;border-top-right-radius:2px;}',
+      '.service-chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #e6edf2;background:#fff;}',
+      '.service-chat-input input{flex:1;min-width:0;border:1px solid #d7e1e9;border-radius:8px;padding:7px 10px;font-size:12px;outline:none;}',
+      '.service-chat-input input:focus{border-color:#5d9bd4;}',
+      '.service-chat-input button{border:0;border-radius:8px;padding:0 14px;background:#1e6f9f;color:#fff;font-size:12px;cursor:pointer;}',
+      '</style>',
+      '<div class="pay-dialog-layer" id="payDialogLayer" aria-hidden="true">',
+      '<div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payDialogTitle">',
+      '<div class="account-dialog-header"><div><p class="dialog-eyebrow">PAYMENT</p><h2 id="payDialogTitle">扫码支付</h2></div><button type="button" class="dialog-close" data-pay-close aria-label="关闭">×</button></div>',
+      '<p class="pay-chain-line">开通对象：<strong id="payChainName">—</strong></p>',
+      '<div class="pay-amount">¥<b>199</b><span>/ 条产业链</span></div>',
+      '<canvas id="payQrCanvas" width="180" height="180" title="演示二维码"></canvas>',
+      '<p class="pay-note">演示环境：扫码后点击下方按钮模拟支付成功，开通对应产业链</p>',
+      '<button type="button" class="auth-primary-button" id="payConfirmButton">已完成支付（演示）</button>',
+      '</div></div>',
+      '<div class="service-chat" id="serviceChat" aria-hidden="true">',
+      '<div class="service-chat-header"><strong>客服咨询</strong><small>在线客服 · 工作日 9:00 - 18:00</small><button type="button" class="service-chat-close" id="serviceChatClose" aria-label="关闭">×</button></div>',
+      '<div class="service-chat-body" id="serviceChatBody"><div class="service-chat-msg agent"><span>您好，我是五度易链客服。产业链开通（¥199/条）、企业清单导出与数据合作都可以在这里咨询～</span></div></div>',
+      '<div class="service-chat-input"><input id="serviceChatInput" type="text" placeholder="输入您想咨询的问题" autocomplete="off"><button type="button" id="serviceChatSend">发送</button></div>',
+      '</div>',
       // 头像菜单
       '<div class="account-menu" id="avatarMenu" role="menu" aria-hidden="true">',
       '<div class="account-menu-header"><span class="account-menu-avatar" id="menuAvatar">W</span><div><strong id="menuAccount">未登录</strong><small id="menuUserType">游客</small></div></div>',
@@ -85,6 +127,12 @@
     const loginError = document.getElementById('loginError');
     const upgradeLayer = document.getElementById('upgradeDialogLayer');
     const upgradeMessage = document.getElementById('upgradeDialogMessage');
+    const payDialogLayer = document.getElementById('payDialogLayer');
+    const payChainName = document.getElementById('payChainName');
+    const payQrCanvas = document.getElementById('payQrCanvas');
+    const serviceChat = document.getElementById('serviceChat');
+    const serviceChatBody = document.getElementById('serviceChatBody');
+    let upgradeChain = '';
     const avatarButton = document.getElementById('avatarButton') || document.querySelector('.avatar-button');
     const avatarMenu = document.getElementById('avatarMenu');
 
@@ -189,13 +237,15 @@
       const users = readUsers();
       const user = users[phone] || { type: 'registered', createdAt: new Date().toISOString() };
       const finalType = type || user.type || 'registered';
-      users[phone] = { ...user, type: finalType, lastLoginAt: new Date().toISOString() };
+      // 收费用户按条开通产业链：登录 / 支付时保留已开通清单
+      const chains = Array.isArray(options.chains) ? options.chains : (Array.isArray(user.chains) ? user.chains : []);
+      users[phone] = { ...user, type: finalType, chains, lastLoginAt: new Date().toISOString() };
       saveUsers(users);
-      localStorage.setItem(USER_KEY, JSON.stringify({ phone, type: finalType, loginAt: Date.now() }));
+      localStorage.setItem(USER_KEY, JSON.stringify({ phone, type: finalType, chains, loginAt: Date.now() }));
       closeLogin();
       updateAuthUi();
-      if (!options.silent) notify(type === 'paid' ? '已开通收费会员（演示）' : '登录成功，欢迎进入五度易链');
-      document.dispatchEvent(new CustomEvent('wudu-auth-change', { detail: { phone, type: finalType } }));
+      if (!options.silent) notify(type === 'paid' ? (chains.length ? `已开通 ${chains.length} 条产业链（演示）` : '已开通收费会员（演示）') : '登录成功，欢迎进入五度易链');
+      document.dispatchEvent(new CustomEvent('wudu-auth-change', { detail: { phone, type: finalType, chains } }));
     }
 
     smsForm.addEventListener('submit', (event) => {
@@ -257,10 +307,11 @@
     });
 
     /* ---------- 开通服务对话框 ---------- */
-    function openUpgrade(message) {
+    function openUpgrade(message, chainName) {
       closeLogin();
       closeAvatarMenu();
-      upgradeMessage.textContent = message || '您当前为注册用户，开通服务后可使用收费用户专属权益。';
+      upgradeChain = chainName || '';
+      upgradeMessage.textContent = message || '开通产业链服务（¥199/条），开通后即可查看对应产业链图谱与上链企业。';
       upgradeLayer.classList.add('is-open');
       upgradeLayer.setAttribute('aria-hidden', 'false');
     }
@@ -275,13 +326,111 @@
     });
     document.getElementById('upgradeContactButton').addEventListener('click', () => {
       closeUpgrade();
-      notify('客服热线 400-000-0000（演示），工作日 9:00-18:00');
+      openServiceChat();
     });
     document.getElementById('upgradeBuyButton').addEventListener('click', () => {
       const user = getUser();
       if (!user) return openLogin('请先登录后再开通服务');
-      signIn(user.phone, 'paid');
+      openPayDialog(upgradeChain);
+    });
+
+    /* ---------- 二维码付款弹窗（按条开通 ¥199） ---------- */
+    function drawPayQr(seedText) {
+      const ctx = payQrCanvas.getContext('2d');
+      const size = payQrCanvas.width;
+      const cell = 10;
+      const cells = size / cell;
+      let seed = [...String(seedText)].reduce((sum, ch) => sum + ch.charCodeAt(0) * 31, 7) || 7;
+      const rand = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = '#1f2d3d';
+      for (let y = 0; y < cells; y += 1) {
+        for (let x = 0; x < cells; x += 1) {
+          if (rand() > 0.52) ctx.fillRect(x * cell + 1, y * cell + 1, cell - 2, cell - 2);
+        }
+      }
+      // 三个定位角
+      [[0, 0], [cells - 7, 0], [0, cells - 7]].forEach(([gx, gy]) => {
+        ctx.fillStyle = '#1f2d3d';
+        ctx.fillRect(gx * cell, gy * cell, 7 * cell, 7 * cell);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(gx * cell + cell, gy * cell + cell, 5 * cell, 5 * cell);
+        ctx.fillStyle = '#1f2d3d';
+        ctx.fillRect(gx * cell + 2 * cell, gy * cell + 2 * cell, 3 * cell, 3 * cell);
+      });
+    }
+
+    function openPayDialog(chainName) {
       closeUpgrade();
+      const user = getUser();
+      payChainName.textContent = chainName ? `${chainName}产业链` : '指定产业链（开通后可联系客服指定）';
+      payDialogLayer.classList.add('is-open');
+      payDialogLayer.setAttribute('aria-hidden', 'false');
+      drawPayQr(`${chainName || 'chain'}|${user ? user.phone : 'guest'}|${Date.now()}`);
+    }
+
+    function closePayDialog() {
+      payDialogLayer.classList.remove('is-open');
+      payDialogLayer.setAttribute('aria-hidden', 'true');
+    }
+
+    payDialogLayer.addEventListener('click', (event) => {
+      if (event.target === payDialogLayer || event.target.closest('[data-pay-close]')) closePayDialog();
+    });
+    document.getElementById('payConfirmButton').addEventListener('click', () => {
+      purchaseChain(upgradeChain);
+    });
+
+    // 演示支付成功：记录已开通的产业链（收费用户按条开通，不解锁全部）
+    function purchaseChain(chainName) {
+      const user = getUser();
+      if (!user) return openLogin('请先登录后再开通服务');
+      const chains = new Set(Array.isArray(user.chains) ? user.chains : []);
+      if (chainName) chains.add(chainName);
+      signIn(user.phone, 'paid', { chains: [...chains] });
+      closePayDialog();
+      notify(chainName ? `「${chainName}」开通成功（演示支付），可查看该产业链图谱与上链企业` : '开通成功（演示支付）');
+    }
+
+    /* ---------- 右下角客服咨询窗口 ---------- */
+    function openServiceChat() {
+      serviceChat.classList.add('is-open');
+      serviceChat.setAttribute('aria-hidden', 'false');
+      serviceChatBody.scrollTop = serviceChatBody.scrollHeight;
+    }
+
+    function closeServiceChat() {
+      serviceChat.classList.remove('is-open');
+      serviceChat.setAttribute('aria-hidden', 'true');
+    }
+
+    document.getElementById('serviceChatClose').addEventListener('click', closeServiceChat);
+    function sendServiceChatMessage() {
+      const input = document.getElementById('serviceChatInput');
+      const text = (input.value || '').trim();
+      if (!text) return;
+      input.value = '';
+      const userMsg = document.createElement('div');
+      userMsg.className = 'service-chat-msg user';
+      userMsg.innerHTML = `<span></span>`;
+      userMsg.querySelector('span').textContent = text;
+      serviceChatBody.appendChild(userMsg);
+      serviceChatBody.scrollTop = serviceChatBody.scrollHeight;
+      setTimeout(() => {
+        const reply = document.createElement('div');
+        reply.className = 'service-chat-msg agent';
+        reply.innerHTML = '<span>收到您的咨询，客服会尽快与您联系。您也可以直接点击「开通服务」按条开通产业链（¥199/条）。</span>';
+        serviceChatBody.appendChild(reply);
+        serviceChatBody.scrollTop = serviceChatBody.scrollHeight;
+      }, 700);
+    }
+    document.getElementById('serviceChatSend').addEventListener('click', sendServiceChatMessage);
+    document.getElementById('serviceChatInput').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') sendServiceChatMessage();
     });
 
     /* ---------- 头像按钮与菜单 ---------- */
@@ -300,7 +449,7 @@
       if (!actionButton) return;
       const action = actionButton.dataset.accountAction;
       closeAvatarMenu();
-      if (action === 'upgrade') openUpgrade('开通收费会员后可使用 AI 智能、企业清单导出与全部产业链。');
+      if (action === 'upgrade') openUpgrade('开通产业链服务：¥199 / 条，开通哪条看哪条。也可联系客服咨询企业级方案。');
       if (action === 'downgrade') {
         const user = getUser();
         if (user) signIn(user.phone, 'registered', { silent: true });
@@ -314,7 +463,9 @@
     });
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
-      if (upgradeLayer.classList.contains('is-open')) closeUpgrade();
+      if (payDialogLayer.classList.contains('is-open')) closePayDialog();
+      else if (upgradeLayer.classList.contains('is-open')) closeUpgrade();
+      else if (serviceChat.classList.contains('is-open')) closeServiceChat();
       else if (loginView.classList.contains('is-open')) closeLogin();
       else closeAvatarMenu();
     });

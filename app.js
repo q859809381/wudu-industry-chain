@@ -647,16 +647,24 @@ let regionScopeState = { province: '不限', city: '不限', district: '不限' 
 let regionScopePickerEventsReady = false;
 let toastTimer;
 
-/* ===================== 用户权限（游客 / 注册用户 / 收费用户） =====================
- * 游客：首页、产业图谱（产业分析、上链企业清单，不能导出）、上链说明、解决方案，仅可查看集成电路产业链
- * 注册用户：模块同游客（不能导出），仅可查看航空航天产业链
- * 收费用户：全部产业链、企业清单导出、AI智能
+/* ===================== 用户权限（游客 / 注册用户 / 收费用户·按链开通） =====================
+ * 集成电路（半导体与集成电路）对所有用户限免开放
+ * 游客：首页、产业图谱、上链说明、解决方案，仅限免产业链
+ * 注册用户：模块同游客，另可查看航空航天产业链
+ * 收费用户：按条开通产业链（¥199/条），开通哪条看哪条；企业清单导出、AI 智能为收费用户专属
  */
 const USER_ACCESS_RULES = {
   visitor: { label: '游客', chain: '半导体与集成电路', chainLabel: '集成电路产业链' },
   registered: { label: '注册用户', chain: '航空航天', chainLabel: '航空航天产业链' },
-  paid: { label: '收费用户', chain: null, chainLabel: '全部产业链' }
+  paid: { label: '收费用户', chain: null, chainLabel: '已开通的产业链' }
 };
+
+const CHAIN_PRICE = 199;
+
+function getUserPurchasedChains() {
+  const user = window.WuduAuth && typeof window.WuduAuth.getUser === 'function' ? window.WuduAuth.getUser() : null;
+  return Array.isArray(user?.chains) ? user.chains : [];
+}
 
 function getUserType() {
   if (window.WuduAuth && typeof window.WuduAuth.getUserType === 'function') return window.WuduAuth.getUserType();
@@ -668,13 +676,19 @@ function getChainScope() {
 }
 
 function chainAllowed(name) {
+  // 集成电路（含半导体与集成电路）对所有用户限免开放，精确匹配避免别名误放行
+  const normalized = normalizeIndustryName(name);
+  if (normalized === '集成电路' || normalized === '半导体与集成电路') return true;
+  const type = getUserType();
+  if (type === 'paid') {
+    // 收费用户按条开通：仅可查看已开通的产业链
+    return getUserPurchasedChains().some((chain) => normalizeIndustryName(chain) === normalized);
+  }
   const scope = getChainScope();
-  if (!scope.chain) return true;
-  if (name === scope.chain) return true;
-  return Boolean(industryNameMatches(name, scope.chain));
+  return Boolean(scope.chain) && normalizeIndustryName(scope.chain) === normalized;
 }
 
-// 点击未授权的产业链：游客弹登录窗，注册用户弹开通服务窗
+// 点击未授权的产业链：游客弹登录窗，注册/收费用户弹开通服务窗（按条开通）
 function gateChainEntry(name) {
   if (chainAllowed(name)) return true;
   const type = getUserType();
@@ -682,7 +696,7 @@ function gateChainEntry(name) {
   if (type === 'visitor') {
     window.WuduAuth?.openLogin(`您当前为游客，仅可查看「${scope.chainLabel}」。登录后可查看更多产业链。`);
   } else {
-    window.WuduAuth?.openUpgrade(`您当前为注册用户，可查看的产业链范围为「${scope.chainLabel}」，开通服务后可查看全部 153 条产业链。`);
+    window.WuduAuth?.openUpgrade(`查看「${name}」需单独开通（¥${CHAIN_PRICE}/条），开通后即可查看该产业链图谱与上链企业。`, name);
   }
   return false;
 }
@@ -1458,6 +1472,8 @@ function renderChainCard(entry, selectedIndustry, isHot = false) {
   const normalizedName = normalizeIndustryName(entry.name);
   const isIcFree = normalizedName === '集成电路' || normalizedName === '半导体与集成电路';
   const isFreeSample = userType !== 'paid' && (isIcFree || (Boolean(normalizedScope) && normalizedName === normalizedScope));
+  // 当前账号可查看的产业链卡片：边框高亮，一眼区分可点开与需开通的链
+  const isAllowed = chainAllowed(entry.name);
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
   let nodeCount = null;
   let companyCount = null;
@@ -1469,7 +1485,7 @@ function renderChainCard(entry, selectedIndustry, isHot = false) {
     nodeCount = mock.nodeCount;
     companyCount = mock.companyCount;
   }
-  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''} ${isHot ? 'hot' : ''}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}">${isHot ? '<em class="hot-tag">热门</em>' : ''}${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
+  return `<button class="chain-picker-item ${isSelected ? 'selected' : ''} ${isHot ? 'hot' : ''} ${isAllowed ? 'allowed' : 'locked'}" type="button" data-industry="${escapeHtml(entry.name)}" aria-pressed="${isSelected}">${isHot ? '<em class="hot-tag">热门</em>' : ''}${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<strong class="picker-item-name" title="${escapeHtml(entry.name)}">${highlightChainKeyword(entry.name, getSearchText())}</strong><span class="picker-item-stats"><span>细分环节 <b>${fmt(nodeCount)}</b></span><i aria-hidden="true"></i><span>上链企业 <b>${fmt(companyCount)}</b></span></span></button>`;
 }
 
 function renderChainFilterSidebar() {

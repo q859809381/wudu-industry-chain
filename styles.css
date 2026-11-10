@@ -177,6 +177,12 @@ h1, h2, h3, p { margin: 0; }
 .chain-picker-list { display: grid; gap: 8px; padding: 12px; }
 .chain-picker-item { position: relative; min-width: 0; padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #cfe0ec; border-radius: 6px; background: #fff; text-align: center; cursor: pointer; transition: .2s ease; }
 .chain-picker-item:hover, .chain-picker-item.selected { border-color: #7eb6e8; box-shadow: 0 4px 14px rgba(39,111,171,.14); }
+/* 当前账号可查看的产业链卡片：边框高亮 + 浅蓝底，与需开通的链区分 */
+.chain-picker-item.allowed { border-color: #5d9bd4; border-width: 1.5px; background: linear-gradient(180deg, #f4faff, #ffffff 65%); }
+.chain-picker-item.allowed .picker-item-name { color: #23608f; }
+/* 未开通的产业链卡片：弱化展示 */
+.chain-picker-item.locked { opacity: .82; }
+.chain-picker-item.locked:hover { opacity: 1; }
 .picker-item-name { display: block; padding: 22px 10px 18px; overflow: hidden; color: #1e405b; font-size: 18px; font-weight: 700; letter-spacing: .5px; text-overflow: ellipsis; white-space: nowrap; }
 .chain-picker-item.selected .picker-item-name { color: var(--blue); }
 /* 六大未来产业热门赛道突出展示：主题蓝柔和突出，不破坏整体色系 */
