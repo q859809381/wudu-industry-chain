@@ -627,7 +627,6 @@ const viewMeta = {
   home: ['PRODUCT HOME', '首页', '了解五度易链的数据底座、核心能力与企业上链服务流程。'],
   graph: ['INDUSTRY GRAPH', '产业图谱', '从产业节点到代表企业，查看半导体与集成电路的多级产业链关系。'],
   ai: ['AI RESEARCH AGENT', 'AI智能', '用自然语言查询企业、节点、证据和区域机会，回答会基于当前产业上下文生成。'],
-  onchain: ['HOW ENTERPRISES GO ON CHAIN', '上链说明', '上链不是把企业名称放进图谱，而是确认主体、能力、角色和证据边界。'],
   solution: ['INDUSTRY CHAIN SOLUTIONS', '解决方案', '围绕产业链梳理、标准化上链、可视化呈现与数据交付，提供可落地的定制服务。'],
   'company-detail': ['COMPANY PROFILE', '企业详情', '查看企业在链上的位置、工商信息、知识产权、法律诉讼与经营表现。']
 };
@@ -4024,7 +4023,6 @@ function init() {
   $$('.topic-button').forEach((button) => button.addEventListener('click', () => { $('#chatInput').value = button.dataset.prompt; sendChat(); }));
   $('#clearChatButton').addEventListener('click', clearActiveConversation);
   $('#newConversationButton').addEventListener('click', createConversation);
-  $('#onchainContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   const homeQueryInput = $('#homeQueryInput');
   // 首页检索框：跳转产业图谱并按关键词检索产业链
   const submitHomeQuery = () => {
