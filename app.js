@@ -3415,7 +3415,7 @@ function renderHomeChainChips() {
         const userType = getUserType();
         const normalizedName = normalizeIndustryName(entry.name);
         const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName) || (userType !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalizedName));
-        return `<button class="home-industry-item" type="button" data-industry="${escapeHtml(entry.name)}">${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<strong>${escapeHtml(entry.name)}</strong><span class="home-industry-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
+        return `<button class="home-industry-item" type="button" data-industry="${escapeHtml(entry.name)}"><strong>${escapeHtml(entry.name)}</strong>${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<span class="home-industry-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
       })
       .join('');
   });
