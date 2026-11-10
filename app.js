@@ -4004,25 +4004,6 @@ function init() {
   });
   syncGraphSearchClear();
   renderHomeChainChips();
-  // 核心能力：左侧标题导航悬停/点击，右侧大面板切换展示对应标题与描述
-  const homeCapabilityList = $('#homeCapabilityList');
-  if (homeCapabilityList) {
-    const capTabs = $$('.home-cap-tab', homeCapabilityList);
-    const capPanel = $('.home-cap-panel', homeCapabilityList);
-    const capTitle = $('#homeCapTitle');
-    const capDesc = $('#homeCapDesc');
-    const activateCapTab = (tab) => {
-      capTabs.forEach((el) => el.classList.toggle('is-active', el === tab));
-      if (capTitle) capTitle.textContent = tab.dataset.title;
-      if (capDesc) capDesc.textContent = tab.dataset.desc;
-      if (capPanel) capPanel.dataset.num = (tab.querySelector('span')?.textContent || '').trim();
-    };
-    capTabs.forEach((tab) => {
-      tab.addEventListener('mouseenter', () => activateCapTab(tab));
-      tab.addEventListener('focus', () => activateCapTab(tab));
-      tab.addEventListener('click', () => activateCapTab(tab));
-    });
-  }
   ['#regionScope'].forEach((selector) => $(selector)?.addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); applyGraphFilters(); }));
   $('#changeChainButton').addEventListener('click', () => { showChainPicker(); showToast('请选择要查看的产业链'); });
   $('#fullscreenButton').addEventListener('click', () => setGraphFullscreen(!$('.graph-board').classList.contains('fullscreen-map')));
