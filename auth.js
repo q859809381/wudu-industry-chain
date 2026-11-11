@@ -50,14 +50,13 @@
       '</div></div>',
       // 开通服务对话框（注册用户触发收费功能时提示）
       '<div class="account-dialog-layer" id="upgradeDialogLayer" aria-hidden="true"><div class="account-dialog" role="dialog" aria-modal="true" aria-labelledby="upgradeDialogTitle">',
-      '<div class="account-dialog-header"><div><p class="dialog-eyebrow">MEMBERSHIP</p><h2 id="upgradeDialogTitle">开通服务</h2></div><button type="button" class="dialog-close" data-upgrade-close aria-label="关闭">×</button></div>',
+      '<div class="account-dialog-header"><div><h2 id="upgradeDialogTitle">开通服务</h2></div><button type="button" class="dialog-close" data-upgrade-close aria-label="关闭">×</button></div>',
       '<p class="dialog-description" id="upgradeDialogMessage"></p>',
       '<div class="upgrade-benefit-list">',
       '<span>收费用户专属权益</span>',
       '<ul><li>按产业链开通：¥199 / 条，开通哪条看哪条</li><li>开通后可查看该产业链完整图谱，含各环节细分情况</li><li>可查看 / 下载上链企业清单，查看上链企业详情</li></ul>',
       '</div>',
       '<div class="upgrade-actions"><button type="button" class="upgrade-secondary-button" id="upgradeContactButton">联系客服</button><button type="button" class="auth-primary-button upgrade-primary-button" id="upgradeBuyButton">开通服务</button></div>',
-      '<p class="auth-upgrade-note">演示环境：点击「开通服务」体验扫码付款，点击「联系客服」在右下角咨询</p>',
       '</div></div>',
       // 二维码付款弹窗 + 右下角客服咨询窗口
       '<style>',
