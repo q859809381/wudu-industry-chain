@@ -1551,8 +1551,8 @@ function renderChainCard(entry, selectedIndustry, isHot = false) {
   // 限免标识：集成电路（含半导体与集成电路）对所有用户完整开放，其余链登录后可折叠预览
   const normalizedName = normalizeIndustryName(entry.name);
   const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName);
-  // 当前账号可查看的产业链卡片：边框高亮，一眼区分可点开与需开通的链
-  const isAllowed = chainAllowed(entry.name);
+  // 卡片开通状态：仅「可完整查看」的链（限免链 / 收费用户已开通的链）高亮，其余折叠预览或需开通的卡保持普通白卡
+  const isAllowed = hasFullChainAccess(entry.name);
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
   let nodeCount = null;
   let companyCount = null;
