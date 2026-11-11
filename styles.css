@@ -2368,8 +2368,6 @@ body.picker-mode #graphView .site-footer { display: none; }
 .home-cap-col { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: 18px 0 16px; border: 1px solid #e4edf4; border-radius: 12px; background: linear-gradient(180deg, #ffffff, #f7fbfe); overflow: hidden; cursor: pointer; transition: flex .38s cubic-bezier(.4,0,.2,1), border-color .2s ease, box-shadow .2s ease, background .2s ease; }
 .home-cap-col:hover { border-color: #c8e2f5; }
 .home-cap-col.is-active { flex: 4.6; align-items: stretch; padding: 22px 26px; border-color: #b5d8f0; background: linear-gradient(180deg, #ffffff, #edf6fc); box-shadow: 0 8px 22px rgba(36,120,220,.12); cursor: default; }
-.home-cap-no { display: inline-block; flex: 0 0 auto; align-self: flex-start; padding: 2px 9px; border-radius: 7px; background: #eaf3fb; color: #2f8fe0; font-size: 11px; font-weight: 800; letter-spacing: 1px; transition: .2s ease; }
-.home-cap-col.is-active .home-cap-no { background: linear-gradient(135deg, #2f8fe0, #2478dc); color: #fff; box-shadow: 0 3px 8px rgba(36,120,220,.28); }
 /* 竖排标题：收起时延迟出现（等宽度收完），展开时立即隐藏 */
 .home-cap-vtitle { margin-top: 16px; writing-mode: vertical-rl; color: #1d3a54; font-size: 14.5px; font-weight: 700; letter-spacing: 6px; opacity: 1; transition: opacity .16s ease .24s; }
 .home-cap-col.is-active .home-cap-vtitle { position: absolute; opacity: 0; pointer-events: none; transition: opacity .08s ease; }
