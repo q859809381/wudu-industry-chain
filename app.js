@@ -715,7 +715,7 @@ const CHAIN_PRICE = 199;
 
 // 限免产业链（精确归一化名）：集成电路对所有人开放，航空航天对登录用户开放
 const FREE_CHAIN_NAMES = ['集成电路', '半导体与集成电路'];
-const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天', '生物医药'];
+const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天'];
 
 function getUserPurchasedChains() {
   const user = window.WuduAuth && typeof window.WuduAuth.getUser === 'function' ? window.WuduAuth.getUser() : null;
