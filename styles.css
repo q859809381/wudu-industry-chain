@@ -1202,10 +1202,11 @@ html, body { overflow-x: hidden; }
 .chain-map::-webkit-scrollbar-track { background: #f3f6f8; }
 .chain-map::-webkit-scrollbar-thumb { border: 2px solid #f3f6f8; border-radius: 8px; background: #b7c9d5; }
 .chain-map::-webkit-scrollbar-thumb:hover { background: #9db4c4; }
+/* 空态提示卡片：单列布局让卡片在可视区域内水平垂直居中，且不呈现拖动画布的光标 */
+.chain-map.is-empty-map { grid-template-columns: 1fr; cursor: default; }
+.chain-map.is-empty-map.is-panning { cursor: default; user-select: auto; }
 .chain-map.is-panning { cursor: grabbing; user-select: none; }
 .chain-map.is-panning * { cursor: grabbing !important; }
-.graph-pan-hint { color: #94a6b2; font-size: 10px; white-space: nowrap; }
-.graph-pan-hint::before { margin-right: 4px; content: "⋮⋮"; color: #b0bfc9; letter-spacing: -1px; }
 .analysis-section.active,
 .company-section.active { width: 100%; padding-top: 14px; }
 .ai-layout { width: 100%; }

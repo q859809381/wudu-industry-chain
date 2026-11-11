@@ -3236,10 +3236,13 @@ function renderGraph() {
     $('#graphCompanyCount').textContent = '—';
     $('#mapLegend').innerHTML = '';
     chainMap.style.gridTemplateColumns = '';
+    // 空态只是提示卡片：单列居中展示，不出现拖动画布的形态
+    chainMap.classList.add('is-empty-map');
     chainMap.innerHTML = `<div class="empty-graph-state"><div class="empty-graph-icon">${icon('layers', 'ui-icon')}</div><strong>${escapeHtml(currentIndustry || '当前筛选')}</strong><p>当前筛选结果只有官方产业体系命名，暂无对应的产业链明细工作簿。</p><small>可继续调整筛选条件，或选择“集成电路 / 半导体与集成电路”查看已接入图谱。</small></div>`;
     renderAnalysis(null);
     return;
   }
+  chainMap.classList.remove('is-empty-map');
   const visibleCompanyTotal = new Set(getVisibleCompanyRecords(profile).map((company) => company.name)).size;
   $('#graphNodeCount').textContent = profile.nodeCount.toLocaleString('zh-CN');
   $('#graphCompanyCount').textContent = visibleCompanyTotal.toLocaleString('zh-CN');
