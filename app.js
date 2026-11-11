@@ -758,9 +758,9 @@ function isChainPreviewMode() {
   return chainSelectionActive && Boolean(getProfile()) && !hasFullChainAccess(currentIndustry);
 }
 
-// 深层信息拦截：预览态下一律弹开通服务窗
-function promptChainUpgrade(actionLabel = '查看细分环节、企业清单与产业分析等完整内容') {
-  const name = currentIndustry || '该产业链';
+// 深层信息拦截：预览态下一律弹开通服务窗（chainName 用于进入详情时 currentIndustry 尚未更新的场景）
+function promptChainUpgrade(actionLabel = '查看细分环节、企业清单与产业分析等完整内容', chainName) {
+  const name = chainName || currentIndustry || '该产业链';
   // 弹窗已打开时不重复弹出/刷新（如进入详情自动提示后又立刻触发其他深层操作）
   if (document.getElementById('upgradeDialogLayer')?.classList.contains('is-open')) return;
   window.WuduAuth?.openUpgrade(`当前可折叠预览「${name}」产业链图谱，${actionLabel}需单独开通（¥${CHAIN_PRICE}/条），开通后即可查看该产业链全部内容。`, name);
@@ -781,7 +781,7 @@ function gateChainEntry(name) {
 // 进入产业链详情：游客/未购用户被 gate 拦截；登录用户进入未购链时自动弹一次开通服务窗（可关闭/取消）
 function enterChainDetail(name) {
   if (!gateChainEntry(name)) return false;
-  if (!hasFullChainAccess(name)) promptChainUpgrade();
+  if (!hasFullChainAccess(name)) promptChainUpgrade(undefined, name);
   return true;
 }
 

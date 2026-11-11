@@ -54,7 +54,7 @@
       '<p class="dialog-description" id="upgradeDialogMessage"></p>',
       '<div class="upgrade-benefit-list">',
       '<span>收费用户专属权益</span>',
-      '<ul><li>按产业链开通：¥199 / 条，开通哪条看哪条</li><li>开通后可查看该产业链图谱与上链企业</li><li>企业清单导出、AI 智能分析</li></ul>',
+      '<ul><li>按产业链开通：¥199 / 条，开通哪条看哪条</li><li>开通后可查看该产业链完整图谱，含各环节细分情况</li><li>可查看 / 下载上链企业清单，查看上链企业详情</li></ul>',
       '</div>',
       '<div class="upgrade-actions"><button type="button" class="upgrade-secondary-button" id="upgradeContactButton">联系客服</button><button type="button" class="auth-primary-button upgrade-primary-button" id="upgradeBuyButton">开通服务</button></div>',
       '<p class="auth-upgrade-note">演示环境：点击「开通服务」体验扫码付款，点击「联系客服」在右下角咨询</p>',
