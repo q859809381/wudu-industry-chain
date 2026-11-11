@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """从 PRD docx 提取结构化内容，生成 prd-content.js
 页签结构：全局介绍（1 引言 / 2 用户角色 / 3 产品概述 / 4 全局业务规则）
-         + 页面与功能描述（5.1-5.5 各模块，含左侧锚点导航）
+         + 页面与功能描述（5.1-5.5 各模块），两个页签均带左侧锚点导航。
+编号在页签内从 1 重排：一级「一、二、三」，二级「1、2」，三级「1.1」。
 封面、文档信息与修订记录、目录不入抽屉。"""
 import re, html, json
 
@@ -143,41 +144,72 @@ def render_blocks(blocks):
         html_out.append('</ul>')
     return ''.join(html_out)
 
-def sec_html(sec, with_title=True):
-    parts = []
-    if with_title:
-        tag = {1: 'h2', 2: 'h3'}[sec['level']]
-        parts.append(f'<{tag} class="prd-doc-h{sec["level"]}">{html.escape(sec["title"])}</{tag}>')
-    parts.append(render_blocks(sec['blocks']))
-    return ''.join(parts)
+CN_NUM = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
 
-def chapter_html(prefix):
-    """H1 章节（含其下 H2 小节）完整 html；prefix 如 '1.'"""
-    for idx, sec in enumerate(sections):
-        if sec['level'] == 1 and sec['title'].startswith(prefix):
-            parts = [sec_html(sec, with_title=True)]
-            for nxt in sections[idx + 1:]:
-                if nxt['level'] > 1:
-                    parts.append(sec_html(nxt, with_title=True))
-                else:
-                    break
-            return ''.join(parts)
-    return ''
+def strip_num(t):
+    return re.sub(r'^\d+(?:\.\d+)*\.?\s+', '', t)
 
-def sub_sections(prefix):
-    return [s for s in sections if s['level'] == 2 and s['title'].startswith(prefix)]
+def orig_num(t):
+    m = re.match(r'^(\d+(?:\.\d+)*)\.?\s+', t)
+    return m.group(1) if m else ''
 
-global_html = ''.join(chapter_html(p) for p in ('1.', '2.', '3.', '4.'))
-chapter5 = next((s for s in sections if s['level'] == 1 and s['title'].startswith('5.')), None)
-pages_nav = []
+def sec_id(orig, fallback):
+    return 'prd-sec-' + orig.replace('.', '-') if orig else fallback
+
+# 组织树：h1 章 → h2 节（h3 已并入上级 blocks）
+tree = []
+cur1 = None
+for sec in sections:
+    if sec['level'] == 1:
+        cur1 = {'sec': sec, 'subs': []}
+        tree.append(cur1)
+    elif sec['level'] == 2 and cur1 is not None:
+        cur1['subs'].append(sec)
+
+def renumber_blocks(blocks, mode, base):
+    """重排 blocks 中的 h3 标题：mode 'dot' 编号为 base.k（全局三级），mode 'flat' 编号为 k（页面模块二级）"""
+    out = []
+    k = 0
+    for kind, content in blocks:
+        if kind == 'h3':
+            k += 1
+            content = (f'{base}.{k}、' if mode == 'dot' else f'{k}、') + strip_num(content)
+        out.append((kind, content))
+    return out
+
+def h1_html(t):
+    return f'<h2 class="prd-doc-h1">{html.escape(t)}</h2>'
+
+def h2_html(t):
+    return f'<h3 class="prd-doc-h2">{html.escape(t)}</h3>'
+
+# ---- 全局介绍：章=一、二、三、四；节=1、2；子节=1.1 ----
+global_parts = []
+global_nav = []
+g_nodes = [n for n in tree if re.match(r'^[1-4]\.', n['sec']['title'])]
+for i, node in enumerate(g_nodes):
+    sid = sec_id(orig_num(node['sec']['title']), f'prd-sec-g{i + 1}')
+    t1 = f'{CN_NUM[i]}、{strip_num(node["sec"]["title"])}'
+    global_nav.append({'id': sid, 'title': t1})
+    inner = [h1_html(t1), render_blocks(node['sec']['blocks'])]
+    for j, sub in enumerate(node['subs'], 1):
+        inner.append(h2_html(f'{j}、{strip_num(sub["title"])}'))
+        inner.append(render_blocks(renumber_blocks(sub['blocks'], 'dot', j)))
+    global_parts.append(f'<div class="prd-module-sec" id="{sid}">' + ''.join(inner) + '</div>')
+global_html = ''.join(global_parts)
+
+# ---- 页面与功能描述：模块=一、二、三、四、五；子节=1、2 ----
 pages_parts = []
-if chapter5:
-    if chapter5['blocks']:
-        pages_parts.append(sec_html(chapter5, with_title=True))
-    for sec in sub_sections('5.'):
-        sid = 'prd-sec-' + sec['title'].split(' ')[0].replace('.', '-')
-        pages_nav.append({'id': sid, 'title': sec['title']})
-        pages_parts.append(f'<div class="prd-module-sec" id="{sid}">{sec_html(sec, with_title=True)}</div>')
+pages_nav = []
+n5 = next((n for n in tree if re.match(r'^5\.', n['sec']['title'])), None)
+if n5 and n5['sec']['blocks']:
+    pages_parts.append(render_blocks(n5['sec']['blocks']))
+for i, sub in enumerate(n5['subs'] if n5 else [], 1):
+    sid = sec_id(orig_num(sub['title']), f'prd-sec-p{i}')
+    t1 = f'{CN_NUM[i - 1]}、{strip_num(sub["title"])}'
+    pages_nav.append({'id': sid, 'title': t1})
+    inner = [h1_html(t1), render_blocks(renumber_blocks(sub['blocks'], 'flat', None))]
+    pages_parts.append(f'<div class="prd-module-sec" id="{sid}">' + ''.join(inner) + '</div>')
 pages_html = ''.join(pages_parts)
 
 data = {
@@ -188,13 +220,18 @@ data = {
     ],
     'globalHtml': global_html,
     'pagesHtml': pages_html,
+    'globalNav': global_nav,
     'pagesNav': pages_nav,
 }
 
 js = '/* 由 产业链全景图谱平台PRD文档.docx 自动生成（python prd-extract.py），勿手工编辑 */\nwindow.WUDU_PRD = ' + json.dumps(data, ensure_ascii=False) + ';\n'
 with open(OUT, 'w', encoding='utf-8') as f:
     f.write(js)
-print('global len:', len(global_html), ' pages len:', len(pages_html), ' nav:', len(pages_nav))
+print('global len:', len(global_html), ' pages len:', len(pages_html))
+print('global nav:')
+for n in global_nav:
+    print('  ', n['id'], n['title'])
+print('pages nav:')
 for n in pages_nav:
     print('  ', n['id'], n['title'])
 bad = [kw for kw in ('<w:', 'w:val', 'HYPERLINK', 'PAGEREF') if kw in global_html or kw in pages_html]

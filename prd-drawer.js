@@ -1,5 +1,5 @@
 /* PRD 文档抽屉：左下角白色悬浮按钮 → 左侧滑出窗口。
- * 两个页签：全局介绍（引言/用户角色/产品概述/全局业务规则）、页面与功能描述（5.1-5.5 各模块，左侧锚点导航）。
+ * 两个页签：全局介绍、页面与功能描述，均带左侧锚点导航（页签内编号从 1 重排）。
  * 内容来自 prd-content.js（由 PRD docx 自动生成），本文件只负责 UI 与交互。 */
 (function () {
   'use strict';
@@ -64,15 +64,12 @@
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
     let mode = 'global';
 
-    /* 页面与功能描述页签：左侧模块锚点导航 */
-    function renderNav() {
-      if (!data.pagesNav || !data.pagesNav.length) {
-        navEl.hidden = true;
-        return;
-      }
-      navEl.innerHTML = data.pagesNav.map((m) =>
-        `<button type="button" class="prd-module-item" data-prd-anchor="${m.id}">${escapeHtml(m.title)}</button>`
-      ).join('');
+    /* 各页签左侧锚点导航（全局介绍 / 页面与功能描述 各自一份） */
+    function navListFor(m) {
+      return m === 'global' ? (data.globalNav || []) : (data.pagesNav || []);
+    }
+
+    function bindNavClicks() {
       navEl.querySelectorAll('[data-prd-anchor]').forEach((btn) => {
         btn.addEventListener('click', () => {
           navEl.querySelectorAll('[data-prd-anchor]').forEach((b) => b.classList.remove('active'));
@@ -94,18 +91,20 @@
     }
 
     function renderTab() {
-      if (mode === 'global') {
-        navEl.hidden = true;
-        contentEl.innerHTML = data.globalHtml || '<div class="prd-doc-empty">暂无内容</div>';
-        tipEl.textContent = '引言 · 用户角色 · 产品概述 · 全局业务规则';
+      const navList = navListFor(mode);
+      if (navList.length) {
+        navEl.hidden = false;
+        navEl.innerHTML = navList.map((m) =>
+          `<button type="button" class="prd-module-item" data-prd-anchor="${m.id}">${escapeHtml(m.title)}</button>`
+        ).join('');
+        bindNavClicks();
+        navEl.querySelectorAll('[data-prd-anchor]').forEach((b, i) => b.classList.toggle('active', i === 0));
+        tipEl.textContent = navList[0].title;
       } else {
-        if (data.pagesNav && data.pagesNav.length) {
-          navEl.hidden = false;
-          navEl.querySelectorAll('[data-prd-anchor]').forEach((b, i) => b.classList.toggle('active', i === 0));
-        }
-        contentEl.innerHTML = data.pagesHtml || '<div class="prd-doc-empty">暂无内容</div>';
-        tipEl.textContent = data.pagesNav && data.pagesNav.length ? data.pagesNav[0].title : '';
+        navEl.hidden = true;
+        tipEl.textContent = mode === 'global' ? '引言 · 用户角色 · 产品概述 · 全局业务规则' : '';
       }
+      contentEl.innerHTML = (mode === 'global' ? data.globalHtml : data.pagesHtml) || '<div class="prd-doc-empty">暂无内容</div>';
       const scroll = drawer.querySelector('.prd-doc-scroll');
       if (scroll) scroll.scrollTop = 0;
     }
@@ -138,8 +137,6 @@
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
     });
-
-    renderNav();
   }
 
   if (document.readyState === 'loading') {
