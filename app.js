@@ -467,9 +467,62 @@ function createAviationProfile() {
 
 industryProfiles['航空航天'] = createAviationProfile();
 
+// 生物医药产业链（数据源：桌面/生物医药.xlsx，上游/中游/下游/专业服务 四级体系）
+const biomedStageMeta = {
+  上游: { key: 'upstream', subtitle: '原料药、中药材、设备与耗材', color: 'blue' },
+  中游: { key: 'midstream', subtitle: '化学药、生物制品与中药研发生产', color: 'teal' },
+  下游: { key: 'downstream', subtitle: '医疗机构、流通与零售终端', color: 'amber' },
+  专业服务: { key: 'service', subtitle: '类器官、实验动物等研发配套', color: 'violet' }
+};
+
+function createBiomedProfile() {
+  const stageOrder = Object.keys(biomedStageMeta);
+  const totalRows = biomedNodes.reduce((sum, node) => sum + node.rowCount, 0);
+  const companyTotal = new Set(biomedNodes.flatMap((node) => expandNodeCompanies(node))).size;
+  return {
+    title: '生物医药',
+    type: '战略性新兴产业',
+    industryTypes: ['战略性新兴产业'],
+    nodeCount: totalRows,
+    total: companyTotal.toLocaleString('zh-CN'),
+    tip: '图谱将生物医药产业拆分为上游、中游、下游、专业服务 4 个一级环节、21 个三级环节和 87 条层级记录；核心环节按原表标注保留。',
+    intro: '生物医药产业链上游覆盖原料药、中药材、制药与研发设备及耗材，中游覆盖化学药、生物制品与中药的研发生产，包含创新药、改良型新药、仿制药、核酸与抗体药物、细胞与基因疗法、疫苗与血液制品及中药饮片、中成药，下游延伸至医疗机构、流通企业与零售药店，并有类器官、实验动物等专业服务配套。',
+    stages: stageOrder.map((stageName) => {
+      const meta = biomedStageMeta[stageName];
+      const sourceNodes = biomedNodes.filter((node) => node.l1 === stageName);
+      return {
+        ...meta,
+        title: stageName,
+        count: sourceNodes.length,
+        nodes: sourceNodes.map((sourceNode) => ({
+          isCore: sourceNode.isCore === true,
+          corePaths: Array.isArray(sourceNode.corePaths) ? sourceNode.corePaths : [],
+          name: sourceNode.l2,
+          meta: `${sourceNode.rowCount} 条层级记录${sourceNode.paths.length ? ` · ${sourceNode.paths.length} 个细分环节` : ''}`,
+          companyTotal: Number(sourceNode.companyTotal || 0),
+          companies: sourceNode.companyTotal.toLocaleString('zh-CN'),
+          evidence: sourceNode.isCore ? '核心环节' : '产业配套',
+          role: sourceNode.isCore ? '核心环节' : '产业配套',
+          featured: sourceNode.isCore === true,
+          coreCount: sourceNode.coreCount,
+          rowCount: sourceNode.rowCount,
+          paths: sourceNode.paths,
+          terms: sourceNode.terms,
+          companyNames: expandNodeCompanies(sourceNode),
+          nodeSearchable: [sourceNode.l1, sourceNode.l2, ...(sourceNode.parents || []), ...sourceNode.paths, ...sourceNode.terms].join(' '),
+          searchable: [sourceNode.l1, sourceNode.l2, ...(sourceNode.parents || []), ...sourceNode.paths, ...sourceNode.terms, ...expandNodeCompanies(sourceNode)].join(' ')
+        }))
+      };
+    })
+  };
+}
+
+industryProfiles['生物医药'] = createBiomedProfile();
+
 const nodeCompanies = [
   ...buildChainCompanyRecords(semiconductorNodes),
-  ...buildChainCompanyRecords(aviationNodes, '航空航天示范企业')
+  ...buildChainCompanyRecords(aviationNodes, '航空航天示范企业'),
+  ...buildChainCompanyRecords(biomedNodes, '生物医药示范企业')
 ];
 
 // 「集成」关键词的演示案例企业：一条记录代表企业在某一环节的上链关系，
@@ -662,7 +715,7 @@ const CHAIN_PRICE = 199;
 
 // 限免产业链（精确归一化名）：集成电路对所有人开放，航空航天对登录用户开放
 const FREE_CHAIN_NAMES = ['集成电路', '半导体与集成电路'];
-const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天'];
+const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天', '生物医药'];
 
 function getUserPurchasedChains() {
   const user = window.WuduAuth && typeof window.WuduAuth.getUser === 'function' ? window.WuduAuth.getUser() : null;
