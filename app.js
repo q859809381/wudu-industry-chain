@@ -3254,8 +3254,9 @@ function renderGraph() {
     const stageNodes = stage.nodes;
     const stageCountLabel = `${stage.count} 类`;
     const stageHasPaths = stageNodes.some((node) => Array.isArray(node.paths) && node.paths.length);
-    const stageToggle = stageHasPaths && !previewMode
-      ? `<button class="stage-toggle" type="button" data-stage-toggle aria-expanded="true" aria-label="折叠${escapeHtml(stage.title)}阶段全部细分环节" title="折叠本阶段全部细分环节">${icon('chevron-down', 'ui-icon mini')}</button>`
+    // 折叠预览态也保留列头箭头：提示可点击，点击弹开通服务窗
+    const stageToggle = stageHasPaths
+      ? `<button class="stage-toggle" type="button" data-stage-toggle aria-expanded="${previewMode ? 'false' : 'true'}" aria-label="${previewMode ? '开通后可展开' : '折叠'}${escapeHtml(stage.title)}阶段全部细分环节" title="${previewMode ? '开通后可展开本阶段细分环节' : '折叠本阶段全部细分环节'}">${icon('chevron-down', 'ui-icon mini')}</button>`
       : '';
     return `<div class="stage-column ${stage.color} ${index > 0 ? 'connected-stage' : ''}"><div class="stage-heading"><div><span>${String(index + 1).padStart(2, '0')}</span><strong>${escapeHtml(stage.title)}</strong></div><b class="stage-count">${stageCountLabel}${stageToggle}</b></div><div class="node-list">${stageNodes.length ?     stageNodes.map((node) => {
       const searchable = node.searchable.toLowerCase();
@@ -3264,9 +3265,11 @@ function renderGraph() {
       const hasCompanies = companyTotal > 0;
       const statusMeta = NODE_STATUS_META[getNodeStatus(node.name, nodeStatusIndex).key];
       const hierarchy = previewMode ? '' : renderNodeHierarchy(node, statusMeta.className);
+      const hasSubPaths = Array.isArray(node.paths) && node.paths.length;
+      // 折叠预览态保留卡片右侧箭头：提示可点击，点击弹开通服务窗
       const expandToggle = hierarchy
         ? `<button class="node-path-expand" type="button" aria-expanded="true" aria-label="收起细分环节" title="收起细分环节">${icon('chevron-down', 'ui-icon mini')}</button>`
-        : '';
+        : (previewMode && hasSubPaths ? `<button class="node-path-expand" type="button" aria-expanded="false" aria-label="开通后查看细分环节" title="开通后可展开查看细分环节">${icon('chevron-down', 'ui-icon mini')}</button>` : '');
       return `<article class="node-card ${node.featured ? 'featured' : ''} ${hasCompanies ? 'has-companies' : ''} ${matches ? 'search-match' : ''}"><div class="node-card-head"><button class="node-card-main" type="button" data-node="${escapeHtml(node.name)}"><span class="node-card-title"><i class="node-role-dot is-${statusMeta.className}" title="${statusMeta.label}：${statusMeta.note}" aria-label="${statusMeta.label}"></i><strong title="${statusMeta.label}：${statusMeta.note}">${escapeHtml(node.name)}</strong></span></button>${expandToggle}</div>${hierarchy}</article>`;
     }).join('') : '<div class="empty-node-list">暂无符合条件的环节</div>'}</div></div>`;
   }).join('');
@@ -3293,10 +3296,14 @@ function renderGraph() {
     button.setAttribute('title', `${collapsed ? '展开' : '收起'} ${name}`);
     syncStageToggle(branch.closest('.stage-column'));
   }));
-  // 卡片头部右侧的图标：只切换本卡片的细分环节显隐，不打开企业清单
+  // 卡片头部右侧的图标：只切换本卡片的细分环节显隐，不打开企业清单；预览态点击弹开通服务窗
   $$('.node-path-expand', chainMap).forEach((button) => button.addEventListener('click', (event) => {
     event.stopPropagation();
     event.preventDefault();
+    if (previewMode) {
+      promptChainUpgrade('查看该环节的细分环节');
+      return;
+    }
     const details = button.closest('.node-card')?.querySelector('details.node-path-details');
     if (!details) return;
     details.open = !details.open;
@@ -3309,6 +3316,10 @@ function renderGraph() {
   }));
   $$('.stage-toggle', chainMap).forEach((button) => button.addEventListener('click', (event) => {
     event.stopPropagation();
+    if (previewMode) {
+      promptChainUpgrade('查看本阶段全部细分环节');
+      return;
+    }
     const column = button.closest('.stage-column');
     if (!column) return;
     setStageExpanded(column, button.getAttribute('aria-expanded') !== 'true');
