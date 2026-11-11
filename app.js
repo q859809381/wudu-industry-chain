@@ -4004,6 +4004,18 @@ function init() {
   });
   syncGraphSearchClear();
   renderHomeChainChips();
+  // 核心能力手风琴：默认第一项展开，鼠标悬浮/点击切换展开项，暗示有更多信息
+  const homeCapabilityList = $('#homeCapabilityList');
+  if (homeCapabilityList) {
+    const activateCapRow = (row) => {
+      if (row.classList.contains('is-active')) return;
+      $$('.home-cap-row', homeCapabilityList).forEach((el) => el.classList.toggle('is-active', el === row));
+    };
+    $$('.home-cap-row', homeCapabilityList).forEach((row) => {
+      row.addEventListener('mouseenter', () => activateCapRow(row));
+      row.querySelector('.home-cap-head')?.addEventListener('click', () => activateCapRow(row));
+    });
+  }
   ['#regionScope'].forEach((selector) => $(selector)?.addEventListener('change', () => { syncAdvancedOptionGroup($(selector)); applyGraphFilters(); }));
   $('#changeChainButton').addEventListener('click', () => { showChainPicker(); showToast('请选择要查看的产业链'); });
   $('#fullscreenButton').addEventListener('click', () => setGraphFullscreen(!$('.graph-board').classList.contains('fullscreen-map')));
