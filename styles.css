@@ -2393,10 +2393,18 @@ body.picker-mode #graphView .site-footer { display: none; }
   .home-cap-col-main { display: none; }
   .home-cap-col.is-active .home-cap-col-main { display: block; opacity: 1; transform: none; }
 }
-.home-audience-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.home-audience { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border: 1px solid #e4edf4; border-radius: 10px; background: #fff; transition: .18s ease; }
-.home-audience:hover { border-color: #a9d1f1; box-shadow: 0 4px 14px rgba(36,120,220,.08); transform: translateY(-1px); }
-.home-audience h3 { margin: 0; color: #1d3a54; font-size: 13px; font-weight: 600; line-height: 1.5; }
+.home-audience-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.home-audience { position: relative; overflow: hidden; display: flex; align-items: flex-start; gap: 12px; padding: 18px 20px 16px; border: 1px solid #e4edf4; border-radius: 10px; background: #fff; transition: .18s ease; }
+.home-audience::before { content: ""; position: absolute; right: -28px; top: -28px; width: 78px; height: 78px; border-radius: 50%; background: var(--aud-tint, #e8f2fd); opacity: .6; transition: .2s ease; }
+.home-audience .highlight-icon { position: relative; z-index: 1; flex: 0 0 auto; }
+.home-audience-txt { position: relative; z-index: 1; min-width: 0; }
+.home-audience h3 { position: relative; z-index: 1; margin: 0; color: #1d3a54; font-size: 13.5px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+.home-audience p { position: relative; z-index: 1; margin: 4px 0 0; color: #7d93a6; font-size: 11.5px; line-height: 1.7; }
+.home-audience.is-blue { --aud-tint: #e8f2fd; --aud-line: #a9d1f1; }
+.home-audience.is-teal { --aud-tint: #e3f5f2; --aud-line: #8fd0c7; }
+.home-audience.is-amber { --aud-tint: #faf1e0; --aud-line: #ecd3a4; }
+.home-audience:hover { border-color: var(--aud-line, #a9d1f1); box-shadow: 0 4px 14px rgba(36,120,220,.08); transform: translateY(-1px); }
+.home-audience:hover::before { opacity: 1; }
 .home-scale-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .home-scale { padding: 18px 16px; border: 1px solid #e4edf4; border-radius: 10px; background: linear-gradient(180deg, #fbfdff, #f4f9fd); }
 .home-scale h3 { margin: 12px 0 0; color: #1d3a54; font-size: 13.5px; font-weight: 700; line-height: 1.5; }
