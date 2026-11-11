@@ -700,22 +700,21 @@ let regionScopePickerEventsReady = false;
 let toastTimer;
 
 /* ===================== 用户权限（游客 / 注册用户 / 收费用户·按链开通） =====================
- * 限免产业链：集成电路（半导体与集成电路）对所有用户开放；登录用户（注册/收费）另可限免查看航空航天
- * 游客：首页、产业图谱、上链说明、解决方案，仅限免产业链
- * 注册用户：模块同游客，另可限免查看航空航天产业链
- * 收费用户：按条开通产业链（¥199/条），开通哪条看哪条；企业清单导出、AI 智能为收费用户专属
+ * 限免产业链：集成电路（半导体与集成电路）对所有用户完整开放
+ * 游客：仅限免产业链，且不可查看企业详情、不可导出企业清单
+ * 注册用户：拥有游客全部权限 + 所有产业链详情页查看权限（仅折叠预览态，深层信息一律弹开通服务）
+ * 收费用户：按条开通产业链（¥199/条），已开通的链可完整查看；企业清单导出、AI 智能为收费用户专属
  */
 const USER_ACCESS_RULES = {
   visitor: { label: '游客', chain: '半导体与集成电路', chainLabel: '集成电路产业链' },
-  registered: { label: '注册用户', chain: '航空航天', chainLabel: '航空航天产业链' },
+  registered: { label: '注册用户', chain: null, chainLabel: '全部产业链（折叠预览）' },
   paid: { label: '收费用户', chain: null, chainLabel: '已开通的产业链' }
 };
 
 const CHAIN_PRICE = 199;
 
-// 限免产业链（精确归一化名）：集成电路对所有人开放，航空航天对登录用户开放
+// 限免产业链（精确归一化名）：集成电路对所有人完整开放
 const FREE_CHAIN_NAMES = ['集成电路', '半导体与集成电路'];
-const FREE_SIGNED_IN_CHAIN_NAMES = ['航空航天'];
 
 function getUserPurchasedChains() {
   const user = window.WuduAuth && typeof window.WuduAuth.getUser === 'function' ? window.WuduAuth.getUser() : null;
@@ -732,30 +731,58 @@ function getChainScope() {
 }
 
 function chainAllowed(name) {
-  // 限免产业链精确匹配（避免别名误放行）：集成电路对所有人开放，航空航天对登录用户开放
+  // 能否进入产业链详情页：限免链全员可进；登录用户可预览所有链（折叠态）；收费用户按已开通清单
   const normalized = normalizeIndustryName(name);
   if (FREE_CHAIN_NAMES.includes(normalized)) return true;
-  if (getUserType() !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalized)) return true;
   const type = getUserType();
+  if (type === 'visitor') return false;
+  if (type === 'registered') return true;
   if (type === 'paid') {
     // 收费用户按条开通：仅可查看已开通的产业链
     return getUserPurchasedChains().some((chain) => normalizeIndustryName(chain) === normalized);
   }
-  const scope = getChainScope();
-  return Boolean(scope.chain) && normalizeIndustryName(scope.chain) === normalized;
+  return false;
+}
+
+// 完整查看权限（可展开细分环节、看企业清单/详情、产业分析）：限免链全员完整，其余仅收费用户已开通的链
+function hasFullChainAccess(name) {
+  const normalized = normalizeIndustryName(name);
+  if (FREE_CHAIN_NAMES.includes(normalized)) return true;
+  const type = getUserType();
+  if (type !== 'paid') return false;
+  return getUserPurchasedChains().some((chain) => normalizeIndustryName(chain) === normalized);
+}
+
+// 详情页折叠预览态：已进入详情页（登录用户）但无完整查看权限
+function isChainPreviewMode() {
+  return chainSelectionActive && Boolean(getProfile()) && !hasFullChainAccess(currentIndustry);
+}
+
+// 深层信息拦截：预览态下一律弹开通服务窗
+function promptChainUpgrade(actionLabel = '查看细分环节、企业清单与产业分析等完整内容') {
+  const name = currentIndustry || '该产业链';
+  // 弹窗已打开时不重复弹出/刷新（如进入详情自动提示后又立刻触发其他深层操作）
+  if (document.getElementById('upgradeDialogLayer')?.classList.contains('is-open')) return;
+  window.WuduAuth?.openUpgrade(`当前可折叠预览「${name}」产业链图谱，${actionLabel}需单独开通（¥${CHAIN_PRICE}/条），开通后即可查看该产业链全部内容。`, name);
 }
 
 // 点击未授权的产业链：游客弹登录窗，注册/收费用户弹开通服务窗（按条开通）
 function gateChainEntry(name) {
   if (chainAllowed(name)) return true;
   const type = getUserType();
-  const scope = getChainScope();
   if (type === 'visitor') {
     window.WuduAuth?.openLogin();
   } else {
     window.WuduAuth?.openUpgrade(`查看「${name}」需单独开通（¥${CHAIN_PRICE}/条），开通后即可查看该产业链图谱与上链企业。`, name);
   }
   return false;
+}
+
+// 进入产业链详情：游客/未购用户被 gate 拦截；登录用户进入未购链时自动弹一次开通服务窗（可关闭/取消）
+function enterChainDetail(name) {
+  if (!gateChainEntry(name)) return false;
+  if (!hasFullChainAccess(name)) promptChainUpgrade();
+  return true;
 }
 
 // 企业清单导出：仅收费用户
@@ -1521,10 +1548,9 @@ function getChainCardMockStats(name) {
 function renderChainCard(entry, selectedIndustry, isHot = false) {
   const entryProfile = industryProfiles[entry.name] || (entry.name === '集成电路' ? industryProfiles['半导体与集成电路'] : null);
   const isSelected = chainSelectionActive && entry.name === selectedIndustry;
-  // 限免标识：集成电路（含半导体与集成电路）对所有用户限免；航空航天对登录用户（注册/收费）限免
-  const userType = getUserType();
+  // 限免标识：集成电路（含半导体与集成电路）对所有用户完整开放，其余链登录后可折叠预览
   const normalizedName = normalizeIndustryName(entry.name);
-  const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName) || (userType !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalizedName));
+  const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName);
   // 当前账号可查看的产业链卡片：边框高亮，一眼区分可点开与需开通的链
   const isAllowed = chainAllowed(entry.name);
   const fmt = (value) => (value === null ? '—' : value.toLocaleString('zh-CN'));
@@ -1744,7 +1770,7 @@ function bindSearchNodeBlock(container) {
 // 从搜索结果跳转：进入环节所属产业链图谱，并自动展开该环节的企业清单抽屉；
 // 同时把检索词带入图谱详情的环节搜索框，关闭抽屉后命中环节仍保持高亮
 function jumpToChainNode(chainName, nodeName, subpath) {
-  if (!gateChainEntry(chainName)) return;
+  if (!enterChainDetail(chainName)) return;
   searchDrilldown = null;
   currentIndustry = chainName;
   chainSelectionActive = true;
@@ -1890,7 +1916,7 @@ function renderSearchChainBlock(hits, query) {
 function bindSearchChainBlock(container) {
   $$('.search-chain-item', container).forEach((button) => {
     button.addEventListener('click', () => {
-      if (!gateChainEntry(button.dataset.industry)) return;
+      if (!enterChainDetail(button.dataset.industry)) return;
       searchDrilldown = null;
       currentIndustry = button.dataset.industry;
       setChainSelectionMode(true);
@@ -1938,7 +1964,7 @@ function renderChainPicker(profile) {
       }).join('');
     }
     $$('.chain-picker-item', groupsContainer).forEach((button) => button.addEventListener('click', () => {
-      if (!gateChainEntry(button.dataset.industry)) return;
+      if (!enterChainDetail(button.dataset.industry)) return;
       currentIndustry = button.dataset.industry;
       setChainSelectionMode(true);
       renderGraph();
@@ -3220,13 +3246,15 @@ function renderGraph() {
   $('#mapLegend').innerHTML = '<span class="legend-explainer"><i class="node-status-dot advantage"></i>优势环节</span><span class="legend-explainer"><i class="node-status-dot weak"></i>弱势环节</span><span class="legend-explainer"><i class="node-status-dot break"></i>断链环节</span>';
   const nodeStatusIndex = buildNodeStatusIndex(profile);
   const companyMatchNodes = new Set(nodeCompanies.filter((company) => company.name.toLowerCase().includes(query)).map((company) => company.node));
+  // 折叠预览态：登录未购链仅展示环节卡片（细分环节收起），深层查看操作一律弹开通服务
+  const previewMode = isChainPreviewMode();
   // 列宽自适应：最小 240px 保底（放不下横向拖拉），列少时均摊铺满整行（如航空航天 3 列）
   chainMap.style.gridTemplateColumns = `repeat(${Math.max(profile.stages.length, 1)}, minmax(240px, 1fr))`;
   chainMap.innerHTML = profile.stages.map((stage, index) => {
     const stageNodes = stage.nodes;
     const stageCountLabel = `${stage.count} 类`;
     const stageHasPaths = stageNodes.some((node) => Array.isArray(node.paths) && node.paths.length);
-    const stageToggle = stageHasPaths
+    const stageToggle = stageHasPaths && !previewMode
       ? `<button class="stage-toggle" type="button" data-stage-toggle aria-expanded="true" aria-label="折叠${escapeHtml(stage.title)}阶段全部细分环节" title="折叠本阶段全部细分环节">${icon('chevron-down', 'ui-icon mini')}</button>`
       : '';
     return `<div class="stage-column ${stage.color} ${index > 0 ? 'connected-stage' : ''}"><div class="stage-heading"><div><span>${String(index + 1).padStart(2, '0')}</span><strong>${escapeHtml(stage.title)}</strong></div><b class="stage-count">${stageCountLabel}${stageToggle}</b></div><div class="node-list">${stageNodes.length ?     stageNodes.map((node) => {
@@ -3235,14 +3263,20 @@ function renderGraph() {
       const companyTotal = getNodeVisibleCompanyCount(node);
       const hasCompanies = companyTotal > 0;
       const statusMeta = NODE_STATUS_META[getNodeStatus(node.name, nodeStatusIndex).key];
-      const hierarchy = renderNodeHierarchy(node, statusMeta.className);
+      const hierarchy = previewMode ? '' : renderNodeHierarchy(node, statusMeta.className);
       const expandToggle = hierarchy
         ? `<button class="node-path-expand" type="button" aria-expanded="true" aria-label="收起细分环节" title="收起细分环节">${icon('chevron-down', 'ui-icon mini')}</button>`
         : '';
       return `<article class="node-card ${node.featured ? 'featured' : ''} ${hasCompanies ? 'has-companies' : ''} ${matches ? 'search-match' : ''}"><div class="node-card-head"><button class="node-card-main" type="button" data-node="${escapeHtml(node.name)}"><span class="node-card-title"><i class="node-role-dot is-${statusMeta.className}" title="${statusMeta.label}：${statusMeta.note}" aria-label="${statusMeta.label}"></i><strong title="${statusMeta.label}：${statusMeta.note}">${escapeHtml(node.name)}</strong></span></button>${expandToggle}</div>${hierarchy}</article>`;
     }).join('') : '<div class="empty-node-list">暂无符合条件的环节</div>'}</div></div>`;
   }).join('');
-  $$('.node-card-main', chainMap).forEach((button) => button.addEventListener('click', () => openDrawer(button.dataset.node)));
+  $$('.node-card-main', chainMap).forEach((button) => button.addEventListener('click', () => {
+    if (previewMode) {
+      promptChainUpgrade('查看该环节的细分环节与企业清单');
+      return;
+    }
+    openDrawer(button.dataset.node);
+  }));
   $$('.node-path-item', chainMap).forEach((button) => button.addEventListener('click', (event) => {
     event.stopPropagation();
     openDrawer(button.dataset.node, button.dataset.path);
@@ -3367,6 +3401,11 @@ function getDrawerNodeRecords() {
 }
 
 function openDrawer(nodeName, subpath = '') {
+  // 折叠预览态：环节企业清单属深层信息，触发开通服务窗
+  if (isChainPreviewMode()) {
+    promptChainUpgrade('查看该环节的细分环节与企业清单');
+    return;
+  }
   const profileNode = getAllNodes().find((node) => node.name === nodeName);
   if (!profileNode) return;
   currentNode = profileNode;
@@ -3464,16 +3503,15 @@ function renderHomeChainChips() {
       .filter((entry) => entry.type === system)
       .map((entry) => {
         const stats = getChainStats(entry.name);
-        // 限免标识：集成电路全员限免；航空航天对登录用户（注册/收费）限免，与图谱选择页口径一致
-        const userType = getUserType();
+        // 限免标识：集成电路全员限免，其余链登录后可折叠预览，与图谱选择页口径一致
         const normalizedName = normalizeIndustryName(entry.name);
-        const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName) || (userType !== 'visitor' && FREE_SIGNED_IN_CHAIN_NAMES.includes(normalizedName));
+        const isFreeSample = FREE_CHAIN_NAMES.includes(normalizedName);
         return `<button class="home-industry-item" type="button" data-industry="${escapeHtml(entry.name)}"><strong>${escapeHtml(entry.name)}</strong>${isFreeSample ? '<em class="free-tag" title="当前账号可免费查看该产业链图谱">限免</em>' : ''}<span class="home-industry-stats">节点 ${stats.nodeCount.toLocaleString('zh-CN')} · 企业 ${stats.companyCount.toLocaleString('zh-CN')}</span></button>`;
       })
       .join('');
   });
   $$('.home-industry-item').forEach((chip) => chip.addEventListener('click', () => {
-    if (!gateChainEntry(chip.dataset.industry)) return;
+    if (!enterChainDetail(chip.dataset.industry)) return;
     currentIndustry = chip.dataset.industry;
     chainSelectionActive = true;
     setChainSelectionMode(true);
@@ -3513,6 +3551,16 @@ const companyDetailOrigin = { view: 'graph', node: '', path: '' };
 
 function openCompanyDetailRecord(record) {
   if (!record) { showToast('未找到该企业的演示样本'); return; }
+  // 游客不可查看企业详情：弹登录窗引导注册
+  if (getUserType() === 'visitor') {
+    window.WuduAuth?.openLogin('企业详情为登录用户专属，请先登录后查看。');
+    return;
+  }
+  // 折叠预览态：企业详情属深层信息，触发开通服务窗
+  if (isChainPreviewMode()) {
+    promptChainUpgrade('查看企业详情');
+    return;
+  }
   if (!window.CompanyDetail) { showToast('企业详情模块未加载，请刷新后重试'); return; }
   const activePanel = $('.view-panel.active');
   const activeView = activePanel?.dataset.panel || 'graph';
@@ -3840,6 +3888,11 @@ function clearActiveConversation() {
 
 function setWorkbenchSection(sectionId) {
   if (!chainSelectionActive) return;
+  // 折叠预览态：产业分析 / 上链企业清单等深层内容不可查看，触发开通服务窗
+  if (sectionId !== 'graphSection' && isChainPreviewMode()) {
+    promptChainUpgrade();
+    return;
+  }
   const target = document.getElementById(sectionId);
   if (!target) return;
   $$('.workbench-tab').forEach((tab) => {
