@@ -2560,6 +2560,7 @@ function applyCompanyFilters(scope = 'list') {
     if (board) board.scrollTop = top;
     return;
   }
+  companyListPage = 0;
   renderCompanyList();
 }
 
@@ -2774,6 +2775,9 @@ function buildCompanyTableRows(profile = getProfile()) {
   };
 }
 
+let companyListPage = 0;
+const COMPANY_LIST_PAGE_SIZE = 20;
+
 function renderCompanyList(profile = getProfile()) {
   const list = $('#onchainCompanyList');
   if (!list) return;
@@ -2781,15 +2785,19 @@ function renderCompanyList(profile = getProfile()) {
   syncCompanyFilterTriggers('list');
   renderCompanyFilterChips('list');
   const { rows, uniqueTotal, matchedTotal } = buildCompanyTableRows(profile);
-  const pageSize = 40;
-  const visibleRows = rows.slice(0, pageSize);
+  const pageSize = COMPANY_LIST_PAGE_SIZE;
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  if (companyListPage >= pageCount) companyListPage = pageCount - 1;
+  if (companyListPage < 0) companyListPage = 0;
+  const pageStart = companyListPage * pageSize;
+  const visibleRows = rows.slice(pageStart, pageStart + pageSize);
   setText('#companyListTotal', matchedTotal.toLocaleString('zh-CN'));
   setText('#companyListScope', profile
-    ? `展示“${profile.title}”当前筛选下的代表企业样本，点击企业所在环节可查看完整清单与证据。`
+    ? `展示“${profile.title}”全部上链企业，支持分页浏览，点击企业名称可查看企业详情。`
     : '当前筛选只有官方产业体系命名，暂未接入对应的企业清单。');
   const filteredActive = hasActiveCompanyFilters();
-  $('#companyListSummary').textContent = rows.length > visibleRows.length
-    ? `${filteredActive ? '筛选后' : ''}显示 ${visibleRows.length} / ${rows.length} 家匹配企业，可继续缩小条件或导出完整清单`
+  $('#companyListSummary').textContent = rows.length > pageSize
+    ? `${filteredActive ? '筛选后' : ''}显示第 ${pageStart + 1}-${pageStart + visibleRows.length} 家，共 ${rows.length.toLocaleString('zh-CN')} 家匹配企业`
     : `${filteredActive ? '筛选后' : ''}显示 ${rows.length} / ${uniqueTotal} 家匹配企业`;
   if (!visibleRows.length) {
     list.innerHTML = '<div class="company-list-empty"><div class="empty-graph-icon">' + icon('building', 'ui-icon') + '</div><strong>当前条件暂无企业清单</strong><p>可放宽筛选条件或更换产业链后继续查看。</p></div>';
@@ -2806,9 +2814,22 @@ function renderCompanyList(profile = getProfile()) {
       company.listed === '是' ? '<span class="table-tag listed">已上市</span>' : '',
       company.stockCode ? `<span class="table-tag code">${escapeHtml(company.stockCode)}</span>` : ''
     ].join('');
-    return `<tr><td class="cell-index">${String(index + 1).padStart(2, '0')}</td><td class="cell-company"><button class="company-name-link" type="button" data-company-key="${escapeHtml(company.displayName || company.name)}" title="查看企业详情">${escapeHtml(company.displayName || company.name)}</button><div class="company-name-tags">${statusTags}</div></td><td class="cell-center">${renderPopoverTrigger(`${nodes.length} 个`, '关联产业链节点', nodes)}</td><td><div class="table-honor">${honorChips.join('') || '<span class="cell-empty">—</span>'}</div></td><td>${renderContactCell(company.phones || [])}</td><td>${renderContactCell(company.emails || [])}</td><td class="cell-date">${escapeHtml(company.registeredDate || '—')}</td><td class="cell-legal">${escapeHtml(company.legalPerson || '—')}</td><td class="cell-capital">${escapeHtml(company.registeredCapital || '—')}</td><td class="cell-region" title="${escapeHtml(company.province || '')}">${escapeHtml(company.province || '—')}</td><td class="cell-region" title="${escapeHtml(company.city || '')}">${escapeHtml(company.city || '—')}</td><td class="cell-region" title="${escapeHtml(company.district || '')}">${escapeHtml(company.district || '—')}</td></tr>`;
+    return `<tr><td class="cell-index">${String(pageStart + index + 1).padStart(2, '0')}</td><td class="cell-company"><button class="company-name-link" type="button" data-company-key="${escapeHtml(company.displayName || company.name)}" title="查看企业详情">${escapeHtml(company.displayName || company.name)}</button><div class="company-name-tags">${statusTags}</div></td><td class="cell-center">${renderPopoverTrigger(`${nodes.length} 个`, '关联产业链节点', nodes)}</td><td><div class="table-honor">${honorChips.join('') || '<span class="cell-empty">—</span>'}</div></td><td>${renderContactCell(company.phones || [])}</td><td>${renderContactCell(company.emails || [])}</td><td class="cell-date">${escapeHtml(company.registeredDate || '—')}</td><td class="cell-legal">${escapeHtml(company.legalPerson || '—')}</td><td class="cell-capital">${escapeHtml(company.registeredCapital || '—')}</td><td class="cell-region" title="${escapeHtml(company.province || '')}">${escapeHtml(company.province || '—')}</td><td class="cell-region" title="${escapeHtml(company.city || '')}">${escapeHtml(company.city || '—')}</td><td class="cell-region" title="${escapeHtml(company.district || '')}">${escapeHtml(company.district || '—')}</td></tr>`;
   }).join('');
-  list.innerHTML = `<div class="company-table-scroll"><table class="company-table">${head}<tbody>${body}</tbody></table></div>${rows.length > pageSize ? `<div class="company-table-more">已展示前 ${pageSize} 家，完整清单可通过右上角「导出表格」获取</div>` : ''}`;
+  const pagerHtml = pageCount > 1
+    ? `<div class="company-list-pager search-result-pager"><button class="pager-button" type="button" data-list-pager="prev" aria-label="上一页" ${companyListPage === 0 ? 'disabled' : ''}><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button><span class="pager-info">第 <b class="pager-current">${companyListPage + 1}</b> / ${pageCount} 页 · 共 ${rows.length.toLocaleString('zh-CN')} 家</span><button class="pager-button next" type="button" data-list-pager="next" aria-label="下一页" ${companyListPage === pageCount - 1 ? 'disabled' : ''}><svg class="ui-icon mini"><use href="#icon-arrow-right"></use></svg></button></div>`
+    : '';
+  list.innerHTML = `<div class="company-table-scroll"><table class="company-table">${head}<tbody>${body}</tbody></table></div>${pagerHtml}`;
+  if (pageCount > 1) {
+    const goToPage = (page) => {
+      companyListPage = Math.min(Math.max(page, 0), pageCount - 1);
+      const top = list.scrollTop;
+      renderCompanyList(profile);
+      list.scrollTop = top;
+    };
+    $('[data-list-pager=prev]', list)?.addEventListener('click', () => goToPage(companyListPage - 1));
+    $('[data-list-pager=next]', list)?.addEventListener('click', () => goToPage(companyListPage + 1));
+  }
 }
 
 function csvCell(value) {
@@ -2898,6 +2919,7 @@ function renderAnalysisLegacy(profile = getProfile()) {
   $('#analysisStageAxis').textContent = maxStageValue ? Math.round(maxStageValue / 2).toLocaleString('zh-CN') : '—';
   $('#analysisStageAxis').nextElementSibling.textContent = maxStageValue ? maxStageValue.toLocaleString('zh-CN') : '—';
   renderDistribution();
+  companyListPage = 0;
   renderCompanyList(profile);
 }
 
@@ -3163,6 +3185,7 @@ function renderAnalysis(profile = getProfile()) {
   $('#qualificationRate').textContent = `${total.toLocaleString('zh-CN')} 家`;
   $('#analysisQualificationGrid').innerHTML = qualificationEntries.map(([label, value]) => `<div class="qualification-card"><div class="qualification-copy"><span>${escapeHtml(label)}</span><strong>${value.toLocaleString('zh-CN')}<i>家</i></strong></div><div class="qualification-track"><b style="width:${total && value ? Math.max(4, Math.round(value / total * 100)) : 0}%"></b></div><small>占样本 ${formatAnalysisPercent(value, total)}</small></div>`).join('');
   renderDistribution(companies);
+  companyListPage = 0;
   renderCompanyList(profile);
 }
 
