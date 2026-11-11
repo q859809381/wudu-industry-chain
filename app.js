@@ -4083,6 +4083,13 @@ function init() {
   // 登录 / 退出 / 会员类型变化：按新的用户权限重置产业链范围，并回到产业链选择页
   document.addEventListener('wudu-auth-change', () => {
     closeDrawer();
+    // 登录/开通/退出后尽量停留在当前页面：当前链仍可见时保持详情（如付款后立即解锁完整图谱），
+    // 仅当当前链不再可见（如退出登录后非限免链）才回到产业链选择页
+    if (currentIndustry && chainAllowed(currentIndustry)) {
+      renderGraph();
+      if ($('.view-panel.active')?.dataset.panel === 'graph') setWorkbenchSection('graphSection');
+      return;
+    }
     const scope = getChainScope();
     if (scope.chain) {
       if (currentIndustry && !chainAllowed(currentIndustry)) currentIndustry = scope.chain;
