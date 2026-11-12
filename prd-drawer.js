@@ -15,7 +15,7 @@
     fab.type = 'button';
     fab.className = 'prd-fab';
     fab.id = 'prdFab';
-    fab.title = '查看产品需求文档（PRD）';
+    fab.title = '查看产品需求文档（PRD）｜快捷键 Tab';
     fab.setAttribute('aria-label', '查看产品需求文档');
     fab.innerHTML = icon('file');
 
@@ -166,6 +166,17 @@
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+      if (event.key === 'Tab') {
+        /* 输入控件内按 Tab 仍走默认焦点移动，不触发抽屉 */
+        const t = event.target;
+        if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
+        event.preventDefault();
+        if (drawer.classList.contains('open')) {
+          closeDrawer();
+        } else {
+          openDrawer();
+        }
+      }
     });
   }
 
