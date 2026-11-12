@@ -288,32 +288,17 @@
 .prd-version-changes { margin: 0; padding-left: 18px; }
 .prd-version-changes li { color: #44607a; font-size: 12px; line-height: 1.7; margin-bottom: 4px; }
 
-/* ---- 本版更新内容标注：标题文字轻微背景色 + 脚注序号（悬浮/点击显示变更说明） ---- */
+/* ---- 本版更新内容标注：标题文字轻微黄色背景，悬浮/点击标题显示变更说明 ---- */
 .prd-doc h2.prd-doc-h1.prd-updated,
 .prd-doc h4.prd-doc-h3.prd-updated {
   width: fit-content;
   max-width: 100%;
-  background: #fcebeb;
+  background: #fcf4cf;
   border-radius: 4px;
   padding: 2px 6px;
   margin-left: -6px;
-}
-.prd-upd-mark {
-  display: inline-block;
-  margin-left: 5px;
-  padding: 0 4px;
-  border-radius: 4px;
-  color: #d97706;
-  font-size: 11px;
-  font-weight: 700;
-  font-style: normal;
-  line-height: 1.4;
-  vertical-align: 4px;
   cursor: pointer;
-  outline: none;
-  transition: background .15s;
 }
-.prd-upd-mark:hover, .prd-upd-mark:focus { background: #ffe6c7; color: #b45309; }
 
 /* 脚注气泡：挂在 body 上的 fixed 定位小窗 */
 .prd-upd-tip {

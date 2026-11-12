@@ -97,6 +97,7 @@
     if (versions.length) {
       versionLabel.textContent = `${versions[0].version} · ${versions[0].date}`;
       versionList.innerHTML = versionListHtml(versions);
+      showVersionDetail(0);
     } else {
       versionLabel.textContent = '依据 PRD 文档自动生成';
       versionBtn.hidden = true;
@@ -223,6 +224,11 @@
       toggleVersionPanel(versionPanel.hidden);
     });
     versionPanel.addEventListener('click', (event) => event.stopPropagation());
+    /* 悬浮版本即切换右侧更新说明（点击同样生效，兼容触屏） */
+    versionList.addEventListener('mouseover', (event) => {
+      const item = event.target.closest('[data-prd-version-index]');
+      if (item) showVersionDetail(Number(item.getAttribute('data-prd-version-index')));
+    });
     versionList.addEventListener('click', (event) => {
       const item = event.target.closest('[data-prd-version-index]');
       if (item) showVersionDetail(Number(item.getAttribute('data-prd-version-index')));
@@ -234,43 +240,44 @@
     updTip.className = 'prd-upd-tip';
     updTip.hidden = true;
     document.body.appendChild(updTip);
-    let pinnedMark = null;
-    function showUpdTip(mark, pin) {
-      updTip.textContent = mark.getAttribute('data-note') || '';
+    let pinnedNote = null;
+    const UPD_SELECTOR = '.prd-updated[data-note]';
+    function showUpdTip(el, pin) {
+      updTip.textContent = el.getAttribute('data-note') || '';
       updTip.hidden = false;
-      const r = mark.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
       const tw = updTip.offsetWidth;
       const th = updTip.offsetHeight;
-      let left = r.left + r.width / 2 - tw / 2;
+      let left = r.left + Math.min(r.width / 2, tw / 2);
       left = Math.max(12, Math.min(left, window.innerWidth - tw - 12));
       let top = r.bottom + 9;
       if (top + th > window.innerHeight - 12) top = Math.max(12, r.top - th - 9);
       updTip.style.left = `${left}px`;
       updTip.style.top = `${top}px`;
-      if (pin) pinnedMark = mark;
+      if (pin) pinnedNote = el;
     }
     function hideUpdTip(force) {
-      if (!force && pinnedMark) return;
+      if (!force && pinnedNote) return;
       updTip.hidden = true;
-      pinnedMark = null;
+      pinnedNote = null;
     }
     contentEl.addEventListener('click', (event) => {
-      const mark = event.target.closest('.prd-upd-mark');
-      if (!mark) return;
+      const el = event.target.closest(UPD_SELECTOR);
+      if (!el) return;
       event.stopPropagation();
-      if (pinnedMark === mark) hideUpdTip(true);
-      else showUpdTip(mark, true);
+      if (pinnedNote === el) hideUpdTip(true);
+      else showUpdTip(el, true);
     });
     contentEl.addEventListener('mouseover', (event) => {
-      const mark = event.target.closest('.prd-upd-mark');
-      if (mark && !pinnedMark) showUpdTip(mark, false);
+      const el = event.target.closest(UPD_SELECTOR);
+      if (el && !pinnedNote) showUpdTip(el, false);
     });
     contentEl.addEventListener('mouseout', (event) => {
-      const mark = event.target.closest('.prd-upd-mark');
-      if (mark && !pinnedMark) hideUpdTip(true);
+      const el = event.target.closest(UPD_SELECTOR);
+      if (el && !pinnedNote) hideUpdTip(true);
     });
     document.addEventListener('click', (event) => {
-      if (pinnedMark && !updTip.contains(event.target) && !event.target.closest('.prd-upd-mark')) hideUpdTip(true);
+      if (pinnedNote && !updTip.contains(event.target) && !event.target.closest(UPD_SELECTOR)) hideUpdTip(true);
     });
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
     document.addEventListener('keydown', (event) => {

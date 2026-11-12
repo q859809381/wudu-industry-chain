@@ -146,8 +146,7 @@ def render_blocks(blocks):
             out.append(f'<li>{html.escape(content)}</li>')
         elif kind == 'h3':
             cls = ' prd-updated' if orig else ''
-            mark = upd_mark(orig) if orig else ''
-            out.append(f'<h4 class="prd-doc-h3{cls}">{html.escape(content)}{mark}</h4>')
+            out.append(f'<h4 class="prd-doc-h3{cls}"{upd_note_attr(orig)}>{html.escape(content)}</h4>')
         else:
             out.append(f'<p>{html.escape(content)}</p>')
     html_out = []
@@ -206,13 +205,12 @@ UPDATED_SECTIONS = {o for o, _ in UPDATE_NOTES}
 NOTE_INDEX = {o: i + 1 for i, (o, _) in enumerate(UPDATE_NOTES)}
 NOTE_TEXT = dict(UPDATE_NOTES)
 
-def upd_mark(orig):
-    """更新章节标题后的脚注序号（上标圆标），data-note 供悬浮/点击气泡展示"""
-    n = NOTE_INDEX.get(orig)
-    if not n:
+def upd_note_attr(orig):
+    """更新章节标题上的 data-note 属性（标题本身轻微高亮，悬浮/点击显示变更说明）"""
+    note = NOTE_TEXT.get(orig)
+    if not note:
         return ''
-    note = html.escape(NOTE_TEXT[orig], quote=True)
-    return f'<sup class="prd-upd-mark" tabindex="0" data-note="{note}">{n}</sup>'
+    return f' data-note="{html.escape(note, quote=True)}"'
 
 def strip_num(t):
     return re.sub(r'^\d+(?:\.\d+)*\.?\s+', '', t)
@@ -254,7 +252,7 @@ def renumber_blocks(blocks, mode, base):
 def h1_html(t, orig=''):
     updated = orig in UPDATED_SECTIONS
     cls = ' prd-updated' if updated else ''
-    return f'<h2 class="prd-doc-h1{cls}">{html.escape(t)}{upd_mark(orig)}</h2>'
+    return f'<h2 class="prd-doc-h1{cls}"{upd_note_attr(orig)}>{html.escape(t)}</h2>'
 
 def h2_html(t):
     return f'<h3 class="prd-doc-h2">{html.escape(t)}</h3>'
