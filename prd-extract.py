@@ -64,6 +64,24 @@ def is_heading(p, text):
         return None
     return 1 if re.match(r'^\d+\.\s', text) else (2 if re.match(r'^\d+\.\d+\s', text) else 3)
 
+# 正文交叉引用重写：抽屉内编号已按页签重排，正文中引用旧编号需映射到新编号表达
+# （源 docx 编号体系不变，仅抽屉展示层替换）
+REF_RULES = [
+    ('对应 5.2 节', '对应「二、产业图谱（核心模块）」'),
+    ('（详见 4.2）', '（详见全局业务规则-2、产业链查看与开通权限）'),
+    ('受 4.2 权限规则约束', '受产业链查看与开通权限规则约束（全局业务规则-2）'),
+    ('按 4.2 权限规则执行', '按产业链查看与开通权限规则执行（全局业务规则-2）'),
+    ('（见 4.2）', '（见产业链查看与开通权限规则，全局业务规则-2）'),
+    ('（见 5.2.4）', '（见 4、环节企业清单抽屉）'),
+    ('（见 5.2.7）', '（见 6、企业详情）'),
+    ('权限规则同 5.2.4', '权限规则同「4、环节企业清单抽屉」'),
+]
+
+def rewrite_refs(t):
+    for old, new in REF_RULES:
+        t = t.replace(old, new)
+    return t
+
 def table_html(tbl):
     rows = re.findall(r'<w:tr[ >].*?</w:tr>', tbl, re.S)
     out = ['<table class="prd-doc-table"><tbody>']
@@ -75,7 +93,8 @@ def table_html(tbl):
             t = ' '.join(para_text(tc).split())
             if not t:
                 continue
-            tds.append(f'<{tag}>{html.escape(t)}</{tag}>')
+            t = html.escape(rewrite_refs(t))
+            tds.append(f'<{tag}>{t}</{tag}>')
         if tds:
             out.append('<tr>' + ''.join(tds) + '</tr>')
     out.append('</tbody></table>')
@@ -182,6 +201,11 @@ def h1_html(t):
 
 def h2_html(t):
     return f'<h3 class="prd-doc-h2">{html.escape(t)}</h3>'
+
+render_blocks_src = render_blocks
+
+def render_blocks(blocks):
+    return render_blocks_src([(k, rewrite_refs(c)) for k, c in blocks])
 
 # ---- 全局介绍：章=一、二、三、四；节=1、2；子节=1.1 ----
 global_parts = []
