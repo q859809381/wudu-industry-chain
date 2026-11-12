@@ -12,19 +12,15 @@
     }[ch]));
   }
 
-  /* 版本历史：右侧滑出的二级窗口，每个版本直接展示其更新记录 */
-  function versionSideHtml(versions) {
+  /* 版本下拉：左列版本列表，点击某个版本后右侧出现该版更新说明 */
+  function versionListHtml(versions) {
     if (!versions || !versions.length) return '';
     return versions.map((v, i) => `
-      <div class="prd-version-card">
-        <div class="prd-version-card-head">
-          <strong>${escapeHtml(v.version)}</strong>
-          <span class="prd-version-date">${escapeHtml(v.date)}</span>
-          ${i === 0 ? '<span class="prd-version-current">当前</span>' : ''}
-        </div>
-        <div class="prd-version-changes-title">${i === 0 ? '本版更新内容' : `较 ${escapeHtml(versions[i - 1].version)} 的更新记录`}</div>
-        <ul class="prd-version-changes">${v.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
-      </div>`).join('');
+      <button type="button" class="prd-version-item${i === 0 ? ' active' : ''}" data-prd-version-index="${i}">
+        <strong>${escapeHtml(v.version)}</strong>
+        <span class="prd-version-date">${escapeHtml(v.date)}</span>
+        ${i === 0 ? '<span class="prd-version-current">当前</span>' : ''}
+      </button>`).join('');
   }
 
   function icon(name, cls) {
@@ -53,9 +49,15 @@
         <span class="prd-drawer-head-icon">${icon('file')}</span>
         <div class="prd-drawer-head-titles">
           <strong>产业链全景图谱平台 PRD</strong>
-          <button type="button" class="prd-version-btn" data-prd-version-btn title="${PRD_VERSION_LABEL}">
-            <span data-prd-version-label></span><span class="prd-version-caret">▾</span>
-          </button>
+          <span class="prd-version-wrap">
+            <button type="button" class="prd-version-btn" data-prd-version-btn title="${PRD_VERSION_LABEL}">
+              <span data-prd-version-label></span><span class="prd-version-caret">▾</span>
+            </button>
+            <div class="prd-version-panel" data-prd-version-panel hidden>
+              <div class="prd-version-list" data-prd-version-list></div>
+              <div class="prd-version-detail" data-prd-version-detail hidden></div>
+            </div>
+          </span>
         </div>
         <button type="button" class="prd-drawer-close" data-prd-close aria-label="关闭">${icon('x', 'ui-icon mini')}</button>
       </div>
@@ -69,15 +71,7 @@
       <div class="prd-drawer-body">
         <nav class="prd-module-nav" data-prd-nav hidden></nav>
         <div class="prd-doc-scroll"><div class="prd-doc" data-prd-content></div></div>
-      </div>
-      <div class="prd-version-side-mask" data-prd-version-mask></div>
-      <aside class="prd-version-side" data-prd-version-side aria-hidden="true">
-        <div class="prd-version-side-head">
-          <strong>${PRD_VERSION_LABEL}</strong>
-          <button type="button" class="prd-version-side-close" data-prd-version-close aria-label="关闭版本历史">${icon('x', 'ui-icon mini')}</button>
-        </div>
-        <div class="prd-version-side-body" data-prd-version-body></div>
-      </aside>`;
+      </div>`;
 
     document.body.appendChild(fab);
     document.body.appendChild(overlay);
@@ -95,13 +89,14 @@
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
     const versionBtn = drawer.querySelector('[data-prd-version-btn]');
     const versionLabel = drawer.querySelector('[data-prd-version-label]');
-    const versionSide = drawer.querySelector('[data-prd-version-side]');
-    const versionMask = drawer.querySelector('[data-prd-version-mask]');
-    const versionBody = drawer.querySelector('[data-prd-version-body]');
+    const versionWrap = drawer.querySelector('.prd-version-wrap');
+    const versionPanel = drawer.querySelector('[data-prd-version-panel]');
+    const versionList = drawer.querySelector('[data-prd-version-list]');
+    const versionDetail = drawer.querySelector('[data-prd-version-detail]');
     const versions = data.versions || [];
     if (versions.length) {
       versionLabel.textContent = `${versions[0].version} · ${versions[0].date}`;
-      versionBody.innerHTML = versionSideHtml(versions);
+      versionList.innerHTML = versionListHtml(versions);
     } else {
       versionLabel.textContent = '依据 PRD 文档自动生成';
       versionBtn.hidden = true;
@@ -151,6 +146,7 @@
         tipEl.textContent = mode === 'global' ? '引言 · 用户角色 · 产品概述 · 全局业务规则' : '';
       }
       contentEl.innerHTML = (mode === 'global' ? data.globalHtml : data.pagesHtml) || '<div class="prd-doc-empty">暂无内容</div>';
+      hideUpdTip(true);
       const scroll = drawer.querySelector('.prd-doc-scroll');
       if (scroll) scroll.scrollTop = 0;
     }
@@ -207,20 +203,80 @@
     fab.addEventListener('click', openDrawer);
     overlay.addEventListener('click', closeDrawer);
     drawer.querySelector('[data-prd-close]').addEventListener('click', closeDrawer);
-    /* 版本历史二级窗口：右侧滑出，点遮罩或关闭按钮收回 */
-    function toggleVersion(open) {
-      versionSide.classList.toggle('open', open);
-      versionMask.classList.toggle('open', open);
+    /* 版本下拉：点击按钮展开列表；点列表中的版本，右侧出现该版更新说明 */
+    function toggleVersionPanel(open) {
+      versionPanel.hidden = !open;
       versionBtn.classList.toggle('open', open);
-      versionSide.setAttribute('aria-hidden', String(!open));
     }
-    versionBtn.addEventListener('click', () => toggleVersion(!versionSide.classList.contains('open')));
-    versionMask.addEventListener('click', () => toggleVersion(false));
-    drawer.querySelector('[data-prd-version-close]').addEventListener('click', () => toggleVersion(false));
+    function showVersionDetail(i) {
+      versionList.querySelectorAll('[data-prd-version-index]').forEach((b) =>
+        b.classList.toggle('active', Number(b.getAttribute('data-prd-version-index')) === i));
+      const v = versions[i];
+      const title = i === 0 ? '本版更新内容' : `较 ${versions[i - 1].version} 的更新记录`;
+      versionDetail.innerHTML =
+        `<div class="prd-version-detail-title">${escapeHtml(title)}</div>` +
+        `<ul class="prd-version-changes">${v.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>`;
+      versionDetail.hidden = false;
+    }
+    versionBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleVersionPanel(versionPanel.hidden);
+    });
+    versionPanel.addEventListener('click', (event) => event.stopPropagation());
+    versionList.addEventListener('click', (event) => {
+      const item = event.target.closest('[data-prd-version-index]');
+      if (item) showVersionDetail(Number(item.getAttribute('data-prd-version-index')));
+    });
+    document.addEventListener('click', () => toggleVersionPanel(false));
+    /* 脚注气泡：挂在 body 上用 fixed 定位，避免被左侧导航或滚动容器裁剪。
+       悬浮临时显示，点击固定/取消；点击其他区域或切换页签时收起 */
+    const updTip = document.createElement('div');
+    updTip.className = 'prd-upd-tip';
+    updTip.hidden = true;
+    document.body.appendChild(updTip);
+    let pinnedMark = null;
+    function showUpdTip(mark, pin) {
+      updTip.textContent = mark.getAttribute('data-note') || '';
+      updTip.hidden = false;
+      const r = mark.getBoundingClientRect();
+      const tw = updTip.offsetWidth;
+      const th = updTip.offsetHeight;
+      let left = r.left + r.width / 2 - tw / 2;
+      left = Math.max(12, Math.min(left, window.innerWidth - tw - 12));
+      let top = r.bottom + 9;
+      if (top + th > window.innerHeight - 12) top = Math.max(12, r.top - th - 9);
+      updTip.style.left = `${left}px`;
+      updTip.style.top = `${top}px`;
+      if (pin) pinnedMark = mark;
+    }
+    function hideUpdTip(force) {
+      if (!force && pinnedMark) return;
+      updTip.hidden = true;
+      pinnedMark = null;
+    }
+    contentEl.addEventListener('click', (event) => {
+      const mark = event.target.closest('.prd-upd-mark');
+      if (!mark) return;
+      event.stopPropagation();
+      if (pinnedMark === mark) hideUpdTip(true);
+      else showUpdTip(mark, true);
+    });
+    contentEl.addEventListener('mouseover', (event) => {
+      const mark = event.target.closest('.prd-upd-mark');
+      if (mark && !pinnedMark) showUpdTip(mark, false);
+    });
+    contentEl.addEventListener('mouseout', (event) => {
+      const mark = event.target.closest('.prd-upd-mark');
+      if (mark && !pinnedMark) hideUpdTip(true);
+    });
+    document.addEventListener('click', (event) => {
+      if (pinnedMark && !updTip.contains(event.target) && !event.target.closest('.prd-upd-mark')) hideUpdTip(true);
+    });
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        if (versionSide.classList.contains('open')) { toggleVersion(false); return; }
+        if (!versionPanel.hidden) { toggleVersionPanel(false); return; }
+        if (pinnedMark) { hideUpdTip(true); return; }
         if (drawer.classList.contains('open')) closeDrawer();
       }
       if (event.key === 'Tab') {

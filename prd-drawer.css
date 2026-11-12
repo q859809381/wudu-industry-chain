@@ -202,13 +202,12 @@
   .prd-doc { padding: 18px 16px 22px; }
 }
 
-/* ---- 版本按钮与版本历史二级窗口 ---- */
-.prd-drawer-head { position: relative; }
+/* ---- 版本按钮与版本下拉（列表 + 右侧更新说明） ---- */
+.prd-version-wrap { position: relative; display: inline-flex; margin-top: 2px; }
 .prd-version-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
   padding: 2px 8px 2px 0;
   border: none;
   background: none;
@@ -229,70 +228,43 @@
 }
 .prd-version-btn.open .prd-version-caret { transform: translateY(-1px) rotate(180deg); }
 
-/* 版本历史：抽屉右侧滑出的二级窗口 */
-.prd-version-side-mask {
+.prd-version-panel {
   position: absolute;
-  inset: 0;
-  z-index: 30;
-  background: rgba(20, 38, 54, .3);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .2s ease, visibility .2s ease;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 60;
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+  border: 1px solid #dbe7ef;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(23, 68, 102, 0.18);
 }
-.prd-version-side-mask.open { opacity: 1; visibility: visible; }
-.prd-version-side {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 31;
-  width: min(400px, 92vw);
+.prd-version-panel[hidden] { display: none; }
+.prd-version-list {
+  flex: 0 0 168px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  background: #f6f9fc;
-  box-shadow: -12px 0 36px rgba(20, 38, 54, .24);
-  transform: translateX(105%);
-  visibility: hidden;
-  transition: transform .26s cubic-bezier(.33, 1, .68, 1), visibility .26s;
+  gap: 2px;
 }
-.prd-version-side.open { transform: translateX(0); visibility: visible; }
-.prd-version-side-head {
-  flex: 0 0 auto;
+.prd-version-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid #e4edf4;
-  background: #ffffff;
-}
-.prd-version-side-head strong { color: #1d3a54; font-size: 14px; }
-.prd-version-side-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #d8e4ec;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 0;
   border-radius: 8px;
-  background: #ffffff;
-  color: #527087;
+  background: transparent;
   cursor: pointer;
-  transition: color .15s, border-color .15s;
+  text-align: left;
+  font: inherit;
+  transition: background .15s;
 }
-.prd-version-side-close:hover { color: #1d5a99; border-color: #a9d1f1; }
-.prd-version-side-close svg { width: 15px; height: 15px; }
-.prd-version-side-body { flex: 1 1 auto; overflow-y: auto; padding: 14px; }
-
-.prd-version-card {
-  background: #ffffff;
-  border: 1px solid #e4edf4;
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.prd-version-card + .prd-version-card { margin-top: 10px; }
-.prd-version-card-head { display: flex; align-items: center; gap: 8px; }
-.prd-version-card-head strong { color: #1d3a54; font-size: 13px; }
-.prd-version-date { color: #8ba0b0; font-size: 11.5px; }
+.prd-version-item:hover { background: #f4f9fd; }
+.prd-version-item.active { background: #e8f2fd; }
+.prd-version-item strong { color: #1d3a54; font-size: 12.5px; white-space: nowrap; }
+.prd-version-date { color: #8ba0b0; font-size: 11px; white-space: nowrap; }
 .prd-version-current {
   margin-left: auto;
   padding: 1px 7px;
@@ -300,83 +272,62 @@
   background: #e8f3fe;
   color: #2e7cc0;
   font-size: 10.5px;
+  white-space: nowrap;
 }
-.prd-version-changes-title { margin-top: 8px; color: #5b788e; font-size: 11px; }
-.prd-version-changes { margin: 6px 0 0; padding-left: 18px; }
+.prd-version-detail {
+  flex: 0 0 330px;
+  max-height: min(400px, 58vh);
+  overflow-y: auto;
+  padding: 12px 14px;
+  border-left: 1px solid #e4edf4;
+  background: #f8fbfd;
+  border-radius: 0 10px 10px 0;
+}
+.prd-version-detail[hidden] { display: none; }
+.prd-version-detail-title { color: #5b788e; font-size: 11px; margin-bottom: 7px; }
+.prd-version-changes { margin: 0; padding-left: 18px; }
 .prd-version-changes li { color: #44607a; font-size: 12px; line-height: 1.7; margin-bottom: 4px; }
 
-/* ---- 本版更新内容标注：标题轻微高亮 + 脚注序号（悬浮/点击显示变更说明） ---- */
+/* ---- 本版更新内容标注：标题文字轻微背景色 + 脚注序号（悬浮/点击显示变更说明） ---- */
 .prd-doc h2.prd-doc-h1.prd-updated,
 .prd-doc h4.prd-doc-h3.prd-updated {
   width: fit-content;
   max-width: 100%;
-  background: #fdf3e3;
-  border-radius: 6px;
-  padding: 3px 8px;
-  margin-left: -8px;
-  color: #8a5a17;
+  background: #fcebeb;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: -6px;
 }
 .prd-upd-mark {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  height: 15px;
-  margin-left: 6px;
-  border-radius: 50%;
-  background: #ffd9a6;
-  color: #a35400;
-  font-size: 10px;
+  display: inline-block;
+  margin-left: 5px;
+  padding: 0 4px;
+  border-radius: 4px;
+  color: #d97706;
+  font-size: 11px;
   font-weight: 700;
   font-style: normal;
-  vertical-align: 5px;
-  line-height: 1;
-  cursor: help;
+  line-height: 1.4;
+  vertical-align: 4px;
+  cursor: pointer;
   outline: none;
-  transition: background .15s, color .15s;
+  transition: background .15s;
 }
-.prd-upd-mark:hover, .prd-upd-mark:focus { background: #ffab5e; color: #7a3d00; }
-.prd-upd-mark::after {
-  content: attr(data-note);
-  position: absolute;
-  top: calc(100% + 9px);
-  left: 50%;
-  width: 320px;
+.prd-upd-mark:hover, .prd-upd-mark:focus { background: #ffe6c7; color: #b45309; }
+
+/* 脚注气泡：挂在 body 上的 fixed 定位小窗 */
+.prd-upd-tip {
+  position: fixed;
+  z-index: 10500;
+  width: max-content;
+  max-width: 340px;
   padding: 10px 13px;
   border-radius: 9px;
   background: #ffffff;
   border: 1px solid #ffd9ad;
   box-shadow: 0 10px 28px rgba(23, 68, 102, .18);
   color: #44607a;
-  font-size: 11.5px;
-  font-weight: 400;
+  font-size: 12px;
   line-height: 1.7;
-  text-align: left;
-  white-space: normal;
-  z-index: 40;
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, -4px);
-  transition: opacity .16s ease, visibility .16s ease, transform .16s ease;
-  pointer-events: none;
 }
-.prd-upd-mark::before {
-  content: '';
-  position: absolute;
-  top: calc(100% + 3px);
-  left: 50%;
-  width: 10px;
-  height: 10px;
-  background: #ffffff;
-  border-left: 1px solid #ffd9ad;
-  border-top: 1px solid #ffd9ad;
-  transform: translate(-50%, -4px) rotate(45deg);
-  z-index: 41;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .16s ease, visibility .16s ease, transform .16s ease;
-  pointer-events: none;
-}
-.prd-upd-mark:hover::before, .prd-upd-mark:focus::before { opacity: 1; visibility: visible; transform: translate(-50%, 0) rotate(45deg); }
-.prd-upd-mark:hover::after, .prd-upd-mark:focus::after { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+.prd-upd-tip[hidden] { display: none; }
