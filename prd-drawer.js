@@ -63,6 +63,8 @@
     const tipEl = drawer.querySelector('[data-prd-tip]');
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
     let mode = 'global';
+    /* 关闭时的停留状态：页签 + 选中导航项 + 滚动位置，再次打开时恢复 */
+    let savedState = null;
 
     /* 各页签左侧锚点导航（全局介绍 / 页面与功能描述 各自一份） */
     function navListFor(m) {
@@ -116,7 +118,28 @@
     }
 
     function openDrawer() {
-      renderTab();
+      if (savedState && savedState.mode !== mode) {
+        /* 恢复关闭前所在页签（setMode 内部会重新渲染） */
+        mode = savedState.mode;
+        modeButtons.forEach((btn) => btn.classList.toggle('active', btn.getAttribute('data-prd-mode') === mode));
+        renderTab();
+      } else {
+        renderTab();
+      }
+      if (savedState) {
+        if (savedState.anchor) {
+          const btn = navEl.querySelector(`[data-prd-anchor="${CSS.escape(savedState.anchor)}"]`);
+          if (btn) {
+            navEl.querySelectorAll('[data-prd-anchor]').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            tipEl.textContent = btn.textContent;
+          }
+        }
+        const scroll = drawer.querySelector('.prd-doc-scroll');
+        if (scroll && typeof savedState.scrollTop === 'number') {
+          scroll.scrollTop = savedState.scrollTop;
+        }
+      }
       overlay.classList.add('open');
       drawer.classList.add('open');
       drawer.setAttribute('aria-hidden', 'false');
@@ -124,6 +147,13 @@
     }
 
     function closeDrawer() {
+      const btn = navEl.querySelector('[data-prd-anchor].active');
+      const scroll = drawer.querySelector('.prd-doc-scroll');
+      savedState = {
+        mode,
+        anchor: btn ? btn.getAttribute('data-prd-anchor') : null,
+        scrollTop: scroll ? scroll.scrollTop : 0,
+      };
       overlay.classList.remove('open');
       drawer.classList.remove('open');
       drawer.setAttribute('aria-hidden', 'true');
