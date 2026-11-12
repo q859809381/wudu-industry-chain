@@ -137,13 +137,17 @@ for kind, lvl, content in items:
 
 def render_blocks(blocks):
     out = []
-    for kind, content in blocks:
+    for item in blocks:
+        kind, content = item[0], item[1]
+        updated = len(item) > 2 and item[2]
         if kind == 'table':
             out.append(content)
         elif kind == 'li':
             out.append(f'<li>{html.escape(content)}</li>')
         elif kind == 'h3':
-            out.append(f'<h4 class="prd-doc-h3">{html.escape(content)}</h4>')
+            badge = NEW_BADGE if updated else ''
+            cls = ' prd-updated' if updated else ''
+            out.append(f'<h4 class="prd-doc-h3{cls}">{badge}{html.escape(content)}</h4>')
         else:
             out.append(f'<p>{html.escape(content)}</p>')
     html_out = []
@@ -164,6 +168,33 @@ def render_blocks(blocks):
     return ''.join(html_out)
 
 CN_NUM = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+
+# 版本历史（最新在前）：changes 为该版本相对上一版的更新记录
+PRD_VERSIONS = [
+    {
+        'version': 'V1.1.0',
+        'date': '2026-11-12',
+        'changes': [
+            '链条选择页：关键词检索结果改为「产业图谱 / 产业环节 / 企业清单」三组分类展示，每组默认 5 条并提供「查看全部」二级页；',
+            '环节企业清单抽屉：企业列表字段与筛选器按实际实现对齐（地区树形多选、是否上市、企业荣誉、成立日期、注册资本等 7 项筛选）；',
+            '产业分析：整体重写为分析筛选、上链企业分布、数量趋势、注册资本、融资统计、企业资质六大模块；',
+            '上链企业清单：改为全量分页展示，每页 20 家，序号跨页连续编号；',
+            '企业详情：明确 8 个分类页签与知识产权 AI 尽调报告（收费专属）；',
+            '解决方案：重写为「常见痛点 — 四步交付 — 核心能力 — 方案对比」结构；',
+            'AI 助手：对话窗口补充新建对话 / 历史记录，明确收费用户专属权限；',
+        ],
+    },
+    {
+        'version': 'V1.0.0',
+        'date': '2026-11-11',
+        'changes': ['初版发布。'],
+    },
+]
+
+# 最新版本更新涉及的章节（原编号），内容中对应标题加 NEW 徽章重点标注
+UPDATED_SECTIONS = {'5.2.2', '5.2.4', '5.2.5', '5.2.6', '5.2.7', '5.3', '5.4', '5.4.2'}
+
+NEW_BADGE = '<span class="prd-new-badge">NEW</span>'
 
 def strip_num(t):
     return re.sub(r'^\d+(?:\.\d+)*\.?\s+', '', t)
@@ -186,18 +217,24 @@ for sec in sections:
         cur1['subs'].append(sec)
 
 def renumber_blocks(blocks, mode, base):
-    """重排 blocks 中的 h3 标题：mode 'dot' 编号为 base.k（全局三级），mode 'flat' 编号为 k（页面模块二级）"""
+    """重排 blocks 中的 h3 标题：mode 'dot' 编号为 base.k（全局三级），mode 'flat' 编号为 k（页面模块二级）。
+    命中 UPDATED_SECTIONS 的子节返回第三元素 'prd-updated'，由 render_blocks 加 NEW 徽章。"""
     out = []
     k = 0
-    for kind, content in blocks:
+    for item in blocks:
+        kind, content = item[0], item[1]
         if kind == 'h3':
             k += 1
+            updated = orig_num(content) in UPDATED_SECTIONS
             content = (f'{base}.{k}、' if mode == 'dot' else f'{k}、') + strip_num(content)
-        out.append((kind, content))
+            out.append((kind, content, 'prd-updated') if updated else (kind, content))
+        else:
+            out.append(item if len(item) > 2 else (kind, content))
     return out
 
-def h1_html(t):
-    return f'<h2 class="prd-doc-h1">{html.escape(t)}</h2>'
+def h1_html(t, updated=False):
+    badge = NEW_BADGE if updated else ''
+    return f'<h2 class="prd-doc-h1">{badge}{html.escape(t)}</h2>'
 
 def h2_html(t):
     return f'<h3 class="prd-doc-h2">{html.escape(t)}</h3>'
@@ -205,7 +242,9 @@ def h2_html(t):
 render_blocks_src = render_blocks
 
 def render_blocks(blocks):
-    return render_blocks_src([(k, rewrite_refs(c)) for k, c in blocks])
+    return render_blocks_src([
+        (b[0], rewrite_refs(b[1]), b[2] if len(b) > 2 else None) for b in blocks
+    ])
 
 # ---- 全局介绍：章=一、二、三、四；节=1、2；子节=1.1 ----
 global_parts = []
@@ -229,10 +268,12 @@ n5 = next((n for n in tree if re.match(r'^5\.', n['sec']['title'])), None)
 if n5 and n5['sec']['blocks']:
     pages_parts.append(render_blocks(n5['sec']['blocks']))
 for i, sub in enumerate(n5['subs'] if n5 else [], 1):
-    sid = sec_id(orig_num(sub['title']), f'prd-sec-p{i}')
+    orig = orig_num(sub['title'])
+    sid = sec_id(orig, f'prd-sec-p{i}')
     t1 = f'{CN_NUM[i - 1]}、{strip_num(sub["title"])}'
     pages_nav.append({'id': sid, 'title': t1})
-    inner = [h1_html(t1), render_blocks(renumber_blocks(sub['blocks'], 'flat', None))]
+    module_updated = orig in UPDATED_SECTIONS
+    inner = [h1_html(t1, updated=module_updated), render_blocks(renumber_blocks(sub['blocks'], 'flat', None))]
     pages_parts.append(f'<div class="prd-module-sec" id="{sid}">' + ''.join(inner) + '</div>')
 pages_html = ''.join(pages_parts)
 
@@ -246,6 +287,7 @@ data = {
     'pagesHtml': pages_html,
     'globalNav': global_nav,
     'pagesNav': pages_nav,
+    'versions': PRD_VERSIONS,
 }
 
 js = '/* 由 产业链全景图谱平台PRD文档.docx 自动生成（python prd-extract.py），勿手工编辑 */\nwindow.WUDU_PRD = ' + json.dumps(data, ensure_ascii=False) + ';\n'

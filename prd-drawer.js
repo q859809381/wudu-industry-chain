@@ -4,7 +4,30 @@
 (function () {
   'use strict';
 
-  const PRD_VERSION_LABEL = '依据 PRD 文档自动生成';
+  const PRD_VERSION_LABEL = 'PRD 版本历史';
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, (ch) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+  }
+
+  /* 版本下拉面板：列历史版本，悬浮展开该版相对上一版的更新记录 */
+  function versionPanelHtml(versions) {
+    if (!versions || !versions.length) return '';
+    return versions.map((v, i) => `
+      <div class="prd-version-item">
+        <div class="prd-version-item-head">
+          <strong>${escapeHtml(v.version)}</strong>
+          <span class="prd-version-date">${escapeHtml(v.date)}</span>
+          ${i === 0 ? '<span class="prd-version-current">当前</span>' : ''}
+        </div>
+        <div class="prd-version-changes">
+          <div class="prd-version-changes-title">${i === 0 ? '本版更新内容' : `较 ${escapeHtml(versions[i - 1].version)} 的更新记录`}</div>
+          <ul>${v.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
+        </div>
+      </div>`).join('');
+  }
 
   function icon(name, cls) {
     return `<svg class="${cls || 'ui-icon'}" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
@@ -32,9 +55,12 @@
         <span class="prd-drawer-head-icon">${icon('file')}</span>
         <div class="prd-drawer-head-titles">
           <strong>产业链全景图谱平台 PRD</strong>
-          <span>${PRD_VERSION_LABEL}</span>
+          <button type="button" class="prd-version-btn" data-prd-version-btn title="${PRD_VERSION_LABEL}">
+            <span data-prd-version-label></span><span class="prd-version-caret">▾</span>
+          </button>
         </div>
         <button type="button" class="prd-drawer-close" data-prd-close aria-label="关闭">${icon('x', 'ui-icon mini')}</button>
+        <div class="prd-version-panel" data-prd-version-panel hidden></div>
       </div>
       <div class="prd-drawer-toolbar">
         <div class="prd-mode-switch" role="tablist">
@@ -62,6 +88,17 @@
     const navEl = drawer.querySelector('[data-prd-nav]');
     const tipEl = drawer.querySelector('[data-prd-tip]');
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
+    const versionBtn = drawer.querySelector('[data-prd-version-btn]');
+    const versionLabel = drawer.querySelector('[data-prd-version-label]');
+    const versionPanel = drawer.querySelector('[data-prd-version-panel]');
+    const versions = data.versions || [];
+    if (versions.length) {
+      versionLabel.textContent = `${versions[0].version} · ${versions[0].date}`;
+      versionPanel.innerHTML = versionPanelHtml(versions);
+    } else {
+      versionLabel.textContent = '依据 PRD 文档自动生成';
+      versionBtn.hidden = true;
+    }
     let mode = 'global';
     /* 关闭时的停留状态：页签 + 选中导航项 + 滚动位置，再次打开时恢复 */
     let savedState = null;
@@ -163,6 +200,18 @@
     fab.addEventListener('click', openDrawer);
     overlay.addEventListener('click', closeDrawer);
     drawer.querySelector('[data-prd-close]').addEventListener('click', closeDrawer);
+    versionBtn.addEventListener('click', (event) => {
+      event.stopPropagation();
+      versionPanel.hidden = !versionPanel.hidden;
+      versionBtn.classList.toggle('open', !versionPanel.hidden);
+    });
+    versionPanel.addEventListener('click', (event) => event.stopPropagation());
+    document.addEventListener('click', (event) => {
+      if (!versionPanel.hidden && !versionPanel.contains(event.target) && event.target !== versionBtn) {
+        versionPanel.hidden = true;
+        versionBtn.classList.remove('open');
+      }
+    });
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
