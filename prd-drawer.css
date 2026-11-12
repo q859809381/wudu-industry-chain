@@ -122,8 +122,6 @@
 }
 .prd-mode-switch button.active { background: #ffffff; color: #1d5a99; font-weight: 600; box-shadow: 0 1px 4px rgba(29, 58, 84, .12); }
 
-.prd-mode-tip { color: #8ba0b0; font-size: 11.5px; }
-
 /* 主体区域 */
 .prd-drawer-body { flex: 1 1 auto; display: flex; min-height: 0; }
 
@@ -221,12 +219,12 @@
 /* 覆盖 .prd-drawer-head-titles span 的块级样式，保证版本号与箭头同行 */
 .prd-version-btn span { display: inline; margin-top: 0; }
 .prd-version-caret {
-  font-size: 13px;
-  line-height: 1;
-  transform: translateY(-1px);
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
   transition: transform 0.18s ease;
 }
-.prd-version-btn.open .prd-version-caret { transform: translateY(-1px) rotate(180deg); }
+.prd-version-btn.open .prd-version-caret { transform: rotate(180deg); }
 
 .prd-version-panel {
   position: absolute;

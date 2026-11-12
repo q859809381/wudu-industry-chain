@@ -51,7 +51,7 @@
           <strong>产业链全景图谱平台 PRD</strong>
           <span class="prd-version-wrap">
             <button type="button" class="prd-version-btn" data-prd-version-btn title="${PRD_VERSION_LABEL}">
-              <span data-prd-version-label></span><span class="prd-version-caret">▾</span>
+              <span data-prd-version-label></span><svg class="prd-version-caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
             <div class="prd-version-panel" data-prd-version-panel hidden>
               <div class="prd-version-list" data-prd-version-list></div>
@@ -66,7 +66,6 @@
           <button type="button" data-prd-mode="global" class="active">全局介绍</button>
           <button type="button" data-prd-mode="pages">页面与功能描述</button>
         </div>
-        <span class="prd-mode-tip" data-prd-tip></span>
       </div>
       <div class="prd-drawer-body">
         <nav class="prd-module-nav" data-prd-nav hidden></nav>
@@ -85,7 +84,6 @@
     const { fab, overlay, drawer } = buildDom();
     const contentEl = drawer.querySelector('[data-prd-content]');
     const navEl = drawer.querySelector('[data-prd-nav]');
-    const tipEl = drawer.querySelector('[data-prd-tip]');
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
     const versionBtn = drawer.querySelector('[data-prd-version-btn]');
     const versionLabel = drawer.querySelector('[data-prd-version-label]');
@@ -111,12 +109,17 @@
       return m === 'global' ? (data.globalNav || []) : (data.pagesNav || []);
     }
 
+    function setActiveNav(anchor) {
+      const btn = navEl.querySelector(`[data-prd-anchor="${CSS.escape(anchor)}"]`);
+      if (!btn) return;
+      navEl.querySelectorAll('[data-prd-anchor]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
     function bindNavClicks() {
       navEl.querySelectorAll('[data-prd-anchor]').forEach((btn) => {
         btn.addEventListener('click', () => {
-          navEl.querySelectorAll('[data-prd-anchor]').forEach((b) => b.classList.remove('active'));
-          btn.classList.add('active');
-          tipEl.textContent = btn.textContent;
+          setActiveNav(btn.getAttribute('data-prd-anchor'));
           const target = contentEl.querySelector(`#${CSS.escape(btn.getAttribute('data-prd-anchor'))}`);
           const scroll = drawer.querySelector('.prd-doc-scroll');
           if (target && scroll) {
@@ -140,11 +143,9 @@
           `<button type="button" class="prd-module-item" data-prd-anchor="${m.id}">${escapeHtml(m.title)}</button>`
         ).join('');
         bindNavClicks();
-        navEl.querySelectorAll('[data-prd-anchor]').forEach((b, i) => b.classList.toggle('active', i === 0));
-        tipEl.textContent = navList[0].title;
+        setActiveNav(navList[0].id);
       } else {
         navEl.hidden = true;
-        tipEl.textContent = mode === 'global' ? '引言 · 用户角色 · 产品概述 · 全局业务规则' : '';
       }
       contentEl.innerHTML = (mode === 'global' ? data.globalHtml : data.pagesHtml) || '<div class="prd-doc-empty">暂无内容</div>';
       hideUpdTip(true);
@@ -168,14 +169,7 @@
         renderTab();
       }
       if (savedState) {
-        if (savedState.anchor) {
-          const btn = navEl.querySelector(`[data-prd-anchor="${CSS.escape(savedState.anchor)}"]`);
-          if (btn) {
-            navEl.querySelectorAll('[data-prd-anchor]').forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-            tipEl.textContent = btn.textContent;
-          }
-        }
+        if (savedState.anchor) setActiveNav(savedState.anchor);
         const scroll = drawer.querySelector('.prd-doc-scroll');
         if (scroll && typeof savedState.scrollTop === 'number') {
           scroll.scrollTop = savedState.scrollTop;
@@ -280,6 +274,36 @@
       if (pinnedNote && !updTip.contains(event.target) && !event.target.closest(UPD_SELECTOR)) hideUpdTip(true);
     });
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
+    /* 右侧滚动时，左侧导航选中项同步跟随当前所在章节 */
+    const docScroll = drawer.querySelector('.prd-doc-scroll');
+    let scrollTicking = false;
+    function syncNavFromScroll() {
+      scrollTicking = false;
+      if (navEl.hidden || !navListFor(mode).length) return;
+      const ref = docScroll.getBoundingClientRect();
+      const secs = [...contentEl.querySelectorAll(':scope > .prd-module-sec')];
+      if (!secs.length) return;
+      /* 以视口上 1/3 处所在章节为当前章节；滚动到底时选中最后一章 */
+      const rel = ref.top + docScroll.clientHeight / 3;
+      let current = secs[0];
+      for (const sec of secs) {
+        if (sec.getBoundingClientRect().top <= rel) current = sec;
+        else break;
+      }
+      if (docScroll.scrollTop + docScroll.clientHeight >= docScroll.scrollHeight - 6) {
+        current = secs[secs.length - 1];
+      }
+      if (current.id) {
+        setActiveNav(current.id);
+        const btn = navEl.querySelector(`[data-prd-anchor="${CSS.escape(current.id)}"]`);
+        if (btn) btn.scrollIntoView({ block: 'nearest' });
+      }
+    }
+    docScroll.addEventListener('scroll', () => {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(syncNavFromScroll);
+    });
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         if (!versionPanel.hidden) { toggleVersionPanel(false); return; }
