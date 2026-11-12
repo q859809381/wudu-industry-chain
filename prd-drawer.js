@@ -12,20 +12,18 @@
     }[ch]));
   }
 
-  /* 版本下拉面板：列历史版本，悬浮展开该版相对上一版的更新记录 */
-  function versionPanelHtml(versions) {
+  /* 版本历史：右侧滑出的二级窗口，每个版本直接展示其更新记录 */
+  function versionSideHtml(versions) {
     if (!versions || !versions.length) return '';
     return versions.map((v, i) => `
-      <div class="prd-version-item">
-        <div class="prd-version-item-head">
+      <div class="prd-version-card">
+        <div class="prd-version-card-head">
           <strong>${escapeHtml(v.version)}</strong>
           <span class="prd-version-date">${escapeHtml(v.date)}</span>
           ${i === 0 ? '<span class="prd-version-current">当前</span>' : ''}
         </div>
-        <div class="prd-version-changes">
-          <div class="prd-version-changes-title">${i === 0 ? '本版更新内容' : `较 ${escapeHtml(versions[i - 1].version)} 的更新记录`}</div>
-          <ul>${v.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
-        </div>
+        <div class="prd-version-changes-title">${i === 0 ? '本版更新内容' : `较 ${escapeHtml(versions[i - 1].version)} 的更新记录`}</div>
+        <ul class="prd-version-changes">${v.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}</ul>
       </div>`).join('');
   }
 
@@ -60,7 +58,6 @@
           </button>
         </div>
         <button type="button" class="prd-drawer-close" data-prd-close aria-label="关闭">${icon('x', 'ui-icon mini')}</button>
-        <div class="prd-version-panel" data-prd-version-panel hidden></div>
       </div>
       <div class="prd-drawer-toolbar">
         <div class="prd-mode-switch" role="tablist">
@@ -72,7 +69,15 @@
       <div class="prd-drawer-body">
         <nav class="prd-module-nav" data-prd-nav hidden></nav>
         <div class="prd-doc-scroll"><div class="prd-doc" data-prd-content></div></div>
-      </div>`;
+      </div>
+      <div class="prd-version-side-mask" data-prd-version-mask></div>
+      <aside class="prd-version-side" data-prd-version-side aria-hidden="true">
+        <div class="prd-version-side-head">
+          <strong>${PRD_VERSION_LABEL}</strong>
+          <button type="button" class="prd-version-side-close" data-prd-version-close aria-label="关闭版本历史">${icon('x', 'ui-icon mini')}</button>
+        </div>
+        <div class="prd-version-side-body" data-prd-version-body></div>
+      </aside>`;
 
     document.body.appendChild(fab);
     document.body.appendChild(overlay);
@@ -90,11 +95,13 @@
     const modeButtons = [...drawer.querySelectorAll('[data-prd-mode]')];
     const versionBtn = drawer.querySelector('[data-prd-version-btn]');
     const versionLabel = drawer.querySelector('[data-prd-version-label]');
-    const versionPanel = drawer.querySelector('[data-prd-version-panel]');
+    const versionSide = drawer.querySelector('[data-prd-version-side]');
+    const versionMask = drawer.querySelector('[data-prd-version-mask]');
+    const versionBody = drawer.querySelector('[data-prd-version-body]');
     const versions = data.versions || [];
     if (versions.length) {
       versionLabel.textContent = `${versions[0].version} · ${versions[0].date}`;
-      versionPanel.innerHTML = versionPanelHtml(versions);
+      versionBody.innerHTML = versionSideHtml(versions);
     } else {
       versionLabel.textContent = '依据 PRD 文档自动生成';
       versionBtn.hidden = true;
@@ -200,21 +207,22 @@
     fab.addEventListener('click', openDrawer);
     overlay.addEventListener('click', closeDrawer);
     drawer.querySelector('[data-prd-close]').addEventListener('click', closeDrawer);
-    versionBtn.addEventListener('click', (event) => {
-      event.stopPropagation();
-      versionPanel.hidden = !versionPanel.hidden;
-      versionBtn.classList.toggle('open', !versionPanel.hidden);
-    });
-    versionPanel.addEventListener('click', (event) => event.stopPropagation());
-    document.addEventListener('click', (event) => {
-      if (!versionPanel.hidden && !versionPanel.contains(event.target) && event.target !== versionBtn) {
-        versionPanel.hidden = true;
-        versionBtn.classList.remove('open');
-      }
-    });
+    /* 版本历史二级窗口：右侧滑出，点遮罩或关闭按钮收回 */
+    function toggleVersion(open) {
+      versionSide.classList.toggle('open', open);
+      versionMask.classList.toggle('open', open);
+      versionBtn.classList.toggle('open', open);
+      versionSide.setAttribute('aria-hidden', String(!open));
+    }
+    versionBtn.addEventListener('click', () => toggleVersion(!versionSide.classList.contains('open')));
+    versionMask.addEventListener('click', () => toggleVersion(false));
+    drawer.querySelector('[data-prd-version-close]').addEventListener('click', () => toggleVersion(false));
     modeButtons.forEach((btn) => btn.addEventListener('click', () => setMode(btn.getAttribute('data-prd-mode'))));
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && drawer.classList.contains('open')) closeDrawer();
+      if (event.key === 'Escape') {
+        if (versionSide.classList.contains('open')) { toggleVersion(false); return; }
+        if (drawer.classList.contains('open')) closeDrawer();
+      }
       if (event.key === 'Tab') {
         /* 输入控件内按 Tab 仍走默认焦点移动，不触发抽屉 */
         const t = event.target;

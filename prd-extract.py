@@ -139,15 +139,15 @@ def render_blocks(blocks):
     out = []
     for item in blocks:
         kind, content = item[0], item[1]
-        updated = len(item) > 2 and item[2]
+        orig = item[2] if len(item) > 2 else ''
         if kind == 'table':
             out.append(content)
         elif kind == 'li':
             out.append(f'<li>{html.escape(content)}</li>')
         elif kind == 'h3':
-            badge = NEW_BADGE if updated else ''
-            cls = ' prd-updated' if updated else ''
-            out.append(f'<h4 class="prd-doc-h3{cls}">{badge}{html.escape(content)}</h4>')
+            cls = ' prd-updated' if orig else ''
+            mark = upd_mark(orig) if orig else ''
+            out.append(f'<h4 class="prd-doc-h3{cls}">{html.escape(content)}{mark}</h4>')
         else:
             out.append(f'<p>{html.escape(content)}</p>')
     html_out = []
@@ -191,10 +191,28 @@ PRD_VERSIONS = [
     },
 ]
 
-# 最新版本更新涉及的章节（原编号），内容中对应标题加 NEW 徽章重点标注
-UPDATED_SECTIONS = {'5.2.2', '5.2.4', '5.2.5', '5.2.6', '5.2.7', '5.3', '5.4', '5.4.2'}
+# 最新版本（V1.1.0）更新涉及的章节（原编号 -> 变更说明）：
+# 正文对应标题做轻微高亮，并在标题后追加脚注序号，悬浮/点击显示该处变更说明
+UPDATE_NOTES = [
+    ('5.2.2', '关键词检索：检索结果改为「产业图谱 / 产业环节 / 企业清单」三组分类展示，每组默认 5 条并提供「查看全部」二级页。'),
+    ('5.2.4', '环节企业清单抽屉：企业列表字段与筛选器按实际实现对齐（地区树形多选、是否上市、企业荣誉、成立日期、注册资本等 7 项筛选）。'),
+    ('5.2.5', '产业分析：整体重写为分析筛选、上链企业分布、数量趋势、注册资本、融资统计、企业资质六大模块。'),
+    ('5.2.6', '上链企业清单：改为全量分页展示，每页 20 家，序号跨页连续编号。'),
+    ('5.2.7', '企业详情：明确 8 个分类页签与知识产权 AI 尽调报告（收费专属）。'),
+    ('5.3', '解决方案：重写为「常见痛点 — 四步交付 — 核心能力 — 方案对比」结构。'),
+    ('5.4', 'AI 助手：对话窗口补充新建对话 / 历史记录，明确收费用户专属权限。'),
+]
+UPDATED_SECTIONS = {o for o, _ in UPDATE_NOTES}
+NOTE_INDEX = {o: i + 1 for i, (o, _) in enumerate(UPDATE_NOTES)}
+NOTE_TEXT = dict(UPDATE_NOTES)
 
-NEW_BADGE = '<span class="prd-new-badge">NEW</span>'
+def upd_mark(orig):
+    """更新章节标题后的脚注序号（上标圆标），data-note 供悬浮/点击气泡展示"""
+    n = NOTE_INDEX.get(orig)
+    if not n:
+        return ''
+    note = html.escape(NOTE_TEXT[orig], quote=True)
+    return f'<sup class="prd-upd-mark" tabindex="0" data-note="{note}">{n}</sup>'
 
 def strip_num(t):
     return re.sub(r'^\d+(?:\.\d+)*\.?\s+', '', t)
@@ -218,23 +236,25 @@ for sec in sections:
 
 def renumber_blocks(blocks, mode, base):
     """重排 blocks 中的 h3 标题：mode 'dot' 编号为 base.k（全局三级），mode 'flat' 编号为 k（页面模块二级）。
-    命中 UPDATED_SECTIONS 的子节返回第三元素 'prd-updated'，由 render_blocks 加 NEW 徽章。"""
+    命中 UPDATE_NOTES 的子节第三元素返回原编号，由 render_blocks 加轻微高亮与脚注序号。"""
     out = []
     k = 0
     for item in blocks:
         kind, content = item[0], item[1]
         if kind == 'h3':
             k += 1
-            updated = orig_num(content) in UPDATED_SECTIONS
+            orig = orig_num(content)
+            updated = orig in UPDATED_SECTIONS
             content = (f'{base}.{k}、' if mode == 'dot' else f'{k}、') + strip_num(content)
-            out.append((kind, content, 'prd-updated') if updated else (kind, content))
+            out.append((kind, content, orig) if updated else (kind, content))
         else:
             out.append(item if len(item) > 2 else (kind, content))
     return out
 
-def h1_html(t, updated=False):
-    badge = NEW_BADGE if updated else ''
-    return f'<h2 class="prd-doc-h1">{badge}{html.escape(t)}</h2>'
+def h1_html(t, orig=''):
+    updated = orig in UPDATED_SECTIONS
+    cls = ' prd-updated' if updated else ''
+    return f'<h2 class="prd-doc-h1{cls}">{html.escape(t)}{upd_mark(orig)}</h2>'
 
 def h2_html(t):
     return f'<h3 class="prd-doc-h2">{html.escape(t)}</h3>'
@@ -272,8 +292,7 @@ for i, sub in enumerate(n5['subs'] if n5 else [], 1):
     sid = sec_id(orig, f'prd-sec-p{i}')
     t1 = f'{CN_NUM[i - 1]}、{strip_num(sub["title"])}'
     pages_nav.append({'id': sid, 'title': t1})
-    module_updated = orig in UPDATED_SECTIONS
-    inner = [h1_html(t1, updated=module_updated), render_blocks(renumber_blocks(sub['blocks'], 'flat', None))]
+    inner = [h1_html(t1, orig=orig), render_blocks(renumber_blocks(sub['blocks'], 'flat', None))]
     pages_parts.append(f'<div class="prd-module-sec" id="{sid}">' + ''.join(inner) + '</div>')
 pages_html = ''.join(pages_parts)
 
