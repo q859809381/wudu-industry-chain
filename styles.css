@@ -1787,27 +1787,16 @@ html, body { overflow-x: hidden; }
 .pain-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .pain-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dfe9f0; border-radius: 12px; background: #fff; box-shadow: 0 4px 14px rgba(32, 94, 141, .05); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .pain-card:hover { border-color: #b8d5ed; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); transform: translateY(-3px); }
-/* 顶部插画条 */
-.pain-visual { flex: 0 0 96px; display: grid; place-items: center; }
-.pain-visual svg { width: 150px; height: 74px; }
+/* 底部插画区：DOM 在前，flex order 排到底部 */
+.pain-visual { order: 2; flex: 0 0 104px; display: grid; place-items: center; margin-top: auto; }
+.pain-visual svg { width: 150px; height: 70px; }
 .pv-blue .pain-visual { color: #2d79bd; background: linear-gradient(150deg, #edf6ff, #dfeffc); }
 .pv-teal .pain-visual { color: #15978e; background: linear-gradient(150deg, #ecfaf8, #daf3f0); }
 .pv-amber .pain-visual { color: #d58b28; background: linear-gradient(150deg, #fdf6ea, #faecd2); }
 .pv-coral .pain-visual { color: #d96658; background: linear-gradient(150deg, #fdf1ee, #fbe2dd); }
-.pain-body { flex: 1 1 auto; display: flex; flex-direction: column; padding: 13px 18px 15px; }
-.pain-body h3 { margin: 0; color: #25455e; font-size: 16px; line-height: 1.45; }
-.pain-body h3::before { content: ''; display: inline-block; width: 4px; height: 14px; margin-right: 8px; border-radius: 2px; vertical-align: -1px; }
-.pv-blue .pain-body h3::before { background: #2d79bd; }
-.pv-teal .pain-body h3::before { background: #15978e; }
-.pv-amber .pain-body h3::before { background: #d58b28; }
-.pv-coral .pain-body h3::before { background: #d96658; }
-.pain-body p { margin-top: 8px; color: #7890a1; font-size: 12.5px; line-height: 1.8; }
-.pain-tags { margin-top: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 14px; border-top: 1px dashed #dfe9f0; }
-.pain-tags i { font-style: normal; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #8aa0b1; }
-.pain-tags em { font-style: normal; font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 999px; background: #eaf4ff; color: #2d79bd; }
-.pv-teal .pain-tags em { background: #e8f8f5; color: #15978e; }
-.pv-amber .pain-tags em { background: #fdf3e3; color: #b8791f; }
-.pv-coral .pain-tags em { background: #fdefec; color: #c65a4d; }
+.pain-body { order: 1; flex: 1 1 auto; padding: 16px 18px 15px; }
+.pain-body h3 { margin: 0; padding-bottom: 12px; border-bottom: 1px solid #eef4f9; color: #25455e; font-size: 15.5px; line-height: 1.45; }
+.pain-body p { margin-top: 11px; color: #7890a1; font-size: 12.5px; line-height: 1.8; }
 .solution-card-icon { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 8px; }
 .solution-card-icon .ui-icon { width: 18px; height: 18px; }
 .solution-card-icon.blue { color: #2777c6; background: #eaf4ff; }
