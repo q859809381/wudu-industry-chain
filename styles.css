@@ -1786,26 +1786,42 @@ html, body { overflow-x: hidden; }
 .solution-card-grid.five-columns { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .solution-card { position: relative; min-width: 0; padding: 19px 18px; border: 1px solid #dfe9f0; border-radius: 9px; background: #fff; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .solution-card:hover { border-color: #b8d5ed; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); transform: translateY(-3px); }
-.solution-card-grid.three-columns { counter-reset: paincard casecard; }
-.pain-card { counter-increment: paincard; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dfe9f0; border-radius: 9px; background: #fff; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-.pain-card:hover { border-color: #b8d5ed; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); transform: translateY(-3px); }
-/* 图文卡：上半主题插画 + 下半标题说明 */
-.pain-visual { position: relative; display: grid; place-items: center; height: 98px; }
-.pain-visual svg { width: 154px; height: 82px; }
-.pv-blue { color: #2d79bd; background: linear-gradient(150deg, #edf6ff, #dfeffc); }
-.pv-teal { color: #15978e; background: linear-gradient(150deg, #ecfaf8, #daf3f0); }
-.pv-amber { color: #d58b28; background: linear-gradient(150deg, #fdf6ea, #faecd2); }
-.pv-coral { color: #d96658; background: linear-gradient(150deg, #fdf1ee, #fbe2dd); }
-.pain-num { position: absolute; top: 8px; right: 12px; font-size: 26px; font-weight: 800; line-height: 1; font-style: normal; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .8); }
-.pain-num::after { content: counter(paincard, decimal-leading-zero); }
-.pain-body { flex: 1 1 auto; padding: 13px 16px 16px; }
-.pain-body h3 { margin: 0; color: #25455e; font-size: 15.5px; line-height: 1.45; }
+.solution-card-grid.three-columns { counter-reset: casecard; }
+/* ---- 行业痛点：手风琴（风箱）式 —— 默认展开第一张，悬浮展开对应卡片 ---- */
+.pain-acc { display: flex; gap: 12px; height: 356px; counter-reset: paincard; }
+.pain-item { counter-increment: paincard; position: relative; flex: 0 1 78px; overflow: hidden; border: 1px solid #dfe9f0; border-radius: 12px; background: #fff; box-shadow: 0 4px 14px rgba(32, 94, 141, .05); transition: flex-grow .5s cubic-bezier(.33, 1, .68, 1), box-shadow .3s ease; }
+.pain-acc:not(:hover) > .pain-item:first-child { flex-grow: 1; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); }
+.pain-acc:hover > .pain-item { flex-grow: 0; }
+.pain-acc:hover > .pain-item:hover { flex-grow: 1; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); }
+/* 展开面：插画通栏 + 定宽正文；收起态隐藏 */
+.pain-face { position: absolute; inset: 0; display: flex; flex-direction: column; background: #fff; opacity: 0; transition: opacity .26s ease; }
+.pain-visual { position: relative; flex: 0 0 132px; display: grid; place-items: center; }
+.pain-visual svg { width: 170px; height: 90px; }
+.pv-blue .pain-visual { color: #2d79bd; background: linear-gradient(150deg, #edf6ff, #dfeffc); }
+.pv-teal .pain-visual { color: #15978e; background: linear-gradient(150deg, #ecfaf8, #daf3f0); }
+.pv-amber .pain-visual { color: #d58b28; background: linear-gradient(150deg, #fdf6ea, #faecd2); }
+.pv-coral .pain-visual { color: #d96658; background: linear-gradient(150deg, #fdf1ee, #fbe2dd); }
+.pain-body { flex: 1 1 auto; width: 430px; max-width: 100%; padding: 14px 20px 16px; box-sizing: content-box; }
+.pain-body h3 { margin: 0; color: #25455e; font-size: 16px; line-height: 1.45; }
 .pain-body h3::before { content: ''; display: inline-block; width: 4px; height: 14px; margin-right: 8px; border-radius: 2px; vertical-align: -1px; }
-.pv-blue ~ .pain-body h3::before { background: #2d79bd; }
-.pv-teal ~ .pain-body h3::before { background: #15978e; }
-.pv-amber ~ .pain-body h3::before { background: #d58b28; }
-.pv-coral ~ .pain-body h3::before { background: #d96658; }
-.pain-body p { margin-top: 7px; color: #7890a1; font-size: 12px; line-height: 1.75; }
+.pv-blue .pain-body h3::before { background: #2d79bd; }
+.pv-teal .pain-body h3::before { background: #15978e; }
+.pv-amber .pain-body h3::before { background: #d58b28; }
+.pv-coral .pain-body h3::before { background: #d96658; }
+.pain-body p { margin-top: 8px; color: #7890a1; font-size: 12.5px; line-height: 1.8; }
+/* 收起导轨：主题色竖排标题 + 序号 */
+.pain-rail { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 18px 0 20px; color: #fff; opacity: 1; transition: opacity .22s ease; }
+.pv-blue .pain-rail { background: linear-gradient(180deg, #2d79bd, #1d5f97); }
+.pv-teal .pain-rail { background: linear-gradient(180deg, #179b92, #0f7d74); }
+.pv-amber .pain-rail { background: linear-gradient(180deg, #d58b28, #b06f1d); }
+.pv-coral .pain-rail { background: linear-gradient(180deg, #d96658, #b84a3d); }
+.pain-rail span { writing-mode: vertical-rl; font-size: 13px; font-weight: 700; letter-spacing: 4px; }
+.pain-num { font-style: normal; font-size: 19px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .75); }
+.pain-num::after { content: counter(paincard, decimal-leading-zero); }
+.pain-acc:not(:hover) > .pain-item:first-child .pain-face,
+.pain-acc:hover > .pain-item:hover .pain-face { opacity: 1; transition-delay: .16s; }
+.pain-acc:not(:hover) > .pain-item:first-child .pain-rail,
+.pain-acc:hover > .pain-item:hover .pain-rail { opacity: 0; }
 .solution-card-icon { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 8px; }
 .solution-card-icon .ui-icon { width: 18px; height: 18px; }
 .solution-card-icon.blue { color: #2777c6; background: #eaf4ff; }
@@ -1912,25 +1928,25 @@ html, body { overflow-x: hidden; }
 
 /* ---- 解决方案页：滚动入场动效 ---- */
 .solution-section .solution-section-heading,
+.solution-section .pain-acc > .pain-item,
 .solution-section .solution-card-grid > .solution-card,
-.solution-section .solution-card-grid > .pain-card,
 .solution-section .arch-frame { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
 .solution-section.in-view .solution-section-heading,
+.solution-section.in-view .pain-acc > .pain-item,
 .solution-section.in-view .solution-card-grid > .solution-card,
-.solution-section.in-view .solution-card-grid > .pain-card,
 .solution-section.in-view .arch-frame { opacity: 1; transform: none; }
-.solution-section .solution-card-grid > .solution-card:nth-child(2),
-.solution-section .solution-card-grid > .pain-card:nth-child(2) { transition-delay: .1s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(3),
-.solution-section .solution-card-grid > .pain-card:nth-child(3) { transition-delay: .2s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(4),
-.solution-section .solution-card-grid > .pain-card:nth-child(4) { transition-delay: .3s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(5),
-.solution-section .solution-card-grid > .pain-card:nth-child(5) { transition-delay: .4s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(6),
-.solution-section .solution-card-grid > .pain-card:nth-child(6) { transition-delay: .5s; }
+.solution-section .pain-acc > .pain-item:nth-child(2),
+.solution-section .solution-card-grid > .solution-card:nth-child(2) { transition-delay: .1s; }
+.solution-section .pain-acc > .pain-item:nth-child(3),
+.solution-section .solution-card-grid > .solution-card:nth-child(3) { transition-delay: .2s; }
+.solution-section .pain-acc > .pain-item:nth-child(4),
+.solution-section .solution-card-grid > .solution-card:nth-child(4) { transition-delay: .3s; }
+.solution-section .pain-acc > .pain-item:nth-child(5),
+.solution-section .solution-card-grid > .solution-card:nth-child(5) { transition-delay: .4s; }
+.solution-section .pain-acc > .pain-item:nth-child(6),
+.solution-section .solution-card-grid > .solution-card:nth-child(6) { transition-delay: .5s; }
 @media (prefers-reduced-motion: reduce) {
-  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .solution-card-grid > .pain-card, .solution-section .arch-frame { opacity: 1; transform: none; transition: none; }
+  .solution-section .solution-section-heading, .solution-section .pain-acc > .pain-item, .solution-section .solution-card-grid > .solution-card, .solution-section .arch-frame { opacity: 1; transform: none; transition: none; }
 }
 
 /* ---- 解决方案页：项目案例 ---- */
@@ -1967,7 +1983,12 @@ html, body { overflow-x: hidden; }
   .solution-section-heading h2 { font-size: 19px; }
   .solution-card-grid.four-columns { grid-template-columns: 1fr; }
   .solution-card-grid.five-columns { grid-template-columns: 1fr; }
-  .solution-card, .pain-card, .capability-card { min-height: 0; }
+  .solution-card, .capability-card { min-height: 0; }
+  /* 小屏退化为纵向堆叠，全部展开 */
+  .pain-acc { flex-direction: column; height: auto; }
+  .pain-item, .pain-acc:hover > .pain-item { flex-grow: 1; }
+  .pain-face { position: static; width: auto; opacity: 1; }
+  .pain-rail { display: none; }
   .arch-band { grid-template-columns: 36px minmax(0, 1fr); }
   .arch-band-label { font-size: 12px; letter-spacing: 4px; }
   .arch-data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
