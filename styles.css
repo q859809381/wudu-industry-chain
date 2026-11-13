@@ -1808,6 +1808,14 @@ html, body { overflow-x: hidden; }
 .capability-card .solution-card-icon.teal { background: linear-gradient(135deg, #179b92, #45c9b8); color: #fff; box-shadow: 0 6px 14px rgba(23, 155, 146, .26); }
 .capability-card .solution-card-icon.coral { background: linear-gradient(135deg, #d96658, #f2917f); color: #fff; box-shadow: 0 6px 14px rgba(217, 102, 88, .26); }
 
+/* ---- 方案优势：专享定制服务通栏横幅 ---- */
+.custom-banner { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: none; padding: 24px 28px; background: linear-gradient(115deg, #2d79bd 0%, #1f8fae 55%, #19b3a2 100%); box-shadow: 0 12px 26px rgba(31, 108, 165, .28); transition: transform .18s ease, box-shadow .18s ease; }
+.custom-banner:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(31, 108, 165, .34); }
+.custom-banner h3 { margin: 0; color: #fff; font-size: 18px; }
+.custom-banner p { margin: 8px 0 0; max-width: 780px; color: rgba(255, 255, 255, .88); font-size: 12.5px; line-height: 1.8; }
+.custom-banner-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; padding: 9px 20px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 999px; background: rgba(255, 255, 255, .1); color: #fff; font-size: 12.5px; font-weight: 600; letter-spacing: 1px; white-space: nowrap; }
+.custom-banner-btn .ui-icon { width: 14px; height: 14px; }
+
 /* ---- 解决方案页：BANNER 静态标签图 ---- */
 .solution-hero { grid-template-columns: minmax(0, 1fr) 300px; }
 .solution-tagmap { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 24px 18px; border: 1px solid rgba(255, 255, 255, .28); border-radius: 12px; background: rgba(255, 255, 255, .1); box-shadow: 0 12px 30px rgba(4, 34, 62, .28); backdrop-filter: blur(3px); }
@@ -1863,16 +1871,18 @@ html, body { overflow-x: hidden; }
 .arch-band-cap { background: #fbfefd; }
 .arch-band-data { background: #f6fafe; }
 .arch-band-body { min-width: 0; padding: 13px 16px 15px; }
-/* 并列项平铺：组前内联分类小标签 + 组间细分隔线 */
-.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 8px; }
-.arch-group { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+/* 分层指向流：每组一个步骤块，箭头引导后继组（换行时箭头位于下一组开头） */
+.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px 14px; }
+.arch-step { display: flex; align-items: center; min-width: 0; flex: 1 1 auto; }
+.arch-group { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; flex: 1 1 auto; }
 .arch-group-name { padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: 1px; }
 .gn-blue { color: #1d6aa8; background: #e6f2fc; }
 .gn-teal { color: #0e7a71; background: #e3f5f2; }
 .arch-pills { display: flex; flex-wrap: wrap; gap: 7px; }
-.arch-divider { align-self: stretch; width: 0; border-left: 1px dashed #c9dcea; margin: 0 6px; }
+/* 组间指向箭头：体现 功能→用户→业务场景 / 体系→工具→基础→模型 的层级方向 */
+.arch-divider { flex: 0 0 auto; width: 8px; height: 8px; border-top: 2px solid #9cc4e4; border-right: 2px solid #9cc4e4; transform: rotate(45deg); margin: 0 10px 0 4px; }
+.arch-band-cap .arch-divider { border-color: #7fc4bb; }
 .arch-band-cap .arch-pills span { border-color: #cde8e4; background: #f5fbfa; }
-.arch-band-cap .arch-divider { border-left-color: #c3e2de; }
 .arch-pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .arch-pills span {
   padding: 4px 10px;
@@ -1924,8 +1934,11 @@ html, body { overflow-x: hidden; }
 
 /* ---- 解决方案页：项目案例 ---- */
 .case-card { overflow: hidden; min-height: 0; }
-.case-card::before { counter-increment: casecard; content: counter(casecard, decimal-leading-zero); position: absolute; top: 10px; right: 14px; color: #e8f1f8; font-size: 34px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .case-card h3 { margin-top: 0; position: relative; z-index: 1; padding-bottom: 10px; border-bottom: 2px solid #eef4f9; }
+/* 顶部场景图占位区：后续直接替换为真实图片 */
+.case-media { display: grid; place-content: center; justify-items: center; gap: 7px; height: 126px; margin: -19px -18px 14px; border-bottom: 1px solid #eef4f9; background: linear-gradient(150deg, #f4f9fd, #eaf3fa); color: #9db4c6; }
+.case-media svg { width: 26px; height: 26px; }
+.case-media span { font-size: 11px; letter-spacing: 2px; }
 .case-row { position: relative; padding-left: 0; }
 .case-row b {
   display: inline-block;
