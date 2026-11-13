@@ -1862,14 +1862,17 @@ html, body { overflow-x: hidden; }
 
 /* ---- 解决方案页：方案架构三层体系（架构图式） ---- */
 .solution-arch { display: flex; flex-direction: column; }
-.arch-band { position: relative; z-index: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); border: 1px solid #d5e5f1; border-radius: 10px; background: #fff; overflow: hidden; box-shadow: 0 6px 16px rgba(32, 94, 141, .07); }
+/* 大容器：三层同框，层间横线分隔 */
+.arch-frame { border: 1px solid #d5e5f1; border-radius: 12px; background: #fff; box-shadow: 0 10px 26px rgba(32, 94, 141, .08); overflow: hidden; }
+.arch-band { display: grid; grid-template-columns: 44px minmax(0, 1fr); }
+.arch-band + .arch-band { border-top: 1px dashed #dce9f3; }
 .arch-band-label { display: grid; place-items: center; padding: 14px 0; writing-mode: vertical-rl; color: #fff; font-size: 13.5px; font-weight: 700; letter-spacing: 7px; }
 .arch-band-app .arch-band-label { background: linear-gradient(180deg, #2d79bd, #1d5f97); }
 .arch-band-cap .arch-band-label { background: linear-gradient(180deg, #179b92, #0f7d74); }
-.arch-band-data .arch-band-label { background: linear-gradient(180deg, #123f68, #0b2f52); letter-spacing: 5px; }
-.arch-band-app { border-color: #b9d7ee; }
-.arch-band-cap { border-color: #bfe3df; }
-.arch-band-data { border-color: #9dbdd8; background: linear-gradient(128deg, #0d3a63 0%, #155a94 70%, #1e74b4 100%); box-shadow: 0 14px 30px rgba(13, 58, 99, .28); }
+.arch-band-data .arch-band-label { background: linear-gradient(180deg, #1c6aa8, #14507f); letter-spacing: 5px; }
+.arch-band-app { background: linear-gradient(180deg, #f5fbff, #fdfeff); }
+.arch-band-cap { background: #fbfefd; }
+.arch-band-data { background: #f6fafe; }
 .arch-band-body { min-width: 0; padding: 13px 16px 15px; }
 /* 并列项平铺：组与组之间用细分隔线区分，无标题层级 */
 .arch-flow-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 8px; }
@@ -1894,10 +1897,9 @@ html, body { overflow-x: hidden; }
   display: flex;
   flex-direction: column;
   padding: 13px 13px 14px;
-  border: 1px solid rgba(255, 255, 255, .5);
+  border: 1px solid #dbe7f1;
   border-radius: 9px;
   background: #ffffff;
-  box-shadow: 0 8px 18px rgba(4, 34, 62, .22);
 }
 .arch-data-card h4 { margin: 0 0 9px; color: #25455e; font-size: 13px; }
 .arch-data-card .arch-pills span { padding: 3px 8px; font-size: 11px; background: #f2f8fd; }
@@ -1908,11 +1910,11 @@ html, body { overflow-x: hidden; }
 .solution-section .solution-section-heading,
 .solution-section .solution-card-grid > .solution-card,
 .solution-section .solution-card-grid > .pain-card,
-.solution-section .arch-band { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.solution-section .arch-frame { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
 .solution-section.in-view .solution-section-heading,
 .solution-section.in-view .solution-card-grid > .solution-card,
 .solution-section.in-view .solution-card-grid > .pain-card,
-.solution-section.in-view .arch-band { opacity: 1; transform: none; }
+.solution-section.in-view .arch-frame { opacity: 1; transform: none; }
 .solution-section .solution-card-grid > .solution-card:nth-child(2),
 .solution-section .solution-card-grid > .pain-card:nth-child(2) { transition-delay: .1s; }
 .solution-section .solution-card-grid > .solution-card:nth-child(3),
@@ -1923,11 +1925,8 @@ html, body { overflow-x: hidden; }
 .solution-section .solution-card-grid > .pain-card:nth-child(5) { transition-delay: .4s; }
 .solution-section .solution-card-grid > .solution-card:nth-child(6),
 .solution-section .solution-card-grid > .pain-card:nth-child(6) { transition-delay: .5s; }
-.solution-arch > .arch-band-app { transition-delay: 0s; }
-.solution-arch > .arch-band-cap { transition-delay: .18s; }
-.solution-arch > .arch-band-data { transition-delay: .36s; }
 @media (prefers-reduced-motion: reduce) {
-  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .solution-card-grid > .pain-card, .solution-section .arch-band { opacity: 1; transform: none; transition: none; }
+  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .solution-card-grid > .pain-card, .solution-section .arch-frame { opacity: 1; transform: none; transition: none; }
 }
 
 /* ---- 解决方案页：项目案例 ---- */
