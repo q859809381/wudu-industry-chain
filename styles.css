@@ -1808,12 +1808,15 @@ html, body { overflow-x: hidden; }
 .capability-card .solution-card-icon.teal { background: linear-gradient(135deg, #179b92, #45c9b8); color: #fff; box-shadow: 0 6px 14px rgba(23, 155, 146, .26); }
 .capability-card .solution-card-icon.coral { background: linear-gradient(135deg, #d96658, #f2917f); color: #fff; box-shadow: 0 6px 14px rgba(217, 102, 88, .26); }
 
-/* ---- 方案优势：专享定制服务通栏横幅 ---- */
-.custom-banner { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: none; padding: 24px 28px; background: linear-gradient(115deg, #2d79bd 0%, #1f8fae 55%, #19b3a2 100%); box-shadow: 0 12px 26px rgba(31, 108, 165, .28); transition: transform .18s ease, box-shadow .18s ease; }
-.custom-banner:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(31, 108, 165, .34); }
-.custom-banner h3 { margin: 0; color: #fff; font-size: 18px; }
-.custom-banner p { margin: 8px 0 0; max-width: 780px; color: rgba(255, 255, 255, .88); font-size: 12.5px; line-height: 1.8; }
-.custom-banner-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; padding: 9px 20px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 999px; background: rgba(255, 255, 255, .1); color: #fff; font-size: 12.5px; font-weight: 600; letter-spacing: 1px; white-space: nowrap; }
+/* ---- 方案优势：专享定制服务大卡（白底 + 客服图占位 + 高亮按钮） ---- */
+.custom-banner { grid-column: span 2; display: flex; align-items: center; gap: 20px; padding: 18px 22px; }
+.custom-banner-media { flex: 0 0 150px; height: 112px; display: grid; place-content: center; justify-items: center; gap: 7px; border: 1px dashed #c9dcea; border-radius: 10px; background: linear-gradient(150deg, #f4f9fd, #eaf3fa); color: #9db4c6; }
+.custom-banner-media svg { width: 28px; height: 28px; }
+.custom-banner-media span { font-size: 11px; letter-spacing: 2px; }
+.custom-banner-copy { flex: 1 1 auto; min-width: 0; }
+.custom-banner h3 { margin: 0; color: #25455e; font-size: 17px; }
+.custom-banner p { margin: 7px 0 0; color: #7890a1; font-size: 12.5px; line-height: 1.8; }
+.custom-banner-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 5px; padding: 10px 22px; border-radius: 999px; background: linear-gradient(115deg, #2d79bd, #19b3a2); color: #fff; font-size: 12.5px; font-weight: 600; letter-spacing: 1px; white-space: nowrap; box-shadow: 0 6px 14px rgba(31, 108, 165, .28); }
 .custom-banner-btn .ui-icon { width: 14px; height: 14px; }
 
 /* ---- 解决方案页：BANNER 静态标签图 ---- */
@@ -1871,23 +1874,21 @@ html, body { overflow-x: hidden; }
 .arch-band-cap { background: #fbfefd; }
 .arch-band-data { background: #f6fafe; }
 .arch-band-body { min-width: 0; padding: 13px 16px 15px; }
-/* 分层指向流：每组一个步骤块，箭头引导后继组（换行时箭头位于下一组开头） */
-.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px 14px; }
-.arch-step { display: flex; align-items: center; min-width: 0; flex: 1 1 auto; }
-.arch-group { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; flex: 1 1 auto; }
+/* 架构图式：组为带边框分组盒（组名在上、内容小格铺开），层间以向上箭头衔接 */
+.arch-flow-pills { display: flex; align-items: stretch; gap: 10px; }
+.arch-group { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; flex: 1 1 0; min-width: 0; padding: 10px 12px 12px; border: 1px solid #d9e7f1; border-radius: 8px; background: #fff; }
+.arch-band-cap .arch-group { border-color: #cde8e4; }
 .arch-group-name { padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: 1px; }
 .gn-blue { color: #1d6aa8; background: #e6f2fc; }
 .gn-teal { color: #0e7a71; background: #e3f5f2; }
 .arch-pills { display: flex; flex-wrap: wrap; gap: 7px; }
 /* 组间指向箭头：体现 功能→用户→业务场景 / 体系→工具→基础→模型 的层级方向 */
-.arch-divider { flex: 0 0 auto; width: 8px; height: 8px; border-top: 2px solid #9cc4e4; border-right: 2px solid #9cc4e4; transform: rotate(45deg); margin: 0 10px 0 4px; }
-.arch-band-cap .arch-divider { border-color: #7fc4bb; }
 .arch-band-cap .arch-pills span { border-color: #cde8e4; background: #f5fbfa; }
 .arch-pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .arch-pills span {
   padding: 4px 10px;
   border: 1px solid #d9e7f1;
-  border-radius: 999px;
+  border-radius: 6px;
   background: #f7fbfe;
   color: #50708a;
   font-size: 11.5px;
@@ -1895,6 +1896,10 @@ html, body { overflow-x: hidden; }
   transition: border-color .15s, color .15s, background .15s, transform .15s;
 }
 .arch-pills span:hover { border-color: #8fc0e8; background: #fff; color: #2d79bd; transform: translateY(-1px); }
+/* 层间向上箭头：数据底座 → 能力体系 → 应用层 */
+.arch-arrows { display: flex; justify-content: center; gap: 220px; padding: 3px 0; }
+.arch-arrows i { width: 10px; height: 10px; border-top: 2px solid #a9cce8; border-right: 2px solid #a9cce8; transform: rotate(-45deg); }
+.arch-band-cap .arch-arrows i, .arch-arrows.cap i { border-color: #8fd0c7; }
 .arch-data-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
 .arch-data-card {
   display: flex;
@@ -1973,6 +1978,9 @@ html, body { overflow-x: hidden; }
   .solution-card-grid.five-columns { grid-template-columns: 1fr; }
   .solution-card-grid.three-columns { grid-template-columns: 1fr; }
   .custom-banner { grid-column: 1 / -1; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .custom-banner-media { width: 100%; flex: none; }
+  .arch-flow-pills { flex-direction: column; }
+  .arch-arrows { gap: 80px; }
   .solution-card, .capability-card { min-height: 0; }
   .pain-grid { grid-template-columns: 1fr; }
   .arch-band { grid-template-columns: 36px minmax(0, 1fr); }
