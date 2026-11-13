@@ -1809,7 +1809,7 @@ html, body { overflow-x: hidden; }
 .capability-card .solution-card-icon.coral { background: linear-gradient(135deg, #d96658, #f2917f); color: #fff; box-shadow: 0 6px 14px rgba(217, 102, 88, .26); }
 
 /* ---- 方案优势：专享定制服务通栏横幅 ---- */
-.custom-banner { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: none; padding: 24px 28px; background: linear-gradient(115deg, #2d79bd 0%, #1f8fae 55%, #19b3a2 100%); box-shadow: 0 12px 26px rgba(31, 108, 165, .28); transition: transform .18s ease, box-shadow .18s ease; }
+.custom-banner { grid-column: span 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: none; padding: 24px 28px; background: linear-gradient(115deg, #2d79bd 0%, #1f8fae 55%, #19b3a2 100%); box-shadow: 0 12px 26px rgba(31, 108, 165, .28); transition: transform .18s ease, box-shadow .18s ease; }
 .custom-banner:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(31, 108, 165, .34); }
 .custom-banner h3 { margin: 0; color: #fff; font-size: 18px; }
 .custom-banner p { margin: 8px 0 0; max-width: 780px; color: rgba(255, 255, 255, .88); font-size: 12.5px; line-height: 1.8; }
@@ -1956,6 +1956,7 @@ html, body { overflow-x: hidden; }
 @media (max-width: 1080px) {
   .solution-hero { grid-template-columns: minmax(0, 1fr) 245px; padding: 28px; }
   .solution-card-grid.four-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .solution-card-grid.three-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pain-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .solution-card-grid.five-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -1970,6 +1971,8 @@ html, body { overflow-x: hidden; }
   .solution-section-heading h2 { font-size: 19px; }
   .solution-card-grid.four-columns { grid-template-columns: 1fr; }
   .solution-card-grid.five-columns { grid-template-columns: 1fr; }
+  .solution-card-grid.three-columns { grid-template-columns: 1fr; }
+  .custom-banner { grid-column: 1 / -1; flex-direction: column; align-items: flex-start; gap: 14px; }
   .solution-card, .capability-card { min-height: 0; }
   .pain-grid { grid-template-columns: 1fr; }
   .arch-band { grid-template-columns: 36px minmax(0, 1fr); }
