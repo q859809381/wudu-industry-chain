@@ -1787,12 +1787,25 @@ html, body { overflow-x: hidden; }
 .solution-card { position: relative; min-width: 0; padding: 19px 18px; border: 1px solid #dfe9f0; border-radius: 9px; background: #fff; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .solution-card:hover { border-color: #b8d5ed; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); transform: translateY(-3px); }
 .solution-card-grid.three-columns { counter-reset: paincard casecard; }
-.pain-card { min-height: 170px; overflow: hidden; background: #fff; }
-.pain-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #2d79bd, #5aa5e0); }
-.pain-card:nth-child(3n+2)::before { background: linear-gradient(90deg, #179b92, #45c9b8); }
-.pain-card:nth-child(3n)::before { background: linear-gradient(90deg, #d58b28, #f0b25c); }
-.pain-card::after { counter-increment: paincard; content: counter(paincard, decimal-leading-zero); position: absolute; top: 13px; right: 15px; color: #e4eef7; font-size: 27px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
-.pain-card h3, .pain-card p { position: relative; z-index: 1; }
+.pain-card { counter-increment: paincard; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #dfe9f0; border-radius: 9px; background: #fff; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.pain-card:hover { border-color: #b8d5ed; box-shadow: 0 10px 24px rgba(32, 94, 141, .11); transform: translateY(-3px); }
+/* 图文卡：上半主题插画 + 下半标题说明 */
+.pain-visual { position: relative; display: grid; place-items: center; height: 98px; }
+.pain-visual svg { width: 154px; height: 82px; }
+.pv-blue { color: #2d79bd; background: linear-gradient(150deg, #edf6ff, #dfeffc); }
+.pv-teal { color: #15978e; background: linear-gradient(150deg, #ecfaf8, #daf3f0); }
+.pv-amber { color: #d58b28; background: linear-gradient(150deg, #fdf6ea, #faecd2); }
+.pv-coral { color: #d96658; background: linear-gradient(150deg, #fdf1ee, #fbe2dd); }
+.pain-num { position: absolute; top: 8px; right: 12px; font-size: 26px; font-weight: 800; line-height: 1; font-style: normal; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, .8); }
+.pain-num::after { content: counter(paincard, decimal-leading-zero); }
+.pain-body { flex: 1 1 auto; padding: 13px 16px 16px; }
+.pain-body h3 { margin: 0; color: #25455e; font-size: 15.5px; line-height: 1.45; }
+.pain-body h3::before { content: ''; display: inline-block; width: 4px; height: 14px; margin-right: 8px; border-radius: 2px; vertical-align: -1px; }
+.pv-blue ~ .pain-body h3::before { background: #2d79bd; }
+.pv-teal ~ .pain-body h3::before { background: #15978e; }
+.pv-amber ~ .pain-body h3::before { background: #d58b28; }
+.pv-coral ~ .pain-body h3::before { background: #d96658; }
+.pain-body p { margin-top: 7px; color: #7890a1; font-size: 12px; line-height: 1.75; }
 .solution-card-icon { width: 36px; height: 36px; display: inline-grid; place-items: center; border-radius: 8px; }
 .solution-card-icon .ui-icon { width: 18px; height: 18px; }
 .solution-card-icon.blue { color: #2777c6; background: #eaf4ff; }
@@ -1857,10 +1870,13 @@ html, body { overflow-x: hidden; }
 .arch-band-app { border-color: #b9d7ee; }
 .arch-band-cap { border-color: #bfe3df; }
 .arch-band-data { border-color: #9dbdd8; background: linear-gradient(128deg, #0d3a63 0%, #155a94 70%, #1e74b4 100%); box-shadow: 0 14px 30px rgba(13, 58, 99, .28); }
-.arch-band-body { min-width: 0; padding: 12px 16px 14px; }
-.arch-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: start; gap: 10px; padding: 7px 0; }
-.arch-row + .arch-row { border-top: 1px dashed #e4edf4; }
-.arch-row-label { padding-top: 4px; color: #4680b7; font-size: 12px; font-weight: 700; }
+.arch-band-body { min-width: 0; padding: 13px 16px 15px; }
+/* 并列项平铺：组与组之间用细分隔线区分，无标题层级 */
+.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 8px; }
+.arch-flow-pills > .arch-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+.arch-divider { align-self: stretch; width: 0; border-left: 1px dashed #c9dcea; margin: 0 6px; }
+.arch-band-cap .arch-pills span { border-color: #cde8e4; background: #f5fbfa; }
+.arch-band-cap .arch-divider { border-left-color: #c3e2de; }
 .arch-pills { display: flex; flex-wrap: wrap; gap: 6px; }
 .arch-pills span {
   padding: 4px 10px;
@@ -1873,19 +1889,6 @@ html, body { overflow-x: hidden; }
   transition: border-color .15s, color .15s, background .15s, transform .15s;
 }
 .arch-pills span:hover { border-color: #8fc0e8; background: #fff; color: #2d79bd; transform: translateY(-1px); }
-/* 能力体系：2×2 四宫格铺满层宽 */
-.arch-cap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
-.arch-cap-cell { padding: 10px 13px 12px; border: 1px dashed #c8e4e0; border-radius: 9px; background: linear-gradient(180deg, #f7fcfb, #f2f9f8); }
-.arch-cap-cell .arch-pills span { background: #fff; }
-.arch-cap-name { display: block; margin-bottom: 8px; color: #0f7d74; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
-/* 层间连接：三个向上流动的箭头 + 徽标 */
-.arch-link { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 10px; height: 40px; }
-.arch-link-chevrons { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.arch-link-chevrons i { width: 8px; height: 8px; border-top: 2px solid #6ea9d8; border-right: 2px solid #6ea9d8; transform: rotate(-45deg); animation: chevUp 1.2s ease infinite; }
-.arch-link-chevrons i:nth-child(2) { animation-delay: .18s; }
-.arch-link-chevrons i:nth-child(3) { animation-delay: .36s; }
-@keyframes chevUp { 0%, 100% { opacity: .25; } 45% { opacity: 1; } }
-.arch-link-label { padding: 3px 14px; border: 1px solid #cfe2f2; border-radius: 999px; background: #fff; color: #4680b7; font-size: 11px; font-weight: 600; letter-spacing: 3px; box-shadow: 0 2px 8px rgba(31, 66, 99, .08); }
 .arch-data-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
 .arch-data-card {
   display: flex;
@@ -1904,28 +1907,27 @@ html, body { overflow-x: hidden; }
 /* ---- 解决方案页：滚动入场动效 ---- */
 .solution-section .solution-section-heading,
 .solution-section .solution-card-grid > .solution-card,
-.solution-section .arch-band,
-.solution-section .arch-link { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.solution-section .solution-card-grid > .pain-card,
+.solution-section .arch-band { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
 .solution-section.in-view .solution-section-heading,
 .solution-section.in-view .solution-card-grid > .solution-card,
-.solution-section.in-view .arch-band,
-.solution-section.in-view .arch-link { opacity: 1; transform: none; }
-.solution-section .solution-card-grid > .solution-card:nth-child(2) { transition-delay: .1s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(3) { transition-delay: .2s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(4) { transition-delay: .3s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(5) { transition-delay: .4s; }
-.solution-section .solution-card-grid > .solution-card:nth-child(6) { transition-delay: .5s; }
+.solution-section.in-view .solution-card-grid > .pain-card,
+.solution-section.in-view .arch-band { opacity: 1; transform: none; }
+.solution-section .solution-card-grid > .solution-card:nth-child(2),
+.solution-section .solution-card-grid > .pain-card:nth-child(2) { transition-delay: .1s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(3),
+.solution-section .solution-card-grid > .pain-card:nth-child(3) { transition-delay: .2s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(4),
+.solution-section .solution-card-grid > .pain-card:nth-child(4) { transition-delay: .3s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(5),
+.solution-section .solution-card-grid > .pain-card:nth-child(5) { transition-delay: .4s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(6),
+.solution-section .solution-card-grid > .pain-card:nth-child(6) { transition-delay: .5s; }
 .solution-arch > .arch-band-app { transition-delay: 0s; }
-.solution-arch > .arch-band-app + .arch-link { transition-delay: .14s; }
-.solution-arch > .arch-band-cap { transition-delay: .28s; }
-.solution-arch > .arch-band-cap + .arch-link { transition-delay: .42s; }
-.solution-arch > .arch-band-data { transition-delay: .56s; }
-/* 痛点卡悬浮微动效：图标轻跳 */
-.pain-card:hover .solution-card-icon { animation: painIconBounce .55s ease; }
-@keyframes painIconBounce { 0%, 100% { transform: none; } 35% { transform: translateY(-5px); } 65% { transform: translateY(2px); } }
+.solution-arch > .arch-band-cap { transition-delay: .18s; }
+.solution-arch > .arch-band-data { transition-delay: .36s; }
 @media (prefers-reduced-motion: reduce) {
-  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .arch-band, .solution-section .arch-link { opacity: 1; transform: none; transition: none; }
-  .arch-link-chevrons i { animation: none; }
+  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .solution-card-grid > .pain-card, .solution-section .arch-band { opacity: 1; transform: none; transition: none; }
 }
 
 /* ---- 解决方案页：项目案例 ---- */
@@ -1965,7 +1967,6 @@ html, body { overflow-x: hidden; }
   .solution-card, .pain-card, .capability-card { min-height: 0; }
   .arch-band { grid-template-columns: 36px minmax(0, 1fr); }
   .arch-band-label { font-size: 12px; letter-spacing: 4px; }
-  .arch-cap-grid { grid-template-columns: 1fr; }
   .arch-data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
