@@ -1849,9 +1849,7 @@ html, body { overflow-x: hidden; }
 
 /* ---- 解决方案页：方案架构三层体系（架构图式） ---- */
 .solution-arch { display: flex; flex-direction: column; }
-.arch-diagram { position: relative; padding: 22px 22px 24px; border: 1px solid #c9def0; border-radius: 14px; background: linear-gradient(180deg, #fdfeff, #f5faff); box-shadow: 0 12px 30px rgba(32, 94, 141, .08); overflow: hidden; }
-.arch-diagram::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(45, 121, 189, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 121, 189, .045) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
-.arch-band { position: relative; z-index: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); border: 1px solid #d5e5f1; border-radius: 10px; background: #fff; overflow: hidden; box-shadow: 0 6px 16px rgba(32, 94, 141, .06); }
+.arch-band { position: relative; z-index: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); border: 1px solid #d5e5f1; border-radius: 10px; background: #fff; overflow: hidden; box-shadow: 0 6px 16px rgba(32, 94, 141, .07); }
 .arch-band-label { display: grid; place-items: center; padding: 14px 0; writing-mode: vertical-rl; color: #fff; font-size: 13.5px; font-weight: 700; letter-spacing: 7px; }
 .arch-band-app .arch-band-label { background: linear-gradient(180deg, #2d79bd, #1d5f97); }
 .arch-band-cap .arch-band-label { background: linear-gradient(180deg, #179b92, #0f7d74); }
@@ -1859,10 +1857,7 @@ html, body { overflow-x: hidden; }
 .arch-band-app { border-color: #b9d7ee; }
 .arch-band-cap { border-color: #bfe3df; }
 .arch-band-data { border-color: #9dbdd8; background: linear-gradient(128deg, #0d3a63 0%, #155a94 70%, #1e74b4 100%); box-shadow: 0 14px 30px rgba(13, 58, 99, .28); }
-.arch-band-body { min-width: 0; padding: 11px 16px 13px; }
-.arch-band-head { padding: 2px 0 7px; }
-.arch-band-head small { color: #8ba3b5; font-size: 11.5px; letter-spacing: 1px; }
-.arch-band-data .arch-band-head small { color: rgba(255, 255, 255, .68); }
+.arch-band-body { min-width: 0; padding: 12px 16px 14px; }
 .arch-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: start; gap: 10px; padding: 7px 0; }
 .arch-row + .arch-row { border-top: 1px dashed #e4edf4; }
 .arch-row-label { padding-top: 4px; color: #4680b7; font-size: 12px; font-weight: 700; }
@@ -1878,12 +1873,19 @@ html, body { overflow-x: hidden; }
   transition: border-color .15s, color .15s, background .15s, transform .15s;
 }
 .arch-pills span:hover { border-color: #8fc0e8; background: #fff; color: #2d79bd; transform: translateY(-1px); }
-/* 层间连接：向上流动的虚线 + 徽标 */
-.arch-link { position: relative; z-index: 1; height: 40px; }
-.arch-link-line { position: absolute; left: 50%; top: 4px; bottom: 2px; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(180deg, #5b9bd3 0 6px, transparent 6px 12px); animation: archFlow .8s linear infinite; }
-.arch-link-line::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); border-right: 6px solid transparent; border-left: 6px solid transparent; border-bottom: 8px solid #2d79bd; }
-.arch-link-label { position: absolute; left: 50%; top: 50%; transform: translate(calc(-50% + 64px), -50%); padding: 2px 13px; border: 1px solid #cfe2f2; border-radius: 999px; background: #fff; color: #4680b7; font-size: 11px; font-weight: 600; letter-spacing: 3px; box-shadow: 0 2px 8px rgba(31, 66, 99, .08); }
-@keyframes archFlow { to { background-position-y: 12px; } }
+/* 能力体系：2×2 四宫格铺满层宽 */
+.arch-cap-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.arch-cap-cell { padding: 10px 13px 12px; border: 1px dashed #c8e4e0; border-radius: 9px; background: linear-gradient(180deg, #f7fcfb, #f2f9f8); }
+.arch-cap-cell .arch-pills span { background: #fff; }
+.arch-cap-name { display: block; margin-bottom: 8px; color: #0f7d74; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+/* 层间连接：三个向上流动的箭头 + 徽标 */
+.arch-link { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 10px; height: 40px; }
+.arch-link-chevrons { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.arch-link-chevrons i { width: 8px; height: 8px; border-top: 2px solid #6ea9d8; border-right: 2px solid #6ea9d8; transform: rotate(-45deg); animation: chevUp 1.2s ease infinite; }
+.arch-link-chevrons i:nth-child(2) { animation-delay: .18s; }
+.arch-link-chevrons i:nth-child(3) { animation-delay: .36s; }
+@keyframes chevUp { 0%, 100% { opacity: .25; } 45% { opacity: 1; } }
+.arch-link-label { padding: 3px 14px; border: 1px solid #cfe2f2; border-radius: 999px; background: #fff; color: #4680b7; font-size: 11px; font-weight: 600; letter-spacing: 3px; box-shadow: 0 2px 8px rgba(31, 66, 99, .08); }
 .arch-data-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
 .arch-data-card {
   display: flex;
@@ -1913,17 +1915,17 @@ html, body { overflow-x: hidden; }
 .solution-section .solution-card-grid > .solution-card:nth-child(4) { transition-delay: .3s; }
 .solution-section .solution-card-grid > .solution-card:nth-child(5) { transition-delay: .4s; }
 .solution-section .solution-card-grid > .solution-card:nth-child(6) { transition-delay: .5s; }
-.solution-section .arch-diagram > *:nth-child(1) { transition-delay: 0s; }
-.solution-section .arch-diagram > *:nth-child(2) { transition-delay: .14s; }
-.solution-section .arch-diagram > *:nth-child(3) { transition-delay: .28s; }
-.solution-section .arch-diagram > *:nth-child(4) { transition-delay: .42s; }
-.solution-section .arch-diagram > *:nth-child(5) { transition-delay: .56s; }
+.solution-arch > .arch-band-app { transition-delay: 0s; }
+.solution-arch > .arch-band-app + .arch-link { transition-delay: .14s; }
+.solution-arch > .arch-band-cap { transition-delay: .28s; }
+.solution-arch > .arch-band-cap + .arch-link { transition-delay: .42s; }
+.solution-arch > .arch-band-data { transition-delay: .56s; }
 /* 痛点卡悬浮微动效：图标轻跳 */
 .pain-card:hover .solution-card-icon { animation: painIconBounce .55s ease; }
 @keyframes painIconBounce { 0%, 100% { transform: none; } 35% { transform: translateY(-5px); } 65% { transform: translateY(2px); } }
 @media (prefers-reduced-motion: reduce) {
   .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .arch-band, .solution-section .arch-link { opacity: 1; transform: none; transition: none; }
-  .arch-link-line { animation: none; }
+  .arch-link-chevrons i { animation: none; }
 }
 
 /* ---- 解决方案页：项目案例 ---- */
@@ -1961,6 +1963,10 @@ html, body { overflow-x: hidden; }
   .solution-card-grid.four-columns { grid-template-columns: 1fr; }
   .solution-card-grid.five-columns { grid-template-columns: 1fr; }
   .solution-card, .pain-card, .capability-card { min-height: 0; }
+  .arch-band { grid-template-columns: 36px minmax(0, 1fr); }
+  .arch-band-label { font-size: 12px; letter-spacing: 4px; }
+  .arch-cap-grid { grid-template-columns: 1fr; }
+  .arch-data-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Chain selector: left category sidebar + right grouped long list. */
