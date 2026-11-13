@@ -1773,12 +1773,10 @@ html, body { overflow-x: hidden; }
 .solution-hero-actions .button.secondary { border-color: rgba(255, 255, 255, .45); background: rgba(255, 255, 255, .12); color: #ffffff; }
 .solution-hero-actions .button.secondary:hover { border-color: rgba(255, 255, 255, .75); background: rgba(255, 255, 255, .2); }
 .solution-section { position: relative; padding: 32px 4px 4px; }
-.solution-section-muted { margin: 28px 0 0; padding: 32px 26px 32px; border: 1px solid #e1ebf2; border-radius: 12px; background: linear-gradient(180deg, #f7fbfe, #f2f8fc); }
-.solution-section-heading { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 19px; }
-.solution-section-heading.centered { justify-content: center; text-align: center; }
-.solution-section-heading h2 { margin-top: 0; color: #1a3852; font-size: 21px; }
-.solution-section-heading h2::after { content: ''; display: block; width: 40px; height: 4px; margin: 9px auto 0; border-radius: 999px; background: linear-gradient(90deg, #2d79bd, #19b3a2); }
-.solution-section-heading p { margin-top: 8px; color: #7f95a5; font-size: 12px; line-height: 1.65; }
+.solution-section-muted { margin: 28px 0 0; }
+.solution-section-heading { position: relative; z-index: 1; margin-bottom: 19px; }
+.solution-section-heading h2 { margin: 4px 0 6px; color: #1d3a54; font-size: 22px; font-weight: 700; letter-spacing: .3px; }
+.solution-section-heading p { margin: 0; color: #7e94a4; font-size: 12px; line-height: 1.65; }
 .solution-card-grid { display: grid; gap: 13px; }
 .solution-card-grid.four-columns { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .solution-card-grid.five-columns { grid-template-columns: repeat(5, minmax(0, 1fr)); }
@@ -1983,7 +1981,7 @@ html, body { overflow-x: hidden; }
   .solution-hero h1 { font-size: 26px; }
   .solution-hero-copy > p { font-size: 12px; }
   .solution-section { padding-top: 24px; }
-  .solution-section-muted { margin-top: 22px; padding: 23px 15px 24px; }
+  .solution-section-muted { margin-top: 22px; }
   .solution-section-heading h2 { font-size: 19px; }
   .solution-card-grid.four-columns { grid-template-columns: 1fr; }
   .solution-card-grid.five-columns { grid-template-columns: 1fr; }
