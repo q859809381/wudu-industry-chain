@@ -1907,7 +1907,7 @@ html, body { overflow-x: hidden; }
 }
 .arch-data-card h4 { margin: 0 0 9px; color: #25455e; font-size: 13px; }
 .arch-data-card .arch-pills span { padding: 3px 8px; font-size: 11px; background: #f2f8fd; }
-.arch-data-card strong { margin-top: 12px; color: #1f6faf; font-size: 19px; line-height: 1.2; }
+.arch-data-card strong { margin-top: auto; padding-top: 12px; color: #1f6faf; font-size: 19px; line-height: 1.2; }
 .arch-data-card strong small { color: #7890a1; font-size: 11px; font-weight: 400; margin-left: 4px; }
 
 /* ---- 解决方案页：滚动入场动效 ---- */
