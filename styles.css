@@ -1874,9 +1874,13 @@ html, body { overflow-x: hidden; }
 .arch-band-cap { background: #fbfefd; }
 .arch-band-data { background: #f6fafe; }
 .arch-band-body { min-width: 0; padding: 13px 16px 15px; }
-/* 并列项平铺：组与组之间用细分隔线区分，无标题层级 */
-.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 8px; }
-.arch-flow-pills > .arch-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+/* 并列项平铺：组前内联分类小标签 + 组间细分隔线 */
+.arch-flow-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 8px; }
+.arch-group { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.arch-group-name { padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700; letter-spacing: 1px; }
+.gn-blue { color: #1d6aa8; background: #e6f2fc; }
+.gn-teal { color: #0e7a71; background: #e3f5f2; }
+.arch-pills { display: flex; flex-wrap: wrap; gap: 7px; }
 .arch-divider { align-self: stretch; width: 0; border-left: 1px dashed #c9dcea; margin: 0 6px; }
 .arch-band-cap .arch-pills span { border-color: #cde8e4; background: #f5fbfa; }
 .arch-band-cap .arch-divider { border-left-color: #c3e2de; }
