@@ -4220,7 +4220,6 @@ function init() {
     submitHomeQuery();
   }));
   $('#solutionContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
-  $('#solutionCtaButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   $('#solutionArchButton').addEventListener('click', () => { document.getElementById('solutionArchSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   enhanceCustomSelects();
   enableGraphPan();
