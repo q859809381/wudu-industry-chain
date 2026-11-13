@@ -1847,22 +1847,22 @@ html, body { overflow-x: hidden; }
 .tagmap-col:first-child .tagmap-tag::after { right: -10px; }
 .tagmap-col:last-child .tagmap-tag::before { left: -10px; }
 
-/* ---- 解决方案页：方案架构三层体系 ---- */
+/* ---- 解决方案页：方案架构三层体系（架构图式） ---- */
 .solution-arch { display: flex; flex-direction: column; }
-.arch-layer { padding: 16px 18px 18px; border: 1px solid #d5e5f1; border-radius: 10px; background: #fff; }
-.arch-layer-app { border-color: #b9d7ee; border-top: 3px solid #2d79bd; background: linear-gradient(180deg, #f3faff, #fff); box-shadow: 0 8px 20px rgba(32, 94, 141, .06); }
-.arch-layer-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.arch-layer-tag {
-  padding: 3px 12px;
-  border-radius: 999px;
-  background: #1f6faf;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-.arch-layer-app .arch-layer-tag { background: #2d79bd; }
-.arch-layer-head small { color: #7f95a5; font-size: 11.5px; }
+.arch-diagram { position: relative; padding: 22px 22px 24px; border: 1px solid #c9def0; border-radius: 14px; background: linear-gradient(180deg, #fdfeff, #f5faff); box-shadow: 0 12px 30px rgba(32, 94, 141, .08); overflow: hidden; }
+.arch-diagram::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(45, 121, 189, .045) 1px, transparent 1px), linear-gradient(90deg, rgba(45, 121, 189, .045) 1px, transparent 1px); background-size: 30px 30px; pointer-events: none; }
+.arch-band { position: relative; z-index: 1; display: grid; grid-template-columns: 44px minmax(0, 1fr); border: 1px solid #d5e5f1; border-radius: 10px; background: #fff; overflow: hidden; box-shadow: 0 6px 16px rgba(32, 94, 141, .06); }
+.arch-band-label { display: grid; place-items: center; padding: 14px 0; writing-mode: vertical-rl; color: #fff; font-size: 13.5px; font-weight: 700; letter-spacing: 7px; }
+.arch-band-app .arch-band-label { background: linear-gradient(180deg, #2d79bd, #1d5f97); }
+.arch-band-cap .arch-band-label { background: linear-gradient(180deg, #179b92, #0f7d74); }
+.arch-band-data .arch-band-label { background: linear-gradient(180deg, #123f68, #0b2f52); letter-spacing: 5px; }
+.arch-band-app { border-color: #b9d7ee; }
+.arch-band-cap { border-color: #bfe3df; }
+.arch-band-data { border-color: #9dbdd8; background: linear-gradient(128deg, #0d3a63 0%, #155a94 70%, #1e74b4 100%); box-shadow: 0 14px 30px rgba(13, 58, 99, .28); }
+.arch-band-body { min-width: 0; padding: 11px 16px 13px; }
+.arch-band-head { padding: 2px 0 7px; }
+.arch-band-head small { color: #8ba3b5; font-size: 11.5px; letter-spacing: 1px; }
+.arch-band-data .arch-band-head small { color: rgba(255, 255, 255, .68); }
 .arch-row { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: start; gap: 10px; padding: 7px 0; }
 .arch-row + .arch-row { border-top: 1px dashed #e4edf4; }
 .arch-row-label { padding-top: 4px; color: #4680b7; font-size: 12px; font-weight: 700; }
@@ -1875,15 +1875,15 @@ html, body { overflow-x: hidden; }
   color: #50708a;
   font-size: 11.5px;
   line-height: 1.5;
+  transition: border-color .15s, color .15s, background .15s, transform .15s;
 }
-.arch-flow { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 0; }
-.arch-flow-arrow { position: relative; width: 2px; height: 16px; border: none; border-radius: 2px; background: linear-gradient(180deg, #2d79bd, #9cc4e4); }
-.arch-flow-arrow::before { content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); border-right: 5px solid transparent; border-left: 5px solid transparent; border-bottom: 6px solid #2d79bd; }
-.arch-flow small { color: #57809f; font-size: 11px; font-weight: 600; letter-spacing: 3px; }
-.arch-layer:not(.arch-layer-app):not(.arch-layer-data) { border-top: 3px solid #19b3a2; }
-.arch-layer-data { border: none; border-top: 3px solid #123f68; border-radius: 10px; background: linear-gradient(128deg, #0d3a63 0%, #155a94 70%, #1e74b4 100%); box-shadow: 0 14px 30px rgba(13, 58, 99, .28); }
-.arch-layer-data .arch-layer-tag { background: rgba(255, 255, 255, .18); }
-.arch-layer-data .arch-layer-head small { color: rgba(255, 255, 255, .72); }
+.arch-pills span:hover { border-color: #8fc0e8; background: #fff; color: #2d79bd; transform: translateY(-1px); }
+/* 层间连接：向上流动的虚线 + 徽标 */
+.arch-link { position: relative; z-index: 1; height: 40px; }
+.arch-link-line { position: absolute; left: 50%; top: 4px; bottom: 2px; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(180deg, #5b9bd3 0 6px, transparent 6px 12px); animation: archFlow .8s linear infinite; }
+.arch-link-line::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); border-right: 6px solid transparent; border-left: 6px solid transparent; border-bottom: 8px solid #2d79bd; }
+.arch-link-label { position: absolute; left: 50%; top: 50%; transform: translate(calc(-50% + 64px), -50%); padding: 2px 13px; border: 1px solid #cfe2f2; border-radius: 999px; background: #fff; color: #4680b7; font-size: 11px; font-weight: 600; letter-spacing: 3px; box-shadow: 0 2px 8px rgba(31, 66, 99, .08); }
+@keyframes archFlow { to { background-position-y: 12px; } }
 .arch-data-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11px; }
 .arch-data-card {
   display: flex;
@@ -1898,6 +1898,33 @@ html, body { overflow-x: hidden; }
 .arch-data-card .arch-pills span { padding: 3px 8px; font-size: 11px; background: #f2f8fd; }
 .arch-data-card strong { margin-top: 12px; color: #1f6faf; font-size: 19px; line-height: 1.2; }
 .arch-data-card strong small { color: #7890a1; font-size: 11px; font-weight: 400; margin-left: 4px; }
+
+/* ---- 解决方案页：滚动入场动效 ---- */
+.solution-section .solution-section-heading,
+.solution-section .solution-card-grid > .solution-card,
+.solution-section .arch-band,
+.solution-section .arch-link { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+.solution-section.in-view .solution-section-heading,
+.solution-section.in-view .solution-card-grid > .solution-card,
+.solution-section.in-view .arch-band,
+.solution-section.in-view .arch-link { opacity: 1; transform: none; }
+.solution-section .solution-card-grid > .solution-card:nth-child(2) { transition-delay: .1s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(3) { transition-delay: .2s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(4) { transition-delay: .3s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(5) { transition-delay: .4s; }
+.solution-section .solution-card-grid > .solution-card:nth-child(6) { transition-delay: .5s; }
+.solution-section .arch-diagram > *:nth-child(1) { transition-delay: 0s; }
+.solution-section .arch-diagram > *:nth-child(2) { transition-delay: .14s; }
+.solution-section .arch-diagram > *:nth-child(3) { transition-delay: .28s; }
+.solution-section .arch-diagram > *:nth-child(4) { transition-delay: .42s; }
+.solution-section .arch-diagram > *:nth-child(5) { transition-delay: .56s; }
+/* 痛点卡悬浮微动效：图标轻跳 */
+.pain-card:hover .solution-card-icon { animation: painIconBounce .55s ease; }
+@keyframes painIconBounce { 0%, 100% { transform: none; } 35% { transform: translateY(-5px); } 65% { transform: translateY(2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .solution-section .solution-section-heading, .solution-section .solution-card-grid > .solution-card, .solution-section .arch-band, .solution-section .arch-link { opacity: 1; transform: none; transition: none; }
+  .arch-link-line { animation: none; }
+}
 
 /* ---- 解决方案页：项目案例 ---- */
 .case-card { overflow: hidden; min-height: 0; }

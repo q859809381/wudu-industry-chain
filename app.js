@@ -4221,6 +4221,16 @@ function init() {
   }));
   $('#solutionContactButton').addEventListener('click', () => showToast('定制需求已记录，产业研究顾问将在 1 个工作日内联系您'));
   $('#solutionArchButton').addEventListener('click', () => { document.getElementById('solutionArchSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  /* 解决方案页滚动入场动效：进入视口后为所在章节加 in-view，触发卡片/架构层错峰浮现 */
+  const solutionViewEl = $('#solutionView');
+  if (solutionViewEl && 'IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+      });
+    }, { threshold: 0.12 });
+    solutionViewEl.querySelectorAll('.solution-section').forEach((sec) => revealObserver.observe(sec));
+  }
   enhanceCustomSelects();
   enableGraphPan();
   initCellPopovers();
